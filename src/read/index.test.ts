@@ -481,10 +481,10 @@ describe('readCardFromPng()', () => {
       expect(result.data.name).toBe('CRC Valid')
     })
 
-    it('strict mode throws on CRC mismatch', () => {
+    it('strict mode throws on data corruption', () => {
       // Create a PNG with corrupted base64 data to cause parsing failure
       const v1Card = {
-        name: 'CRC Test',
+        name: 'Corrupt Data Test',
         description: '',
         personality: '',
         scenario: '',
@@ -501,10 +501,26 @@ describe('readCardFromPng()', () => {
     })
 
     it('non-strict mode continues on CRC mismatch', () => {
-      // This test depends on the specific implementation behavior
       const card = createV3Card('Non-strict CRC')
       const pngBytes = createPngWithCard(card)
-      // In non-strict mode, minor issues should be tolerated
+      // Corrupt the CRC of the last chunk before IEND
+      // Find a tEXt chunk and corrupt its CRC
+      let corruptedCRC = false
+      for (let i = 8; i < pngBytes.length - 12; i++) {
+        if (pngBytes[i] === 116 && pngBytes[i+1] === 69 && pngBytes[i+2] === 88 && pngBytes[i+3] === 116) { // 'tEXt'
+          // Found tEXt chunk, corrupt CRC (last 4 bytes of chunk)
+          const length = (pngBytes[i-8] << 24) | (pngBytes[i-7] << 16) | (pngBytes[i-6] << 8) | pngBytes[i-5]
+          const crcOffset = i + 4 + length
+          if (crcOffset + 4 < pngBytes.length) {
+            pngBytes[crcOffset] = 0xFF
+            pngBytes[crcOffset + 1] = 0xFF
+            corruptedCRC = true
+            break
+          }
+        }
+      }
+      expect(corruptedCRC).toBe(true)
+      // In non-strict mode, should tolerate CRC mismatch and still parse
       const result = readCardFromPng(pngBytes, { strict: false })
       expect(result.data.name).toBe('Non-strict CRC')
     })

@@ -126,8 +126,9 @@ describe('ZIP Handling', () => {
       expect(zip[eocdOffset + 3]).toBe(0x06)
     })
 
-    it('compresses with deflate', () => {
-      // Our implementation uses stored, so just verify it creates valid ZIP
+    it('creates valid ZIP with large content (stored compression)', () => {
+      // Our implementation uses stored (no compression), not deflate
+      // Verify it creates valid ZIP that can be extracted
       const files = new Map<string, Uint8Array>()
       const largeContent = 'A'.repeat(1000)
       files.set('large.txt', encodeUTF8(largeContent))

@@ -375,7 +375,7 @@ describe('Integration Tests', () => {
   })
 
   describe('Compatibility', () => {
-    it('reads real card from Chub.ai', () => {
+    it('reads V2 card format (Chub.ai style)', () => {
       // Simulate a V2 card format like Chub.ai produces
       const v2Card = {
         spec: 'chara_card_v2',
@@ -403,7 +403,7 @@ describe('Integration Tests', () => {
       expect(result.data.name).toBe('Chub Character')
     })
 
-    it('reads real card from SillyTavern', () => {
+    it('reads V2 card format (SillyTavern style)', () => {
       // SillyTavern typically produces V2 cards
       const stCard = {
         spec: 'chara_card_v2',
@@ -431,7 +431,7 @@ describe('Integration Tests', () => {
       expect(result.data.name).toBe('ST Character')
     })
 
-    it('reads real card from NovelAI', () => {
+    it('reads V1 card format (NovelAI style)', () => {
       // NovelAI uses V1-like format
       const naiCard = {
         name: 'NAI Character',

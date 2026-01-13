@@ -7,7 +7,7 @@ import {
   writeLorebookToJson,
 } from './index'
 import { readCard, readLorebook } from '../read/index'
-import { readChunks, writeChunks, createTextChunk } from '../png/chunks'
+import { readChunks, writeChunks, createTextChunk, computeCRC32 } from '../png/chunks'
 import { extractZip } from '../zip/index'
 import { encodeBase64 } from '../utils/base64'
 import { encodeUTF8, decodeUTF8 } from '../utils/utf8'
@@ -141,13 +141,20 @@ describe('writeCardToPng()', () => {
       expect(ccv3Chunk.data).toMatch(/^[A-Za-z0-9+/=]+$/)
     })
 
-    it('computes correct CRC-32', () => {
+    it('writes chunks with CRC values', () => {
       const card = createV3Card('CRC Test')
       const basePng = createMinimalPng()
       const result = writeCardToPng(card, basePng)
-      // If CRC was incorrect, readChunks would fail
+      // Verify chunks have CRC values populated (functional test)
       const chunks = readChunks(result)
       expect(chunks.length).toBeGreaterThan(0)
+      // All chunks should have CRC values (non-zero for most chunks)
+      for (const chunk of chunks) {
+        expect(typeof chunk.crc).toBe('number')
+      }
+      // Most importantly, the PNG should be readable back
+      const readBack = readCard(result)
+      expect(readBack.data.name).toBe('CRC Test')
     })
   })
 
@@ -181,9 +188,13 @@ describe('writeCardToPng()', () => {
       const charaChunk = findTextChunk(result, 'chara')
       const decoded = Buffer.from(charaChunk.data, 'base64').toString('utf-8')
       const parsed = JSON.parse(decoded)
-      // V3-only fields should not be directly in data (may be in extensions)
+      // V3-only fields should not be directly in data
       expect(parsed.data.group_only_greetings).toBeUndefined()
       expect(parsed.data.nickname).toBeUndefined()
+      // If they're preserved, they should be in extensions (implementation dependent)
+      // The V2 format should still be valid and parseable
+      expect(parsed.spec).toBe('chara_card_v2')
+      expect(parsed.data.name).toBe('V3 Only')
     })
 
     it('includeV2Chunk: false omits chara chunk', () => {
@@ -415,7 +426,7 @@ describe('writeCardToCharx()', () => {
       expect(files.has('assets/icon/main.png')).toBe(true)
     })
 
-    it('compresses with deflate', () => {
+    it('creates valid ZIP (stored compression)', () => {
       // Our implementation uses stored (no compression)
       // but should still create valid ZIP
       const card = createV3Card('Compress Test')
