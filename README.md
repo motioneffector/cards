@@ -18,6 +18,10 @@ This is a foundation release with production-ready core utilities and a complete
 
 **In Progress**: PNG/JSON/CHARX I/O implementation will be completed in subsequent releases.
 
+## Demo
+
+[Try the interactive demo](https://motioneffector.github.io/cards/)
+
 ## Installation
 
 ```bash
@@ -188,10 +192,6 @@ console.log(new TextDecoder().decode(decoded)) // 'Hello, World!'
 - Real-world compatibility tests (Chub.ai, SillyTavern, NovelAI)
 - Performance optimizations
 - Comprehensive documentation
-
-## Demo
-
-[Try the interactive demo](https://motioneffector.github.io/cards/index.html) with 25 automated tests showcasing the working components.
 
 ## Error Handling
 
