@@ -98,7 +98,7 @@ export interface CharacterDataV1 {
  * Asset metadata for V3 cards
  */
 export interface Asset {
-  type: 'icon' | 'background' | 'emotion' | 'user_icon' | string
+  type: string
   uri: string
   name: string
   ext: string
@@ -146,7 +146,7 @@ export interface LorebookEntry {
   selective?: boolean
   secondary_keys?: string[]
   constant?: boolean
-  position?: 'before_char' | 'after_char' | string
+  position?: string
 
   // V3 parsed decorators
   decorators?: Decorator[]
@@ -207,7 +207,7 @@ export interface WritePngOptions {
  * Asset data for writing to CHARX
  */
 export interface AssetData {
-  type: 'icon' | 'background' | 'emotion' | 'user_icon' | string
+  type: string
   name: string
   data: Uint8Array
   ext: string

@@ -135,29 +135,29 @@ function serializeDecoratorLine(decorator: Decorator): string | null {
     case 'dont_activate':
       return '@@dont_activate'
     case 'activate_only_after':
-      return `@@activate_only_after ${decorator.value}`
+      return `@@activate_only_after ${String(decorator.value)}`
     case 'activate_only_every':
-      return `@@activate_only_every ${decorator.value}`
+      return `@@activate_only_every ${String(decorator.value)}`
     case 'keep_activate_after_match':
       return '@@keep_activate_after_match'
     case 'dont_activate_after_match':
       return '@@dont_activate_after_match'
     case 'depth':
-      return `@@depth ${decorator.value}`
+      return `@@depth ${String(decorator.value)}`
     case 'instruct_depth':
-      return `@@instruct_depth ${decorator.value}`
+      return `@@instruct_depth ${String(decorator.value)}`
     case 'reverse_depth':
-      return `@@reverse_depth ${decorator.value}`
+      return `@@reverse_depth ${String(decorator.value)}`
     case 'position':
       return `@@position ${decorator.value}`
     case 'role':
       return `@@role ${decorator.value}`
     case 'scan_depth':
-      return `@@scan_depth ${decorator.value}`
+      return `@@scan_depth ${String(decorator.value)}`
     case 'instruct_scan_depth':
-      return `@@instruct_scan_depth ${decorator.value}`
+      return `@@instruct_scan_depth ${String(decorator.value)}`
     case 'is_greeting':
-      return `@@is_greeting ${decorator.value}`
+      return `@@is_greeting ${String(decorator.value)}`
     case 'additional_keys':
       return `@@additional_keys ${decorator.value.join(',')}`
     case 'exclude_keys':

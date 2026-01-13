@@ -23,6 +23,13 @@ export {
 export { repairCard } from './repair'
 export { validateCard, validateLorebook } from './validate'
 
+// Decorator parsing and serialization
+export { parseDecorators, serializeDecorators } from './lorebook/decorators'
+
+// Utility functions
+export { computeCRC32 } from './png/crc'
+export { encodeBase64, decodeBase64 } from './utils/base64'
+
 // Type definitions
 export type {
   CharacterCard,

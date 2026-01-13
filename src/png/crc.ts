@@ -27,9 +27,7 @@ function makeCrcTable(): Uint32Array {
  * @returns CRC-32 value as unsigned 32-bit integer
  */
 export function computeCRC32(...data: Uint8Array[]): number {
-  if (!crcTable) {
-    crcTable = makeCrcTable()
-  }
+  crcTable ??= makeCrcTable()
 
   let crc = 0xffffffff
 

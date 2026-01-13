@@ -154,7 +154,21 @@ describe('Decorator System', () => {
     })
 
     it('serializes all decorator types', () => {
-      expect(true).toBe(true) // Placeholder - will test each type
+      // Test each decorator type serializes correctly
+      const testCases = [
+        { decorators: [{ type: 'depth' as const, value: 4 }], expected: '@@depth 4' },
+        { decorators: [{ type: 'activate' as const }], expected: '@@activate' },
+        { decorators: [{ type: 'dont_activate' as const }], expected: '@@dont_activate' },
+        { decorators: [{ type: 'activate_only_after' as const, value: 3 }], expected: '@@activate_only_after 3' },
+        { decorators: [{ type: 'role' as const, value: 'system' as const }], expected: '@@role system' },
+        { decorators: [{ type: 'position' as const, value: 'before_char' as const }], expected: '@@position before_char' },
+        { decorators: [{ type: 'scan_depth' as const, value: 10 }], expected: '@@scan_depth 10' },
+        { decorators: [{ type: 'ignore_on_max_context' as const }], expected: '@@ignore_on_max_context' },
+      ]
+      for (const { decorators, expected } of testCases) {
+        const result = serializeDecorators(decorators, 'content')
+        expect(result).toContain(expected)
+      }
     })
 
     it('preserves decorator order', () => {

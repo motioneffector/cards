@@ -191,7 +191,7 @@ console.log(new TextDecoder().decode(decoded)) // 'Hello, World!'
 
 ## Demo
 
-[Try the interactive demo](https://motioneffector.github.io/cards/demo.html) with 25 automated tests showcasing the working components.
+[Try the interactive demo](https://motioneffector.github.io/cards/index.html) with 25 automated tests showcasing the working components.
 
 ## Error Handling
 

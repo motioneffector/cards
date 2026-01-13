@@ -71,10 +71,10 @@ function manualBase64Encode(bytes: Uint8Array): string {
 
     const bitmap = (a << 16) | (b << 8) | c
 
-    result += chars[(bitmap >> 18) & 0x3f]
-    result += chars[(bitmap >> 12) & 0x3f]
-    result += i > bytes.length + 1 ? '=' : chars[(bitmap >> 6) & 0x3f]
-    result += i > bytes.length ? '=' : chars[bitmap & 0x3f]
+    result += chars[(bitmap >> 18) & 0x3f] ?? ''
+    result += chars[(bitmap >> 12) & 0x3f] ?? ''
+    result += i > bytes.length + 1 ? '=' : (chars[(bitmap >> 6) & 0x3f] ?? '')
+    result += i > bytes.length ? '=' : (chars[bitmap & 0x3f] ?? '')
   }
 
   return result
@@ -87,26 +87,29 @@ function manualBase64Decode(base64: string): Uint8Array {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
   const lookup = new Map<string, number>()
   for (let i = 0; i < chars.length; i++) {
-    lookup.set(chars[i], i)
+    const char = chars[i]
+    if (char !== undefined) {
+      lookup.set(char, i)
+    }
   }
 
   // Remove padding and whitespace
-  base64 = base64.replace(/[=\s]/g, '')
+  const cleanBase64 = base64.replace(/[=\s]/g, '')
 
   const bytes: number[] = []
   let i = 0
 
-  while (i < base64.length) {
-    const a = lookup.get(base64[i++] ?? '') ?? 0
-    const b = lookup.get(base64[i++] ?? '') ?? 0
-    const c = lookup.get(base64[i++] ?? '') ?? 0
-    const d = lookup.get(base64[i++] ?? '') ?? 0
+  while (i < cleanBase64.length) {
+    const a = lookup.get(cleanBase64[i++] ?? '') ?? 0
+    const b = lookup.get(cleanBase64[i++] ?? '') ?? 0
+    const c = lookup.get(cleanBase64[i++] ?? '') ?? 0
+    const d = lookup.get(cleanBase64[i++] ?? '') ?? 0
 
     const bitmap = (a << 18) | (b << 12) | (c << 6) | d
 
     bytes.push((bitmap >> 16) & 0xff)
-    if (i <= base64.length + 1) bytes.push((bitmap >> 8) & 0xff)
-    if (i <= base64.length) bytes.push(bitmap & 0xff)
+    if (i <= cleanBase64.length + 1) bytes.push((bitmap >> 8) & 0xff)
+    if (i <= cleanBase64.length) bytes.push(bitmap & 0xff)
   }
 
   return new Uint8Array(bytes)
