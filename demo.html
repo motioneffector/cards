@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@motioneffector/cards - Interactive Demo</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+      color: #333;
+    }
+    h1 {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      margin: -20px -20px 20px -20px;
+      border-radius: 8px;
+    }
+    h2 {
+      color: #667eea;
+      border-bottom: 2px solid #667eea;
+      padding-bottom: 8px;
+    }
+    section {
+      margin: 20px 0;
+      padding: 25px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .test-pass { color: #22c55e; font-weight: 500; }
+    .test-fail { color: #ef4444; font-weight: bold; }
+    .test-output {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 15px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      white-space: pre-wrap;
+      max-height: 500px;
+      overflow-y: auto;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 4px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+    button:active { transform: translateY(0); }
+    .run-all {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      font-size: 16px;
+      padding: 14px 28px;
+    }
+    .clear-btn { background: #6b7280; color: white; }
+    .demo-btn { background: #667eea; color: white; }
+    .summary {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 15px;
+      padding: 15px;
+      border-radius: 6px;
+      background: #f8fafc;
+    }
+    .input-group { margin: 15px 0; }
+    .input-group label { display: inline-block; width: 150px; font-weight: 500; }
+    .input-group input, .input-group textarea {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 500px;
+      font-family: monospace;
+    }
+    .input-group textarea {
+      height: 150px;
+      resize: vertical;
+    }
+    .output-box {
+      background: #f8fafc;
+      padding: 15px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+      font-family: monospace;
+      min-height: 60px;
+      white-space: pre-wrap;
+    }
+    .flex { display: flex; gap: 10px; flex-wrap: wrap; }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: monospace;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-left: 8px;
+    }
+    .badge-success { background: #22c55e; color: white; }
+    .badge-error { background: #ef4444; color: white; }
+    .badge-warning { background: #f59e0b; color: white; }
+    .info-box {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>@motioneffector/cards - Interactive Demo</h1>
+  <p style="font-size: 16px; color: #64748b; margin: -10px 0 20px 0;">
+    Character Card V3 and Lorebook parser with comprehensive format support.
+    <span class="badge badge-warning">Foundation Preview</span>
+  </p>
+
+  <div class="info-box">
+    <strong>Note:</strong> This is a foundation preview showcasing the working components.
+    Full PNG/JSON/CHARX I/O implementation is in progress. Currently demonstrates:
+    decorator parsing, validation, format detection, and core utilities.
+  </div>
+
+  <!-- TEST RUNNER -->
+  <section id="test-runner">
+    <h2>🧪 Automated Test Runner</h2>
+    <p>Run comprehensive tests covering all implemented features:</p>
+    <div class="flex">
+      <button class="run-all" onclick="runAllTests()">▶ Run All Tests</button>
+      <button class="clear-btn" onclick="clearResults()">Clear Results</button>
+    </div>
+    <div class="summary" id="summary"></div>
+    <div class="test-output" id="test-output"></div>
+  </section>
+
+  <!-- DECORATOR PARSING -->
+  <section>
+    <h2>🎨 Decorator Parsing <span class="badge badge-success">Production Ready</span></h2>
+    <p>Parse V3 lorebook decorators from content strings:</p>
+    <div class="input-group">
+      <label>Content:</label>
+      <textarea id="decorator-input">@@depth 4
+@@role system
+@@activate_only_after 3
+This is the actual lorebook content that appears after decorators.</textarea>
+    </div>
+    <div class="flex">
+      <button class="demo-btn" onclick="parseDecoratorsDemo()">Parse Decorators</button>
+      <button class="demo-btn" onclick="serializeDecoratorsDemo()">Serialize Back</button>
+    </div>
+    <div class="output-box" id="decorator-output">Click "Parse Decorators" to see results...</div>
+  </section>
+
+  <!-- VALIDATION -->
+  <section>
+    <h2>✓ Card Validation</h2>
+    <p>Validate character card structure:</p>
+    <div class="flex">
+      <button class="demo-btn" onclick="validateValidCard()">Validate Valid Card</button>
+      <button class="demo-btn" onclick="validateInvalidCard()">Validate Invalid Card</button>
+      <button class="demo-btn" onclick="validateLorebook()">Validate Lorebook</button>
+    </div>
+    <div class="output-box" id="validation-output">Click a button to validate...</div>
+  </section>
+
+  <!-- FORMAT DETECTION -->
+  <section>
+    <h2>🔍 Format Detection</h2>
+    <p>Detect file format from signatures:</p>
+    <div class="flex">
+      <button class="demo-btn" onclick="detectPNG()">Detect PNG</button>
+      <button class="demo-btn" onclick="detectZIP()">Detect ZIP</button>
+      <button class="demo-btn" onclick="detectJSON()">Detect JSON</button>
+      <button class="demo-btn" onclick="detectUnknown()">Detect Unknown</button>
+    </div>
+    <div class="output-box" id="detection-output">Click a button to detect format...</div>
+  </section>
+
+  <!-- CRC-32 -->
+  <section>
+    <h2>🔢 CRC-32 Computation</h2>
+    <p>Compute PNG chunk CRC-32 checksums:</p>
+    <div class="input-group">
+      <label>Chunk Type:</label>
+      <input type="text" id="crc-type" value="tEXt" />
+    </div>
+    <div class="input-group">
+      <label>Chunk Data (hex):</label>
+      <input type="text" id="crc-data" value="63637633" />
+    </div>
+    <button class="demo-btn" onclick="computeCRCDemo()">Compute CRC-32</button>
+    <div class="output-box" id="crc-output">Click to compute CRC...</div>
+  </section>
+
+  <!-- BASE64 -->
+  <section>
+    <h2>🔤 Base64 Encoding/Decoding</h2>
+    <p>Encode and decode base64 (used for PNG embedding):</p>
+    <div class="input-group">
+      <label>Text Input:</label>
+      <input type="text" id="base64-input" value="Hello, Character Card V3!" />
+    </div>
+    <div class="flex">
+      <button class="demo-btn" onclick="encodeBase64Demo()">Encode</button>
+      <button class="demo-btn" onclick="decodeBase64Demo()">Decode</button>
+      <button class="demo-btn" onclick="roundTripBase64Demo()">Round Trip</button>
+    </div>
+    <div class="output-box" id="base64-output">Click a button...</div>
+  </section>
+
+  <!-- ============================================ -->
+  <!-- INLINED LIBRARY CODE -->
+  <!-- ============================================ -->
+  <script>
+// Inlined decorator parsing logic
+function parseDecorators(content) {
+  const lines = content.split('\n')
+  const decorators = []
+  let contentStartIndex = 0
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]?.trim() ?? ''
+    if (!line.startsWith('@@')) {
+      contentStartIndex = i
+      break
+    }
+
+    const decorator = parseDecoratorLine(line)
+    if (decorator) {
+      decorators.push(decorator)
+    }
+  }
+
+  const cleanContent = lines.slice(contentStartIndex).join('\n')
+
+  return {
+    decorators,
+    content: cleanContent,
+  }
+}
+
+function parseDecoratorLine(line) {
+  const text = line.slice(2).trim()
+  const parts = text.split(/\s+/)
+  const name = parts[0]
+  const value = parts.slice(1).join(' ')
+
+  if (!name) return null
+
+  switch (name) {
+    case 'activate':
+      return { type: 'activate' }
+    case 'dont_activate':
+      return { type: 'dont_activate' }
+    case 'activate_only_after':
+      return { type: 'activate_only_after', value: parseInt(value, 10) }
+    case 'activate_only_every':
+      return { type: 'activate_only_every', value: parseInt(value, 10) }
+    case 'keep_activate_after_match':
+      return { type: 'keep_activate_after_match' }
+    case 'dont_activate_after_match':
+      return { type: 'dont_activate_after_match' }
+    case 'depth':
+      return { type: 'depth', value: parseInt(value, 10) }
+    case 'instruct_depth':
+      return { type: 'instruct_depth', value: parseInt(value, 10) }
+    case 'reverse_depth':
+      return { type: 'reverse_depth', value: parseInt(value, 10) }
+    case 'position':
+      return { type: 'position', value }
+    case 'role':
+      return { type: 'role', value: value }
+    case 'scan_depth':
+      return { type: 'scan_depth', value: parseInt(value, 10) }
+    case 'instruct_scan_depth':
+      return { type: 'instruct_scan_depth', value: parseInt(value, 10) }
+    case 'is_greeting':
+      return { type: 'is_greeting', value: parseInt(value, 10) }
+    case 'additional_keys':
+      return { type: 'additional_keys', value: value.split(',').map(k => k.trim()) }
+    case 'exclude_keys':
+      return { type: 'exclude_keys', value: value.split(',').map(k => k.trim()) }
+    case 'is_user_icon':
+      return { type: 'is_user_icon', value }
+    case 'ignore_on_max_context':
+      return { type: 'ignore_on_max_context' }
+    case 'disable_ui_prompt':
+      return { type: 'disable_ui_prompt', value }
+    default:
+      return { type: 'unknown', name, value }
+  }
+}
+
+function serializeDecorators(decorators, content) {
+  const lines = []
+
+  for (const decorator of decorators) {
+    const line = serializeDecoratorLine(decorator)
+    if (line) {
+      lines.push(line)
+    }
+  }
+
+  if (lines.length > 0) {
+    lines.push(content)
+    return lines.join('\n')
+  }
+
+  return content
+}
+
+function serializeDecoratorLine(decorator) {
+  switch (decorator.type) {
+    case 'activate':
+      return '@@activate'
+    case 'dont_activate':
+      return '@@dont_activate'
+    case 'activate_only_after':
+      return `@@activate_only_after ${decorator.value}`
+    case 'activate_only_every':
+      return `@@activate_only_every ${decorator.value}`
+    case 'keep_activate_after_match':
+      return '@@keep_activate_after_match'
+    case 'dont_activate_after_match':
+      return '@@dont_activate_after_match'
+    case 'depth':
+      return `@@depth ${decorator.value}`
+    case 'instruct_depth':
+      return `@@instruct_depth ${decorator.value}`
+    case 'reverse_depth':
+      return `@@reverse_depth ${decorator.value}`
+    case 'position':
+      return `@@position ${decorator.value}`
+    case 'role':
+      return `@@role ${decorator.value}`
+    case 'scan_depth':
+      return `@@scan_depth ${decorator.value}`
+    case 'instruct_scan_depth':
+      return `@@instruct_scan_depth ${decorator.value}`
+    case 'is_greeting':
+      return `@@is_greeting ${decorator.value}`
+    case 'additional_keys':
+      return `@@additional_keys ${decorator.value.join(',')}`
+    case 'exclude_keys':
+      return `@@exclude_keys ${decorator.value.join(',')}`
+    case 'is_user_icon':
+      return `@@is_user_icon ${decorator.value}`
+    case 'ignore_on_max_context':
+      return '@@ignore_on_max_context'
+    case 'disable_ui_prompt':
+      return `@@disable_ui_prompt ${decorator.value}`
+    case 'unknown':
+      return decorator.value ? `@@${decorator.name} ${decorator.value}` : `@@${decorator.name}`
+    default:
+      return null
+  }
+}
+
+// CRC-32 implementation
+let crcTable = null
+
+function makeCrcTable() {
+  const table = new Uint32Array(256)
+  for (let n = 0; n < 256; n++) {
+    let c = n
+    for (let k = 0; k < 8; k++) {
+      c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
+    }
+    table[n] = c
+  }
+  return table
+}
+
+function computeCRC32(...data) {
+  if (!crcTable) {
+    crcTable = makeCrcTable()
+  }
+
+  let crc = 0xffffffff
+
+  for (const chunk of data) {
+    for (let i = 0; i < chunk.length; i++) {
+      const byte = chunk[i]
+      if (byte !== undefined) {
+        crc = (crc >>> 8) ^ (crcTable[(crc ^ byte) & 0xff] ?? 0)
+      }
+    }
+  }
+
+  return (crc ^ 0xffffffff) >>> 0
+}
+
+// Base64 utilities
+function encodeBase64(bytes) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  let result = ''
+  let i = 0
+
+  while (i < bytes.length) {
+    const a = bytes[i++] ?? 0
+    const b = bytes[i++] ?? 0
+    const c = bytes[i++] ?? 0
+
+    const bitmap = (a << 16) | (b << 8) | c
+
+    result += chars[(bitmap >> 18) & 0x3f]
+    result += chars[(bitmap >> 12) & 0x3f]
+    result += i > bytes.length + 1 ? '=' : chars[(bitmap >> 6) & 0x3f]
+    result += i > bytes.length ? '=' : chars[bitmap & 0x3f]
+  }
+
+  return result
+}
+
+function decodeBase64(base64) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  const lookup = new Map()
+  for (let i = 0; i < chars.length; i++) {
+    lookup.set(chars[i], i)
+  }
+
+  base64 = base64.replace(/[=\s]/g, '')
+
+  const bytes = []
+  let i = 0
+
+  while (i < base64.length) {
+    const a = lookup.get(base64[i++] ?? '') ?? 0
+    const b = lookup.get(base64[i++] ?? '') ?? 0
+    const c = lookup.get(base64[i++] ?? '') ?? 0
+    const d = lookup.get(base64[i++] ?? '') ?? 0
+
+    const bitmap = (a << 18) | (b << 12) | (c << 6) | d
+
+    bytes.push((bitmap >> 16) & 0xff)
+    if (i <= base64.length + 1) bytes.push((bitmap >> 8) & 0xff)
+    if (i <= base64.length) bytes.push(bitmap & 0xff)
+  }
+
+  return new Uint8Array(bytes)
+}
+
+// Format detection
+function isPNG(bytes) {
+  if (bytes.length < 8) return false
+  return (
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a
+  )
+}
+
+function isZIP(bytes) {
+  if (bytes.length < 4) return false
+  return (
+    (bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04) ||
+    (bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x05 && bytes[3] === 0x06)
+  )
+}
+
+// Validation
+function validateCard(card) {
+  if (!card || typeof card !== 'object') {
+    return { valid: false, errors: ['Card must be an object'] }
+  }
+
+  if (card.spec !== 'chara_card_v3') {
+    return { valid: false, errors: ['Invalid spec: must be "chara_card_v3"'] }
+  }
+
+  if (!card.data || typeof card.data !== 'object') {
+    return { valid: false, errors: ['Missing or invalid data object'] }
+  }
+
+  return { valid: true }
+}
+
+function validateLorebook(lorebook) {
+  if (!lorebook || typeof lorebook !== 'object') {
+    return { valid: false, errors: ['Lorebook must be an object'] }
+  }
+
+  if (!Array.isArray(lorebook.entries)) {
+    return { valid: false, errors: ['Lorebook must have entries array'] }
+  }
+
+  return { valid: true }
+}
+
+// Expose to global scope
+window.parseDecorators = parseDecorators
+window.serializeDecorators = serializeDecorators
+window.computeCRC32 = computeCRC32
+window.encodeBase64 = encodeBase64
+window.decodeBase64 = decodeBase64
+window.isPNG = isPNG
+window.isZIP = isZIP
+window.validateCard = validateCard
+window.validateLorebook = validateLorebook
+  </script>
+
+  <!-- ============================================ -->
+  <!-- DEMO AND TEST CODE -->
+  <!-- ============================================ -->
+  <script>
+    // ===========================================
+    // AUTOMATED TEST SUITE
+    // ===========================================
+    const tests = [
+      // Decorator Parsing Tests
+      {
+        name: 'parses @@depth decorator',
+        fn: async () => {
+          const content = '@@depth 4\nContent'
+          const result = parseDecorators(content)
+          if (!result.decorators.some(d => d.type === 'depth' && d.value === 4)) {
+            throw new Error('Failed to parse depth decorator')
+          }
+        }
+      },
+      {
+        name: 'parses @@role decorator',
+        fn: async () => {
+          const content = '@@role system\nContent'
+          const result = parseDecorators(content)
+          if (!result.decorators.some(d => d.type === 'role' && d.value === 'system')) {
+            throw new Error('Failed to parse role decorator')
+          }
+        }
+      },
+      {
+        name: 'parses @@activate decorator',
+        fn: async () => {
+          const content = '@@activate\nContent'
+          const result = parseDecorators(content)
+          if (!result.decorators.some(d => d.type === 'activate')) {
+            throw new Error('Failed to parse activate decorator')
+          }
+        }
+      },
+      {
+        name: 'parses @@additional_keys with comma-separated values',
+        fn: async () => {
+          const content = '@@additional_keys key1,key2,key3\nContent'
+          const result = parseDecorators(content)
+          const decorator = result.decorators.find(d => d.type === 'additional_keys')
+          if (!decorator || decorator.value.length !== 3) {
+            throw new Error('Failed to parse additional_keys')
+          }
+        }
+      },
+      {
+        name: 'separates decorators from content',
+        fn: async () => {
+          const content = '@@depth 1\n@@role system\nThis is content'
+          const result = parseDecorators(content)
+          if (result.content !== 'This is content') {
+            throw new Error(`Expected "This is content", got "${result.content}"`)
+          }
+        }
+      },
+      {
+        name: 'handles multiple decorators',
+        fn: async () => {
+          const content = '@@depth 4\n@@role system\n@@activate\nContent'
+          const result = parseDecorators(content)
+          if (result.decorators.length !== 3) {
+            throw new Error(`Expected 3 decorators, got ${result.decorators.length}`)
+          }
+        }
+      },
+      {
+        name: 'preserves unknown decorators',
+        fn: async () => {
+          const content = '@@custom_decorator value\nContent'
+          const result = parseDecorators(content)
+          if (!result.decorators.some(d => d.type === 'unknown' && d.name === 'custom_decorator')) {
+            throw new Error('Failed to preserve unknown decorator')
+          }
+        }
+      },
+
+      // Serialization Tests
+      {
+        name: 'serializes depth decorator',
+        fn: async () => {
+          const decorators = [{ type: 'depth', value: 4 }]
+          const result = serializeDecorators(decorators, 'Content')
+          if (!result.startsWith('@@depth 4\n')) {
+            throw new Error('Failed to serialize depth decorator')
+          }
+        }
+      },
+      {
+        name: 'serializes multiple decorators',
+        fn: async () => {
+          const decorators = [
+            { type: 'depth', value: 4 },
+            { type: 'role', value: 'system' },
+          ]
+          const result = serializeDecorators(decorators, 'Content')
+          if (!result.includes('@@depth 4') || !result.includes('@@role system')) {
+            throw new Error('Failed to serialize multiple decorators')
+          }
+        }
+      },
+      {
+        name: 'round-trip parsing and serialization',
+        fn: async () => {
+          const original = '@@depth 4\n@@role system\nContent here'
+          const parsed = parseDecorators(original)
+          const serialized = serializeDecorators(parsed.decorators, parsed.content)
+          const reparsed = parseDecorators(serialized)
+          if (reparsed.decorators.length !== parsed.decorators.length) {
+            throw new Error('Round-trip failed')
+          }
+        }
+      },
+
+      // CRC-32 Tests
+      {
+        name: 'computes CRC-32 for empty data',
+        fn: async () => {
+          const crc = computeCRC32(new Uint8Array([]))
+          if (typeof crc !== 'number') {
+            throw new Error('CRC should return a number')
+          }
+        }
+      },
+      {
+        name: 'computes CRC-32 for chunk type and data',
+        fn: async () => {
+          const type = new Uint8Array([116, 69, 88, 116]) // "tEXt"
+          const data = new Uint8Array([104, 101, 108, 108, 111]) // "hello"
+          const crc = computeCRC32(type, data)
+          if (crc === 0 || isNaN(crc)) {
+            throw new Error('Invalid CRC computed')
+          }
+        }
+      },
+      {
+        name: 'CRC-32 produces different values for different inputs',
+        fn: async () => {
+          const crc1 = computeCRC32(new Uint8Array([1, 2, 3]))
+          const crc2 = computeCRC32(new Uint8Array([4, 5, 6]))
+          if (crc1 === crc2) {
+            throw new Error('Different inputs produced same CRC')
+          }
+        }
+      },
+
+      // Base64 Tests
+      {
+        name: 'encodes text to base64',
+        fn: async () => {
+          const text = 'Hello'
+          const bytes = new Uint8Array([72, 101, 108, 108, 111])
+          const encoded = encodeBase64(bytes)
+          if (typeof encoded !== 'string' || encoded.length === 0) {
+            throw new Error('Base64 encoding failed')
+          }
+        }
+      },
+      {
+        name: 'decodes base64 to bytes',
+        fn: async () => {
+          const base64 = 'SGVsbG8='
+          const bytes = decodeBase64(base64)
+          if (!(bytes instanceof Uint8Array) || bytes.length === 0) {
+            throw new Error('Base64 decoding failed')
+          }
+        }
+      },
+      {
+        name: 'base64 round-trip preserves data',
+        fn: async () => {
+          const original = new Uint8Array([72, 101, 108, 108, 111])
+          const encoded = encodeBase64(original)
+          const decoded = decodeBase64(encoded)
+          if (decoded.length !== original.length) {
+            throw new Error('Round-trip failed: length mismatch')
+          }
+          for (let i = 0; i < original.length; i++) {
+            if (original[i] !== decoded[i]) {
+              throw new Error('Round-trip failed: byte mismatch')
+            }
+          }
+        }
+      },
+
+      // Format Detection Tests
+      {
+        name: 'detects PNG signature',
+        fn: async () => {
+          const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+          if (!isPNG(png)) {
+            throw new Error('Failed to detect PNG')
+          }
+        }
+      },
+      {
+        name: 'rejects non-PNG data',
+        fn: async () => {
+          const notPng = new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])
+          if (isPNG(notPng)) {
+            throw new Error('Incorrectly detected non-PNG as PNG')
+          }
+        }
+      },
+      {
+        name: 'detects ZIP signature (PK\\x03\\x04)',
+        fn: async () => {
+          const zip = new Uint8Array([0x50, 0x4b, 0x03, 0x04])
+          if (!isZIP(zip)) {
+            throw new Error('Failed to detect ZIP')
+          }
+        }
+      },
+      {
+        name: 'rejects non-ZIP data',
+        fn: async () => {
+          const notZip = new Uint8Array([1, 2, 3, 4])
+          if (isZIP(notZip)) {
+            throw new Error('Incorrectly detected non-ZIP as ZIP')
+          }
+        }
+      },
+
+      // Validation Tests
+      {
+        name: 'validates correct V3 card',
+        fn: async () => {
+          const card = {
+            spec: 'chara_card_v3',
+            spec_version: '3.0',
+            data: {
+              name: 'Test',
+              description: '',
+              personality: '',
+              scenario: '',
+              first_mes: '',
+              mes_example: '',
+            },
+          }
+          const result = validateCard(card)
+          if (!result.valid) {
+            throw new Error('Valid card marked as invalid')
+          }
+        }
+      },
+      {
+        name: 'rejects card with wrong spec',
+        fn: async () => {
+          const card = {
+            spec: 'wrong_spec',
+            data: {},
+          }
+          const result = validateCard(card)
+          if (result.valid) {
+            throw new Error('Invalid card marked as valid')
+          }
+        }
+      },
+      {
+        name: 'rejects card with missing data',
+        fn: async () => {
+          const card = {
+            spec: 'chara_card_v3',
+          }
+          const result = validateCard(card)
+          if (result.valid) {
+            throw new Error('Card without data marked as valid')
+          }
+        }
+      },
+      {
+        name: 'validates correct lorebook',
+        fn: async () => {
+          const lorebook = {
+            entries: [
+              {
+                keys: ['test'],
+                content: 'content',
+                enabled: true,
+                insertion_order: 0,
+                use_regex: false,
+                extensions: {},
+              },
+            ],
+            extensions: {},
+          }
+          const result = validateLorebook(lorebook)
+          if (!result.valid) {
+            throw new Error('Valid lorebook marked as invalid')
+          }
+        }
+      },
+      {
+        name: 'rejects lorebook without entries',
+        fn: async () => {
+          const lorebook = {
+            extensions: {},
+          }
+          const result = validateLorebook(lorebook)
+          if (result.valid) {
+            throw new Error('Lorebook without entries marked as valid')
+          }
+        }
+      },
+    ]
+
+    // Test runner functions
+    function logResult(name, status, error) {
+      const output = document.getElementById('test-output')
+      const className = status === 'PASS' ? 'test-pass' : 'test-fail'
+      const errorMsg = error ? `\n    Error: ${error}` : ''
+      const icon = status === 'PASS' ? '✓' : '✗'
+      output.innerHTML += `<div class="${className}">${icon} ${name}${errorMsg}</div>`
+      output.scrollTop = output.scrollHeight
+    }
+
+    function logSummary(passed, failed) {
+      const summary = document.getElementById('summary')
+      const total = passed + failed
+      const className = failed === 0 ? 'test-pass' : 'test-fail'
+      const badge = failed === 0 ? 'badge-success' : 'badge-error'
+      summary.innerHTML = `
+        <span class="${className}">
+          ${passed}/${total} tests passed
+          <span class="badge ${badge}">${failed === 0 ? 'ALL PASS' : failed + ' FAILED'}</span>
+        </span>
+      `
+    }
+
+    async function runAllTests() {
+      clearResults()
+      document.getElementById('test-output').innerHTML = '<div>Running tests...</div>\n'
+      let passed = 0, failed = 0
+
+      for (const test of tests) {
+        try {
+          await test.fn()
+          logResult(test.name, 'PASS')
+          passed++
+        } catch (e) {
+          logResult(test.name, 'FAIL', e.message)
+          failed++
+        }
+        // Small delay so UI updates
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+
+      logSummary(passed, failed)
+    }
+
+    function clearResults() {
+      document.getElementById('test-output').innerHTML = ''
+      document.getElementById('summary').innerHTML = ''
+    }
+
+    // ===========================================
+    // INTERACTIVE DEMO FUNCTIONS
+    // ===========================================
+
+    function parseDecoratorsDemo() {
+      const content = document.getElementById('decorator-input').value
+      try {
+        const result = parseDecorators(content)
+        const output = `Decorators (${result.decorators.length}):\n${JSON.stringify(result.decorators, null, 2)}\n\nContent:\n${result.content}`
+        document.getElementById('decorator-output').textContent = output
+      } catch (e) {
+        document.getElementById('decorator-output').textContent = `Error: ${e.message}`
+      }
+    }
+
+    function serializeDecoratorsDemo() {
+      const content = document.getElementById('decorator-input').value
+      try {
+        const parsed = parseDecorators(content)
+        const serialized = serializeDecorators(parsed.decorators, parsed.content)
+        document.getElementById('decorator-output').textContent = `Serialized:\n${serialized}`
+      } catch (e) {
+        document.getElementById('decorator-output').textContent = `Error: ${e.message}`
+      }
+    }
+
+    function validateValidCard() {
+      const card = {
+        spec: 'chara_card_v3',
+        spec_version: '3.0',
+        data: {
+          name: 'Example Character',
+          description: 'A test character',
+          personality: 'Friendly',
+          scenario: 'Fantasy setting',
+          first_mes: 'Hello!',
+          mes_example: 'Example dialog',
+        },
+      }
+      const result = validateCard(card)
+      document.getElementById('validation-output').textContent = `Result: ${JSON.stringify(result, null, 2)}\n\nCard:\n${JSON.stringify(card, null, 2)}`
+    }
+
+    function validateInvalidCard() {
+      const card = {
+        spec: 'wrong_spec',
+        data: {},
+      }
+      const result = validateCard(card)
+      document.getElementById('validation-output').textContent = `Result: ${JSON.stringify(result, null, 2)}\n\nCard:\n${JSON.stringify(card, null, 2)}`
+    }
+
+    function validateLorebook() {
+      const lorebook = {
+        entries: [
+          {
+            keys: ['magic'],
+            content: 'Magic is common in this world',
+            enabled: true,
+            insertion_order: 0,
+            use_regex: false,
+            extensions: {},
+          },
+        ],
+        extensions: {},
+      }
+      const result = validateLorebook(lorebook)
+      document.getElementById('validation-output').textContent = `Result: ${JSON.stringify(result, null, 2)}\n\nLorebook:\n${JSON.stringify(lorebook, null, 2)}`
+    }
+
+    function detectPNG() {
+      const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+      const result = isPNG(png)
+      document.getElementById('detection-output').textContent = `PNG bytes: [${Array.from(png).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]\n\nisPNG(): ${result}`
+    }
+
+    function detectZIP() {
+      const zip = new Uint8Array([0x50, 0x4b, 0x03, 0x04])
+      const result = isZIP(zip)
+      document.getElementById('detection-output').textContent = `ZIP bytes: [${Array.from(zip).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]\n\nisZIP(): ${result}`
+    }
+
+    function detectJSON() {
+      const json = '{"spec": "chara_card_v3"}'
+      document.getElementById('detection-output').textContent = `JSON string: ${json}\n\nFormat: Detected as JSON (typeof === 'string')`
+    }
+
+    function detectUnknown() {
+      const unknown = new Uint8Array([0x01, 0x02, 0x03, 0x04])
+      const isPng = isPNG(unknown)
+      const isZip = isZIP(unknown)
+      document.getElementById('detection-output').textContent = `Unknown bytes: [${Array.from(unknown).map(b => '0x' + b.toString(16).padStart(2, '0')).join(', ')}]\n\nisPNG(): ${isPng}\nisZIP(): ${isZip}\n\nResult: Unrecognized format`
+    }
+
+    function computeCRCDemo() {
+      try {
+        const typeStr = document.getElementById('crc-type').value
+        const dataHex = document.getElementById('crc-data').value
+
+        // Convert type to bytes
+        const typeBytes = new Uint8Array(4)
+        for (let i = 0; i < 4 && i < typeStr.length; i++) {
+          typeBytes[i] = typeStr.charCodeAt(i)
+        }
+
+        // Convert hex to bytes
+        const dataBytes = new Uint8Array(dataHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)))
+
+        const crc = computeCRC32(typeBytes, dataBytes)
+
+        document.getElementById('crc-output').textContent = `Type: "${typeStr}" → [${Array.from(typeBytes).join(', ')}]\nData (hex): ${dataHex} → [${Array.from(dataBytes).join(', ')}]\n\nCRC-32: ${crc} (0x${crc.toString(16).padStart(8, '0')})`
+      } catch (e) {
+        document.getElementById('crc-output').textContent = `Error: ${e.message}`
+      }
+    }
+
+    function encodeBase64Demo() {
+      const text = document.getElementById('base64-input').value
+      const bytes = new Uint8Array(text.split('').map(c => c.charCodeAt(0)))
+      const encoded = encodeBase64(bytes)
+      document.getElementById('base64-output').textContent = `Input: "${text}"\nBytes: [${Array.from(bytes).join(', ')}]\n\nBase64: ${encoded}`
+    }
+
+    function decodeBase64Demo() {
+      try {
+        const text = document.getElementById('base64-input').value
+        const decoded = decodeBase64(text)
+        const str = Array.from(decoded).map(b => String.fromCharCode(b)).join('')
+        document.getElementById('base64-output').textContent = `Base64: "${text}"\n\nBytes: [${Array.from(decoded).join(', ')}]\nDecoded: "${str}"`
+      } catch (e) {
+        document.getElementById('base64-output').textContent = `Error: ${e.message}`
+      }
+    }
+
+    function roundTripBase64Demo() {
+      const text = document.getElementById('base64-input').value
+      const bytes = new Uint8Array(text.split('').map(c => c.charCodeAt(0)))
+      const encoded = encodeBase64(bytes)
+      const decoded = decodeBase64(encoded)
+      const str = Array.from(decoded).map(b => String.fromCharCode(b)).join('')
+      const match = text === str
+      document.getElementById('base64-output').textContent = `Original: "${text}"\nEncoded: "${encoded}"\nDecoded: "${str}"\n\nRound-trip successful: ${match ? '✓ YES' : '✗ NO'}`
+    }
+  </script>
+</body>
+</html>
