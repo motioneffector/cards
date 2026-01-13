@@ -7,6 +7,22 @@
 // Error classes
 export { CardsError, ParseError, ValidationError } from './errors'
 
+// Reading functions
+export { readCard, readCardFromPng, readCardFromJson, readCardFromCharx, readLorebook } from './read'
+
+// Writing functions
+export {
+  writeCardToPng,
+  writeCardToJson,
+  writeCardToCharx,
+  writeLorebookToPng,
+  writeLorebookToJson,
+} from './write'
+
+// Repair and validation
+export { repairCard } from './repair'
+export { validateCard, validateLorebook } from './validate'
+
 // Type definitions
 export type {
   CharacterCard,
