@@ -90,6 +90,7 @@ describe('repairCard()', () => {
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
       expect(result.card).toBeDefined()
+      expect(typeof result.card).toBe('object')
       expect(result.card.spec).toBe('chara_card_v3')
       expect(result.card.data.name).toBe('Valid Card')
     })
@@ -153,6 +154,8 @@ describe('repairCard()', () => {
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
       expect(result.card.data.name).toBeDefined()
+      expect(typeof result.card.data.name).toBe('string')
+      expect(result.card.data.name.length).toBeGreaterThan(0)
     })
 
     it('recovers from partial JSON', () => {
@@ -171,6 +174,8 @@ describe('repairCard()', () => {
       const pngBytes = createPngWithTextChunk('chara', base64)
       const result = repairCard(pngBytes)
       expect(result.card.data.name).toBeDefined()
+      expect(typeof result.card.data.name).toBe('string')
+      expect(result.card.data.name.length).toBeGreaterThan(0)
     })
 
     it('merges data from multiple chunks', () => {
@@ -250,6 +255,8 @@ describe('repairCard()', () => {
       expect(result.card.spec).toBe('chara_card_v3')
       expect(result.card.spec_version).toBe('3.0')
       expect(result.card.data).toBeDefined()
+      expect(typeof result.card.data).toBe('object')
+      expect(result.card.data.name).toBeDefined()
       expect(typeof result.card.data.name).toBe('string')
     })
 

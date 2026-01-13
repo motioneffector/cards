@@ -41,6 +41,8 @@ describe('validateCard()', () => {
       const result = validateCard(card)
       expect(result.valid).toBe(false)
       expect(result.errors).toBeDefined()
+      expect(Array.isArray(result.errors)).toBe(true)
+      expect(result.errors!.length).toBeGreaterThan(0)
       expect(result.errors?.some(e => e.includes('name'))).toBe(true)
     })
 
@@ -50,6 +52,8 @@ describe('validateCard()', () => {
       const result = validateCard(card)
       expect(result.valid).toBe(false)
       expect(result.errors).toBeDefined()
+      expect(Array.isArray(result.errors)).toBe(true)
+      expect(result.errors!.length).toBeGreaterThan(0)
     })
 
     it('returns valid: false for wrong type', () => {
@@ -110,7 +114,8 @@ describe('validateCard()', () => {
       }
       const result = validateCard(card, { strict: true })
       // Valid decorator should not cause error
-      expect(result.errors?.some(e => e.includes('decorator'))).toBeFalsy()
+      const decoratorErrors = result.errors?.filter(e => e.includes('decorator')) ?? []
+      expect(decoratorErrors).toEqual([])
     })
 
     it('validates asset URIs', () => {
@@ -151,6 +156,7 @@ describe('validateCard()', () => {
       ;(card.data as Record<string, unknown>).description = undefined
       const result = validateCard(card)
       expect(result.errors).toBeDefined()
+      expect(Array.isArray(result.errors)).toBe(true)
       expect(result.errors!.length).toBeGreaterThanOrEqual(2)
     })
 

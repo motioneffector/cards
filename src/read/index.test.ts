@@ -372,6 +372,7 @@ describe('readCard()', () => {
       const result = readCard(json, { parseDecorators: true })
       const entry = result.data.character_book?.entries[0]
       expect(entry?.decorators).toBeDefined()
+      expect(Array.isArray(entry?.decorators)).toBe(true)
       expect(entry?.decorators).toContainEqual({ type: 'depth', value: 4 })
       expect(entry?.content).toBe('Actual content')
     })
@@ -496,7 +497,7 @@ describe('readCardFromPng()', () => {
       const corruptedBase64 = base64.slice(0, 10) + '!!!CORRUPT!!!' + base64.slice(20)
       const pngBytes = createPngWithTextChunk('chara', corruptedBase64)
       // Strict mode should throw on corrupted data
-      expect(() => readCardFromPng(pngBytes, { strict: true })).toThrow()
+      expect(() => readCardFromPng(pngBytes, { strict: true })).toThrow(ParseError)
     })
 
     it('non-strict mode continues on CRC mismatch', () => {
@@ -518,7 +519,7 @@ describe('readCardFromPng()', () => {
       const card = createV3Card()
       const pngBytes = createPngWithCard(card)
       const truncated = pngBytes.slice(0, 20)
-      expect(() => readCardFromPng(truncated)).toThrow()
+      expect(() => readCardFromPng(truncated)).toThrow(ParseError)
     })
 
     it('handles corrupted chunk length', () => {
@@ -527,7 +528,7 @@ describe('readCardFromPng()', () => {
       // Corrupt chunk length bytes
       pngBytes[8] = 0xff
       pngBytes[9] = 0xff
-      expect(() => readCardFromPng(pngBytes, { strict: true })).toThrow()
+      expect(() => readCardFromPng(pngBytes, { strict: true })).toThrow(ParseError)
     })
 
     it('handles empty chunk payload', () => {
@@ -845,6 +846,7 @@ describe('readCardFromCharx()', () => {
       const zipBytes = createZip(files)
       const result = readCardFromCharx(zipBytes)
       expect(result.data.assets?.[0]?.uri).toBeDefined()
+      expect(result.data.assets?.[0]?.uri).toMatch(/^(data:|embeded:\/\/)/)
     })
   })
 
@@ -865,7 +867,7 @@ describe('readCardFromCharx()', () => {
 
     it('handles corrupted ZIP', () => {
       const invalidZip = new Uint8Array([0x50, 0x4b, 0x03, 0x04, 0xff, 0xff])
-      expect(() => readCardFromCharx(invalidZip)).toThrow()
+      expect(() => readCardFromCharx(invalidZip)).toThrow(ParseError)
     })
   })
 })
@@ -932,7 +934,10 @@ describe('readLorebook()', () => {
       const pngBytes = createPngWithTextChunk('naidata', base64)
       const result = readLorebook(pngBytes)
       expect(result.entries).toBeDefined()
+      expect(Array.isArray(result.entries)).toBe(true)
       expect(result.extensions).toBeDefined()
+      expect(typeof result.extensions).toBe('object')
+      expect(result.extensions).not.toBeNull()
     })
   })
 
