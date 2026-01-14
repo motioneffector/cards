@@ -7,6 +7,11 @@ import { PNG_SIGNATURE } from '../constants'
 import { computeCRC32 } from './crc'
 
 /**
+ * Maximum allowed PNG chunk size (100MB)
+ */
+const MAX_CHUNK_SIZE = 100 * 1024 * 1024
+
+/**
  * Read all chunks from PNG bytes
  *
  * @param bytes - PNG file bytes
@@ -22,6 +27,11 @@ export function readChunks(bytes: Uint8Array): PngChunk[] {
   let offset = 8 // Skip signature
 
   while (offset < bytes.length) {
+    // Ensure we have enough bytes for chunk header
+    if (offset + 8 > bytes.length) {
+      throw new Error('Invalid PNG: truncated chunk header')
+    }
+
     // Read chunk length (4 bytes, big-endian)
     const length =
       ((bytes[offset] ?? 0) << 24) |
@@ -29,12 +39,22 @@ export function readChunks(bytes: Uint8Array): PngChunk[] {
       ((bytes[offset + 2] ?? 0) << 8) |
       (bytes[offset + 3] ?? 0)
 
+    // Validate chunk length
+    if (length < 0 || length > MAX_CHUNK_SIZE) {
+      throw new Error(`Invalid PNG: chunk length ${length} exceeds maximum allowed size`)
+    }
+
     offset += 4
 
     // Read chunk type (4 bytes ASCII)
     const typeBytes = bytes.slice(offset, offset + 4)
     const type = String.fromCharCode(...typeBytes)
     offset += 4
+
+    // Ensure we have enough bytes for chunk data and CRC
+    if (offset + length + 4 > bytes.length) {
+      throw new Error(`Invalid PNG: chunk data extends beyond file bounds`)
+    }
 
     // Read chunk data
     const data = bytes.slice(offset, offset + length)
