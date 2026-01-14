@@ -1,0 +1,2860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@motioneffector/cards - Demo</title>
+  <style>
+/* ============================================
+   RESET & BASE
+   ============================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #e6edf3;
+  background: #0d1117;
+  min-height: 100vh;
+}
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+
+:root {
+  /* Backgrounds */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --bg-hover: #30363d;
+
+  /* Borders */
+  --border-default: #30363d;
+  --border-muted: #21262d;
+
+  /* Text */
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --text-link: #58a6ff;
+
+  /* Accents */
+  --accent-blue: #1f6feb;
+  --accent-blue-hover: #388bfd;
+  --accent-green: #238636;
+  --accent-green-bright: #3fb950;
+  --accent-red: #da3633;
+  --accent-red-bright: #f85149;
+  --accent-yellow: #d29922;
+  --accent-yellow-bright: #e3b341;
+  --accent-purple: #8957e5;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Typography */
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.25rem;
+  --font-size-xl: 1.5rem;
+  --font-size-xxl: 2rem;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+
+  /* Transitions */
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-xl);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.header {
+  margin-bottom: var(--space-xxl);
+  padding-bottom: var(--space-xl);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.header-title {
+  font-size: var(--font-size-xxl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.header-description {
+  font-size: var(--font-size-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+.header-links {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-link);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.header-link:hover {
+  background: var(--bg-tertiary);
+  text-decoration: underline;
+}
+
+/* ============================================
+   EXHIBITS
+   ============================================ */
+
+.exhibits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxl);
+}
+
+.exhibit {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.exhibit-header {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+}
+
+.exhibit-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-xs);
+}
+
+.exhibit-description {
+  font-size: var(--font-size-md);
+  color: var(--text-secondary);
+}
+
+.exhibit-content {
+  padding: var(--space-lg);
+}
+
+.exhibit-interactive {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-lg);
+  min-height: 200px;
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.exhibit-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-lg);
+}
+
+.exhibit-state {
+  padding: var(--space-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.exhibit-state-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-sm);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent-blue);
+  color: white;
+  border-color: var(--accent-blue);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-blue-hover);
+  border-color: var(--accent-blue-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.btn-danger {
+  background: var(--accent-red);
+  color: white;
+  border-color: var(--accent-red);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: var(--accent-red-bright);
+}
+
+.btn-success {
+  background: var(--accent-green);
+  color: white;
+  border-color: var(--accent-green);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: var(--accent-green-bright);
+}
+
+.btn-small {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+/* ============================================
+   INPUTS
+   ============================================ */
+
+.input {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input-mono {
+  font-family: var(--font-mono);
+}
+
+select.input {
+  cursor: pointer;
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+/* ============================================
+   TOGGLE
+   ============================================ */
+
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+}
+
+.toggle-switch {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: var(--bg-hover);
+  border-radius: 11px;
+  transition: background var(--transition-normal);
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform var(--transition-normal);
+}
+
+.toggle input {
+  display: none;
+}
+
+.toggle input:checked + .toggle-switch {
+  background: var(--accent-blue);
+}
+
+.toggle input:checked + .toggle-switch::after {
+  transform: translateX(18px);
+}
+
+.toggle-label {
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   TAGS / BADGES
+   ============================================ */
+
+.tag {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+.tag-blue {
+  background: rgba(31, 111, 235, 0.2);
+  color: var(--accent-blue-hover);
+}
+
+.tag-green {
+  background: rgba(35, 134, 54, 0.2);
+  color: var(--accent-green-bright);
+}
+
+.tag-red {
+  background: rgba(218, 54, 51, 0.2);
+  color: var(--accent-red-bright);
+}
+
+.tag-yellow {
+  background: rgba(210, 153, 34, 0.2);
+  color: var(--accent-yellow-bright);
+}
+
+.tag-purple {
+  background: rgba(137, 87, 229, 0.2);
+  color: var(--accent-purple);
+}
+
+/* ============================================
+   TEST RUNNER
+   ============================================ */
+
+.test-runner {
+  margin-top: var(--space-xxl);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.test-runner-header {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.test-runner-title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+}
+
+.test-runner-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.test-runner-content {
+  padding: var(--space-lg);
+}
+
+.test-progress {
+  margin-bottom: var(--space-lg);
+}
+
+.test-progress-bar {
+  height: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: var(--space-sm);
+}
+
+.test-progress-fill {
+  height: 100%;
+  background: var(--accent-blue);
+  border-radius: 4px;
+  transition: width var(--transition-fast);
+  width: 0%;
+}
+
+.test-progress-fill.success {
+  background: var(--accent-green);
+}
+
+.test-progress-fill.failure {
+  background: var(--accent-red);
+}
+
+.test-progress-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+}
+
+.test-output {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-md);
+  max-height: 400px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.test-output-empty {
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.test-item {
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--border-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.test-item:last-child {
+  border-bottom: none;
+}
+
+.test-icon {
+  flex-shrink: 0;
+  font-size: var(--font-size-md);
+}
+
+.test-icon.pass {
+  color: var(--accent-green-bright);
+}
+
+.test-icon.fail {
+  color: var(--accent-red-bright);
+}
+
+.test-name {
+  color: var(--text-primary);
+}
+
+.test-error {
+  color: var(--accent-red-bright);
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-xs);
+}
+
+.test-summary {
+  margin-top: var(--space-lg);
+  padding: var(--space-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  display: flex;
+  gap: var(--space-lg);
+}
+
+.test-summary-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.test-summary-item.passed {
+  color: var(--accent-green-bright);
+}
+
+.test-summary-item.failed {
+  color: var(--accent-red-bright);
+}
+
+.test-summary-item.skipped {
+  color: var(--text-muted);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-muted { color: var(--text-muted); }
+.text-success { color: var(--accent-green-bright); }
+.text-error { color: var(--accent-red-bright); }
+.text-warning { color: var(--accent-yellow-bright); }
+
+.font-mono { font-family: var(--font-mono); }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-xs { gap: var(--space-xs); }
+.gap-sm { gap: var(--space-sm); }
+.gap-md { gap: var(--space-md); }
+.gap-lg { gap: var(--space-lg); }
+
+.mt-sm { margin-top: var(--space-sm); }
+.mt-md { margin-top: var(--space-md); }
+.mt-lg { margin-top: var(--space-lg); }
+.mb-sm { margin-bottom: var(--space-sm); }
+.mb-md { margin-bottom: var(--space-md); }
+.mb-lg { margin-bottom: var(--space-lg); }
+
+.p-sm { padding: var(--space-sm); }
+.p-md { padding: var(--space-md); }
+.p-lg { padding: var(--space-lg); }
+
+.hidden { display: none; }
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-default);
+}
+
+/* ============================================
+   EXHIBIT-SPECIFIC STYLES
+   ============================================ */
+
+/* Chunk visualization */
+.chunk-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.chunk-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.chunk-item:hover {
+  background: var(--bg-hover);
+}
+
+.chunk-item.selected {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.chunk-item.selected .chunk-crc {
+  color: rgba(255,255,255,0.7);
+}
+
+.chunk-block {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.chunk-block.ihdr { background: var(--accent-purple); }
+.chunk-block.idat { background: var(--accent-blue); }
+.chunk-block.text { background: var(--accent-green); }
+.chunk-block.iend { background: var(--accent-red); }
+
+.chunk-type {
+  font-weight: 600;
+  min-width: 50px;
+}
+
+.chunk-size {
+  color: var(--text-secondary);
+}
+
+.chunk-crc {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  margin-left: auto;
+}
+
+/* Three-panel layout */
+.three-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-md);
+  min-height: 300px;
+}
+
+@media (max-width: 900px) {
+  .three-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-hover);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.panel-content {
+  padding: var(--space-md);
+  flex: 1;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* Decode animation */
+.decode-stream {
+  word-break: break-all;
+  line-height: 1.8;
+}
+
+.decode-char {
+  display: inline;
+  transition: color var(--transition-fast);
+}
+
+.decode-char.decoded {
+  color: var(--accent-green-bright);
+}
+
+.decode-char.active {
+  background: var(--accent-yellow);
+  color: var(--bg-primary);
+}
+
+/* Card fields */
+.card-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.card-field {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+}
+
+.card-field-name {
+  color: var(--accent-purple);
+  min-width: 100px;
+}
+
+.card-field-value {
+  color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-field.added {
+  animation: fieldAdded 0.5s ease;
+}
+
+@keyframes fieldAdded {
+  0% { background: rgba(63, 185, 80, 0.3); }
+  100% { background: transparent; }
+}
+
+/* Normalization banner */
+.normalization-banner {
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(63, 185, 80, 0.1);
+  border: 1px solid var(--accent-green);
+  border-radius: var(--radius-md);
+  color: var(--accent-green-bright);
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-md);
+}
+
+/* Two-panel layout for Format Forge */
+.two-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .two-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form styling */
+.form-group {
+  margin-bottom: var(--space-md);
+}
+
+.form-label {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.form-input {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+textarea.form-input {
+  min-height: 60px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+/* Output workbench */
+.output-chunks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.output-chunk {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+.output-chunk.building {
+  animation: chunkBuild 0.3s ease;
+}
+
+@keyframes chunkBuild {
+  0% { transform: translateX(-10px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* Decorator chips */
+.decorator-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--accent-purple);
+  color: white;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+  cursor: grab;
+  transition: transform var(--transition-fast);
+}
+
+.decorator-chip:hover {
+  transform: scale(1.05);
+}
+
+.decorator-chip.flying {
+  position: fixed;
+  z-index: 1000;
+  transition: all 0.4s ease-out;
+}
+
+/* Decorator split view */
+.decorator-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  min-height: 250px;
+}
+
+@media (max-width: 768px) {
+  .decorator-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.decorator-panel {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.decorator-panel-header {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-hover);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.decorator-panel-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.decorator-panel-content {
+  padding: var(--space-md);
+  min-height: 200px;
+}
+
+.raw-content {
+  width: 100%;
+  min-height: 180px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  resize: vertical;
+}
+
+.structured-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.decorators-area {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  min-height: 40px;
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--border-default);
+}
+
+.content-preview {
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  min-height: 60px;
+}
+
+/* Repair log */
+.repair-log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.repair-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  animation: logEntry 0.2s ease;
+}
+
+@keyframes logEntry {
+  0% { opacity: 0; transform: translateY(-5px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.repair-entry .icon {
+  flex-shrink: 0;
+}
+
+.repair-entry.success .icon { color: var(--accent-green-bright); }
+.repair-entry.failure .icon { color: var(--accent-red-bright); }
+.repair-entry.warning .icon { color: var(--accent-yellow-bright); }
+.repair-entry.info .icon { color: var(--text-muted); }
+
+/* Recovered fields panel */
+.recovered-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.recovered-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+.recovered-field .status {
+  font-size: var(--font-size-md);
+}
+
+.recovered-field.ok .status { color: var(--accent-green-bright); }
+.recovered-field.partial .status { color: var(--accent-yellow-bright); }
+.recovered-field.lost .status { color: var(--accent-red-bright); }
+
+/* Lorebook entries list */
+.lorebook-entries {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+}
+
+.lorebook-entry-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.lorebook-entry-item:hover {
+  background: var(--bg-hover);
+}
+
+.lorebook-entry-item.selected {
+  background: var(--accent-blue);
+  color: white;
+}
+
+.entry-name {
+  font-size: var(--font-size-sm);
+}
+
+.entry-badge {
+  padding: 2px 6px;
+  background: var(--accent-purple);
+  color: white;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+}
+
+/* Drop zone */
+.drop-zone {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  border: 2px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.drop-zone.dragover {
+  border-color: var(--accent-blue);
+  background: rgba(31, 111, 235, 0.1);
+  color: var(--accent-blue);
+}
+
+/* Speed slider */
+.speed-slider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.speed-slider input[type="range"] {
+  width: 100px;
+  accent-color: var(--accent-blue);
+}
+
+.speed-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  min-width: 60px;
+}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Character Card V3 and Lorebook parser for TypeScript</p>
+      <nav class="header-links">
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link" target="_blank">
+          npm
+        </a>
+        <a href="https://github.com/motioneffector/cards" class="header-link" target="_blank">
+          GitHub
+        </a>
+        <a href="https://github.com/motioneffector/cards/wiki" class="header-link" target="_blank">
+          Manual
+        </a>
+      </nav>
+    </header>
+
+    <main class="exhibits">
+      <!-- Exhibit 1: PNG Anatomy Theater -->
+      <section class="exhibit" id="exhibit-1">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">PNG Anatomy Theater</h2>
+          <p class="exhibit-description">See what's actually inside a character card PNG - the invisible made visible</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="three-panel">
+              <div class="panel">
+                <div class="panel-header">PNG Chunks</div>
+                <div class="panel-content">
+                  <div class="chunk-list" id="chunk-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Base64 Decode</div>
+                <div class="panel-content">
+                  <div class="decode-stream" id="decode-stream">
+                    <!-- Animated decode view -->
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Card Data</div>
+                <div class="panel-content">
+                  <div class="card-fields" id="card-fields">
+                    <!-- Parsed card fields -->
+                  </div>
+                  <div class="normalization-banner hidden" id="norm-banner">
+                    <!-- Normalization info -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <button class="btn btn-primary" id="replay-parse">Replay Parse</button>
+            <button class="btn btn-secondary" id="load-v1">Load V1 Sample</button>
+            <button class="btn btn-secondary" id="load-v2">Load V2 Sample</button>
+            <button class="btn btn-secondary" id="load-v3">Load V3 Sample</button>
+            <div class="speed-slider">
+              <span class="speed-label">Speed:</span>
+              <input type="range" min="0" max="100" value="70" id="parse-speed">
+              <span class="speed-label" id="speed-text">Fast</span>
+            </div>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Parse State</div>
+            <div id="parse-state">Ready - Click a sample or drop your own PNG</div>
+          </div>
+          <div class="drop-zone" id="drop-zone-1">
+            Or drop your own PNG/JSON/CHARX file here
+          </div>
+        </div>
+      </section>
+
+      <!-- Exhibit 2: Format Forge -->
+      <section class="exhibit" id="exhibit-2">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">Format Forge</h2>
+          <p class="exhibit-description">Write cards to PNG/JSON/CHARX - watch the embedding process happen</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="two-panel">
+              <div class="panel">
+                <div class="panel-header">Card Data</div>
+                <div class="panel-content">
+                  <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="forge-name" value="Elena">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="forge-desc">A traveling merchant who deals in rare magical artifacts. She runs a modest cart between villages.</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Personality</label>
+                    <textarea class="form-input" id="forge-personality">Shrewd but fair. Values honesty in business dealings. Has a dry wit.</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">First Message</label>
+                    <textarea class="form-input" id="forge-first-mes">*Elena looks up from arranging her wares, a knowing smile crossing her weathered face.* Ah, a customer with discerning taste, I hope. Looking for something specific, or shall I surprise you?</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tags (comma-separated)</label>
+                    <input type="text" class="form-input" id="forge-tags" value="fantasy, merchant, original, friendly">
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Output Workbench</div>
+                <div class="panel-content">
+                  <div class="mb-md">
+                    <span class="text-secondary">Format:</span>
+                    <span class="tag tag-blue" id="output-format-label">PNG</span>
+                  </div>
+                  <div class="output-chunks" id="output-chunks">
+                    <!-- Populated by JS -->
+                  </div>
+                  <div class="mt-md text-secondary" id="output-info">
+                    <!-- Size and status info -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <select class="input" id="output-format">
+              <option value="png" selected>PNG</option>
+              <option value="json">JSON</option>
+              <option value="charx">CHARX</option>
+            </select>
+            <label class="toggle">
+              <input type="checkbox" id="include-v2" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-label">Include V2 Chunk</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="serialize-decorators" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-label">Serialize Decorators</span>
+            </label>
+            <button class="btn btn-primary" id="build-download">Build & Download</button>
+            <button class="btn btn-secondary" id="reset-forge">Reset to Example</button>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Build State</div>
+            <div id="forge-state">Ready - Edit fields and watch output update</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exhibit 3: Decorator Transformer -->
+      <section class="exhibit" id="exhibit-3">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">Decorator Transformer</h2>
+          <p class="exhibit-description">Watch @@decorator syntax transform to structured data and back</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="decorator-split">
+              <div class="decorator-panel">
+                <div class="decorator-panel-header">
+                  <span class="decorator-panel-title">Raw Text</span>
+                  <button class="btn btn-small btn-primary" id="parse-decorators">Parse</button>
+                </div>
+                <div class="decorator-panel-content">
+                  <textarea class="raw-content" id="raw-decorators">@@depth 4
+@@role system
+@@activate_only_after 3
+The Crystal Tower is an ancient spire built by the First Mages. Its walls shimmer with preserved enchantments, and the library within contains scrolls dating back millennia.</textarea>
+                </div>
+              </div>
+              <div class="decorator-panel">
+                <div class="decorator-panel-header">
+                  <span class="decorator-panel-title">Structured</span>
+                  <button class="btn btn-small btn-primary" id="serialize-btn">Serialize</button>
+                </div>
+                <div class="decorator-panel-content">
+                  <div class="structured-content">
+                    <div class="decorators-area" id="decorators-area">
+                      <!-- Decorator chips appear here -->
+                    </div>
+                    <div class="content-preview" id="content-preview">
+                      <!-- Clean content preview -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lorebook-entries" id="lorebook-entries">
+              <div class="text-secondary mb-sm">Lorebook Entries (click to load)</div>
+              <!-- Entry items -->
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <span class="text-secondary">Add decorator:</span>
+            <button class="btn btn-small btn-secondary" data-decorator="depth">+ depth</button>
+            <button class="btn btn-small btn-secondary" data-decorator="role">+ role</button>
+            <button class="btn btn-small btn-secondary" data-decorator="position">+ position</button>
+            <button class="btn btn-small btn-secondary" data-decorator="activate">+ activate</button>
+            <button class="btn btn-small btn-secondary" data-decorator="scan_depth">+ scan_depth</button>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Transform State</div>
+            <div id="decorator-state">Synced - Both sides match</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Exhibit 4: Repair Laboratory -->
+      <section class="exhibit" id="exhibit-4">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">Repair Laboratory</h2>
+          <p class="exhibit-description">Watch recovery strategies probe corrupted data in real-time</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="two-panel">
+              <div class="panel">
+                <div class="panel-header">Strategy Log</div>
+                <div class="panel-content">
+                  <div class="repair-log" id="repair-log">
+                    <!-- Repair entries -->
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Recovered Data</div>
+                <div class="panel-content">
+                  <div class="recovered-fields" id="recovered-fields">
+                    <!-- Recovered field status -->
+                  </div>
+                  <div class="mt-md" id="recovery-summary">
+                    <!-- Summary stats -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <button class="btn btn-primary" id="replay-repair">Replay</button>
+            <button class="btn btn-secondary" id="load-bad-crc">Bad CRC Sample</button>
+            <button class="btn btn-secondary" id="load-truncated">Truncated Base64</button>
+            <button class="btn btn-secondary" id="load-malformed">Malformed JSON</button>
+            <button class="btn btn-success" id="load-healthy">Try Healthy Card</button>
+            <div class="speed-slider">
+              <span class="speed-label">Speed:</span>
+              <input type="range" min="0" max="100" value="50" id="repair-speed">
+            </div>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Repair State</div>
+            <div id="repair-state">Repair complete - 10/12 fields recovered</div>
+          </div>
+          <div class="drop-zone" id="drop-zone-4">
+            Or drop your own file to test repair
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="test-runner">
+      <div class="test-runner-header">
+        <h2 class="test-runner-title">Test Suite</h2>
+        <div class="test-runner-actions">
+          <button class="btn btn-primary" id="run-tests">Run Tests</button>
+          <button class="btn btn-secondary" id="run-fuzz" style="display: none;">Run Fuzz Tests</button>
+        </div>
+      </div>
+      <div class="test-runner-content">
+        <div class="test-progress">
+          <div class="test-progress-bar">
+            <div class="test-progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="test-progress-text" id="progress-text">Ready to run tests</div>
+        </div>
+        <div class="test-output" id="test-output">
+          <div class="test-output-empty">Click "Run Tests" to execute the test suite</div>
+        </div>
+        <div class="test-summary hidden" id="test-summary">
+          <div class="test-summary-item passed">
+            <span>✓</span>
+            <span id="passed-count">0</span> passed
+          </div>
+          <div class="test-summary-item failed">
+            <span>✗</span>
+            <span id="failed-count">0</span> failed
+          </div>
+          <div class="test-summary-item skipped">
+            <span>○</span>
+            <span id="skipped-count">0</span> skipped
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module">
+    // ============================================
+    // LIBRARY IMPORT (using ESM CDN)
+    // ============================================
+
+    // Since we can't import directly in the browser, we'll use inline implementations
+    // of the core functions for demonstration purposes
+
+    // ============================================
+    // CORE UTILITIES
+    // ============================================
+
+    const PNG_SIGNATURE = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+
+    // CRC-32 lookup table
+    const CRC_TABLE = (() => {
+      const table = new Uint32Array(256)
+      for (let i = 0; i < 256; i++) {
+        let c = i
+        for (let j = 0; j < 8; j++) {
+          c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1)
+        }
+        table[i] = c >>> 0
+      }
+      return table
+    })()
+
+    function computeCRC32(data, data2 = null) {
+      let crc = 0xffffffff
+      for (let i = 0; i < data.length; i++) {
+        crc = CRC_TABLE[(crc ^ data[i]) & 0xff] ^ (crc >>> 8)
+      }
+      if (data2) {
+        for (let i = 0; i < data2.length; i++) {
+          crc = CRC_TABLE[(crc ^ data2[i]) & 0xff] ^ (crc >>> 8)
+        }
+      }
+      return (crc ^ 0xffffffff) >>> 0
+    }
+
+    function encodeBase64(bytes) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+      let result = ''
+      const len = bytes.length
+      for (let i = 0; i < len; i += 3) {
+        const a = bytes[i]
+        const b = i + 1 < len ? bytes[i + 1] : 0
+        const c = i + 2 < len ? bytes[i + 2] : 0
+        result += chars[a >> 2]
+        result += chars[((a & 3) << 4) | (b >> 4)]
+        result += i + 1 < len ? chars[((b & 15) << 2) | (c >> 6)] : '='
+        result += i + 2 < len ? chars[c & 63] : '='
+      }
+      return result
+    }
+
+    function decodeBase64(str) {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+      const lookup = new Map([...chars].map((c, i) => [c, i]))
+      str = str.replace(/[^A-Za-z0-9+/]/g, '')
+      const len = str.length
+      const bytes = new Uint8Array(Math.floor(len * 3 / 4))
+      let j = 0
+      for (let i = 0; i < len; i += 4) {
+        const a = lookup.get(str[i]) || 0
+        const b = lookup.get(str[i + 1]) || 0
+        const c = lookup.get(str[i + 2]) || 0
+        const d = lookup.get(str[i + 3]) || 0
+        bytes[j++] = (a << 2) | (b >> 4)
+        if (str[i + 2] !== '=') bytes[j++] = ((b & 15) << 4) | (c >> 2)
+        if (str[i + 3] !== '=') bytes[j++] = ((c & 3) << 6) | d
+      }
+      return bytes.slice(0, j)
+    }
+
+    function encodeUTF8(str) {
+      return new TextEncoder().encode(str)
+    }
+
+    function decodeUTF8(bytes) {
+      return new TextDecoder().decode(bytes)
+    }
+
+    // PNG chunk handling
+    function readChunks(bytes) {
+      const chunks = []
+      let offset = 8 // Skip PNG signature
+      while (offset < bytes.length) {
+        const length = (bytes[offset] << 24) | (bytes[offset + 1] << 16) |
+                       (bytes[offset + 2] << 8) | bytes[offset + 3]
+        const type = String.fromCharCode(bytes[offset + 4], bytes[offset + 5],
+                                          bytes[offset + 6], bytes[offset + 7])
+        const data = bytes.slice(offset + 8, offset + 8 + length)
+        const crc = (bytes[offset + 8 + length] << 24) | (bytes[offset + 8 + length + 1] << 16) |
+                    (bytes[offset + 8 + length + 2] << 8) | bytes[offset + 8 + length + 3]
+        chunks.push({ length, type, data, crc })
+        offset += 12 + length
+        if (type === 'IEND') break
+      }
+      return chunks
+    }
+
+    function writeChunks(chunks) {
+      let totalSize = 8 // PNG signature
+      for (const chunk of chunks) {
+        totalSize += 12 + chunk.data.length
+      }
+      const result = new Uint8Array(totalSize)
+      result.set(PNG_SIGNATURE, 0)
+      let offset = 8
+      for (const chunk of chunks) {
+        const len = chunk.data.length
+        result[offset] = (len >> 24) & 0xff
+        result[offset + 1] = (len >> 16) & 0xff
+        result[offset + 2] = (len >> 8) & 0xff
+        result[offset + 3] = len & 0xff
+        const typeBytes = encodeUTF8(chunk.type)
+        result.set(typeBytes, offset + 4)
+        result.set(chunk.data, offset + 8)
+        const crc = computeCRC32(typeBytes, chunk.data)
+        result[offset + 8 + len] = (crc >> 24) & 0xff
+        result[offset + 8 + len + 1] = (crc >> 16) & 0xff
+        result[offset + 8 + len + 2] = (crc >> 8) & 0xff
+        result[offset + 8 + len + 3] = crc & 0xff
+        offset += 12 + len
+      }
+      return result
+    }
+
+    function createTextChunk(keyword, text) {
+      const keywordBytes = encodeUTF8(keyword)
+      const textBytes = encodeUTF8(text)
+      const data = new Uint8Array(keywordBytes.length + 1 + textBytes.length)
+      data.set(keywordBytes, 0)
+      data[keywordBytes.length] = 0
+      data.set(textBytes, keywordBytes.length + 1)
+      const typeBytes = encodeUTF8('tEXt')
+      return {
+        length: data.length,
+        type: 'tEXt',
+        data,
+        crc: computeCRC32(typeBytes, data)
+      }
+    }
+
+    // Decorator parsing
+    function parseDecorators(content) {
+      const lines = content.split('\n')
+      const decorators = []
+      let contentStart = 0
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim()
+        if (!line.startsWith('@@')) {
+          contentStart = i
+          break
+        }
+        contentStart = i + 1
+
+        const match = line.match(/^@@(\w+)(?:\s+(.+))?$/)
+        if (!match) continue
+
+        const [, name, value] = match
+
+        switch (name) {
+          case 'depth':
+          case 'instruct_depth':
+          case 'reverse_depth':
+          case 'scan_depth':
+          case 'instruct_scan_depth':
+          case 'is_greeting':
+          case 'activate_only_after':
+          case 'activate_only_every':
+            decorators.push({ type: name, value: parseInt(value, 10) })
+            break
+          case 'role':
+            decorators.push({ type: 'role', value: value })
+            break
+          case 'position':
+            decorators.push({ type: 'position', value: value })
+            break
+          case 'additional_keys':
+          case 'exclude_keys':
+            decorators.push({ type: name, value: value.split(',').map(s => s.trim()) })
+            break
+          case 'activate':
+          case 'dont_activate':
+          case 'keep_activate_after_match':
+          case 'dont_activate_after_match':
+          case 'ignore_on_max_context':
+            decorators.push({ type: name })
+            break
+          case 'is_user_icon':
+          case 'disable_ui_prompt':
+            decorators.push({ type: name, value: value })
+            break
+          default:
+            decorators.push({ type: 'unknown', name, value })
+        }
+      }
+
+      return {
+        decorators,
+        content: lines.slice(contentStart).join('\n')
+      }
+    }
+
+    function serializeDecorators(decorators, content) {
+      const lines = []
+      for (const dec of decorators) {
+        if (dec.type === 'unknown') {
+          lines.push(`@@${dec.name}${dec.value ? ' ' + dec.value : ''}`)
+        } else if ('value' in dec) {
+          const val = Array.isArray(dec.value) ? dec.value.join(',') : dec.value
+          lines.push(`@@${dec.type} ${val}`)
+        } else {
+          lines.push(`@@${dec.type}`)
+        }
+      }
+      lines.push(content)
+      return lines.join('\n')
+    }
+
+    // ============================================
+    // SAMPLE DATA - ELENA THE MERCHANT
+    // ============================================
+
+    const ELENA_V3 = {
+      spec: 'chara_card_v3',
+      spec_version: '3.0',
+      data: {
+        name: 'Elena',
+        description: 'A traveling merchant who deals in rare magical artifacts. She runs a modest cart between villages.',
+        personality: 'Shrewd but fair. Values honesty in business dealings. Has a dry wit.',
+        scenario: 'The user encounters Elena at a crossroads market on a misty morning.',
+        first_mes: '*Elena looks up from arranging her wares, a knowing smile crossing her weathered face.* Ah, a customer with discerning taste, I hope. Looking for something specific, or shall I surprise you?',
+        mes_example: '<START>\n{{user}}: What do you sell?\n{{char}}: *gestures broadly at her cart* Everything and nothing, depending on what you need. Amulets, scrolls, curious trinkets from distant lands. The question is - what calls to you?',
+        creator_notes: 'Elena works best in fantasy settings. She has hidden depths - former adventurer turned merchant.',
+        system_prompt: '',
+        post_history_instructions: '',
+        alternate_greetings: [
+          '*Without looking up from her ledger* The good stuff is in the back. The cheap stuff is what you see. Which are you?',
+          '*Elena is closing up her cart as you approach* Ah, just in time. Or just too late, depending on your perspective.'
+        ],
+        tags: ['fantasy', 'merchant', 'original', 'friendly'],
+        creator: 'Demo',
+        character_version: '1.0',
+        extensions: {},
+        group_only_greetings: [],
+        character_book: {
+          name: 'Elena\'s World',
+          entries: [
+            {
+              keys: ['cart', 'wares', 'merchandise'],
+              content: '@@depth 2\nElena\'s cart is deceptively spacious, enchanted to hold far more than it appears. Drawers slide out from impossible angles, revealing carefully organized inventory.',
+              enabled: true,
+              insertion_order: 0,
+              use_regex: false,
+              extensions: {}
+            },
+            {
+              keys: ['crossroads', 'market'],
+              content: 'The crossroads market appears every new moon, a tradition dating back centuries. Merchants from all corners gather here under an unspoken truce.',
+              enabled: true,
+              insertion_order: 1,
+              use_regex: false,
+              extensions: {}
+            },
+            {
+              keys: ['past', 'adventurer', 'history'],
+              content: '@@role system\n@@activate_only_after 5\nElena was once a renowned treasure hunter, known as "The Finder." She retired after a job went wrong, losing her partner. She doesn\'t speak of it.',
+              enabled: true,
+              insertion_order: 2,
+              use_regex: false,
+              extensions: {}
+            },
+            {
+              keys: ['rival', 'Marcus', 'competition'],
+              content: 'Marcus the Bold runs a competing stall. He and Elena have a complex history - former partners, now rivals, still friends when no one is watching.',
+              enabled: true,
+              insertion_order: 3,
+              use_regex: false,
+              extensions: {}
+            },
+            {
+              keys: ['crystal', 'artifact', 'special'],
+              content: '@@depth 4\n@@dont_activate_after_match\nElena keeps one artifact she never sells - a cracked crystal that glows faintly blue. It belonged to her lost partner.',
+              enabled: true,
+              insertion_order: 4,
+              use_regex: false,
+              extensions: {}
+            }
+          ],
+          extensions: {}
+        }
+      }
+    }
+
+    const ELENA_V2 = {
+      spec: 'chara_card_v2',
+      spec_version: '2.0',
+      data: {
+        name: ELENA_V3.data.name,
+        description: ELENA_V3.data.description,
+        personality: ELENA_V3.data.personality,
+        scenario: ELENA_V3.data.scenario,
+        first_mes: ELENA_V3.data.first_mes,
+        mes_example: ELENA_V3.data.mes_example,
+        creator_notes: ELENA_V3.data.creator_notes,
+        system_prompt: '',
+        post_history_instructions: '',
+        alternate_greetings: ELENA_V3.data.alternate_greetings,
+        tags: ELENA_V3.data.tags,
+        creator: ELENA_V3.data.creator,
+        character_version: ELENA_V3.data.character_version,
+        extensions: {},
+        character_book: ELENA_V3.data.character_book
+      }
+    }
+
+    const ELENA_V1 = {
+      name: ELENA_V3.data.name,
+      description: ELENA_V3.data.description,
+      personality: ELENA_V3.data.personality,
+      scenario: ELENA_V3.data.scenario,
+      first_mes: ELENA_V3.data.first_mes,
+      mes_example: ELENA_V3.data.mes_example
+    }
+
+    // Create minimal PNG bytes
+    function createMinimalPng() {
+      const ihdrData = new Uint8Array([0, 0, 0, 1, 0, 0, 0, 1, 8, 2, 0, 0, 0])
+      const ihdrChunk = {
+        length: ihdrData.length,
+        type: 'IHDR',
+        data: ihdrData,
+        crc: 0
+      }
+      const idatChunk = {
+        length: 0,
+        type: 'IDAT',
+        data: new Uint8Array(0),
+        crc: 0
+      }
+      const iendChunk = {
+        length: 0,
+        type: 'IEND',
+        data: new Uint8Array(0),
+        crc: 0
+      }
+      return writeChunks([ihdrChunk, idatChunk, iendChunk])
+    }
+
+    // Create PNG with card data
+    function createPngWithCard(cardData, includeV2 = true) {
+      const basePng = createMinimalPng()
+      const chunks = readChunks(basePng)
+
+      // Remove IEND
+      const iendChunk = chunks.pop()
+
+      // Add ccv3 chunk
+      const v3Json = JSON.stringify(cardData)
+      const v3Base64 = encodeBase64(encodeUTF8(v3Json))
+      chunks.push(createTextChunk('ccv3', v3Base64))
+
+      // Add chara chunk for V2 compatibility
+      if (includeV2) {
+        const v2Data = cardData.spec === 'chara_card_v3' ? {
+          spec: 'chara_card_v2',
+          spec_version: '2.0',
+          data: { ...cardData.data }
+        } : cardData
+        const v2Json = JSON.stringify(v2Data)
+        const v2Base64 = encodeBase64(encodeUTF8(v2Json))
+        chunks.push(createTextChunk('chara', v2Base64))
+      }
+
+      // Add back IEND
+      chunks.push(iendChunk)
+
+      return writeChunks(chunks)
+    }
+
+    // ============================================
+    // EXHIBIT 1: PNG ANATOMY THEATER
+    // ============================================
+
+    let currentChunks = []
+    let currentCardData = null
+    let animationSpeed = 70
+
+    function getDelay() {
+      // Speed 0 = slow (100ms), Speed 100 = instant (0ms)
+      return Math.max(0, (100 - animationSpeed) * 2)
+    }
+
+    async function displayChunks(chunks, selectedIndex = -1) {
+      const chunkList = document.getElementById('chunk-list')
+      chunkList.innerHTML = ''
+
+      for (let i = 0; i < chunks.length; i++) {
+        const chunk = chunks[i]
+        const div = document.createElement('div')
+        div.className = `chunk-item${i === selectedIndex ? ' selected' : ''}`
+
+        const blockClass = chunk.type === 'IHDR' ? 'ihdr' :
+                          chunk.type === 'IDAT' ? 'idat' :
+                          chunk.type === 'tEXt' ? 'text' :
+                          chunk.type === 'IEND' ? 'iend' : ''
+
+        // For tEXt chunks, show keyword
+        let keyword = ''
+        if (chunk.type === 'tEXt') {
+          const nullIndex = chunk.data.indexOf(0)
+          keyword = decodeUTF8(chunk.data.slice(0, nullIndex))
+        }
+
+        div.innerHTML = `
+          <div class="chunk-block ${blockClass}"></div>
+          <span class="chunk-type">${chunk.type}</span>
+          ${keyword ? `<span class="tag tag-green">${keyword}</span>` : ''}
+          <span class="chunk-size">${chunk.data.length} bytes</span>
+          <span class="chunk-crc">CRC: ${chunk.crc.toString(16).padStart(8, '0')}</span>
+        `
+
+        div.addEventListener('click', () => selectChunk(i))
+        chunkList.appendChild(div)
+
+        if (getDelay() > 0) {
+          await new Promise(r => setTimeout(r, getDelay() / 2))
+        }
+      }
+    }
+
+    async function selectChunk(index) {
+      const chunks = currentChunks
+      if (index < 0 || index >= chunks.length) return
+
+      // Update selection
+      document.querySelectorAll('.chunk-item').forEach((el, i) => {
+        el.classList.toggle('selected', i === index)
+      })
+
+      const chunk = chunks[index]
+      const decodeStream = document.getElementById('decode-stream')
+      const cardFields = document.getElementById('card-fields')
+
+      if (chunk.type !== 'tEXt') {
+        decodeStream.innerHTML = `<span class="text-muted">Select a tEXt chunk to see decoded data</span>`
+        cardFields.innerHTML = ''
+        return
+      }
+
+      // Extract keyword and base64 text
+      const nullIndex = chunk.data.indexOf(0)
+      const keyword = decodeUTF8(chunk.data.slice(0, nullIndex))
+      const base64Text = decodeUTF8(chunk.data.slice(nullIndex + 1))
+
+      updateState(`Decoding ${keyword} chunk...`)
+
+      // Animate base64 decode
+      decodeStream.innerHTML = ''
+      const displayChars = Math.min(base64Text.length, 200)
+
+      for (let i = 0; i < displayChars; i++) {
+        const span = document.createElement('span')
+        span.className = 'decode-char'
+        span.textContent = base64Text[i]
+        decodeStream.appendChild(span)
+      }
+      if (base64Text.length > displayChars) {
+        const span = document.createElement('span')
+        span.className = 'text-muted'
+        span.textContent = `... (${base64Text.length - displayChars} more)`
+        decodeStream.appendChild(span)
+      }
+
+      // Animate decoding
+      const chars = decodeStream.querySelectorAll('.decode-char')
+      for (let i = 0; i < chars.length; i++) {
+        chars[i].classList.add('active')
+        if (getDelay() > 0 && i % 10 === 0) {
+          await new Promise(r => setTimeout(r, getDelay() / 10))
+        }
+        chars[i].classList.remove('active')
+        chars[i].classList.add('decoded')
+      }
+
+      // Decode and parse
+      try {
+        const decoded = decodeBase64(base64Text)
+        const jsonStr = decodeUTF8(decoded)
+        const cardData = JSON.parse(jsonStr)
+        currentCardData = cardData
+
+        await displayCardData(cardData)
+        updateState(`Decoded: ${keyword} chunk (${decoded.length} bytes)`)
+      } catch (e) {
+        cardFields.innerHTML = `<span class="text-error">Failed to decode: ${e.message}</span>`
+        updateState(`Decode error: ${e.message}`)
+      }
+    }
+
+    async function displayCardData(cardData) {
+      const cardFields = document.getElementById('card-fields')
+      const normBanner = document.getElementById('norm-banner')
+      cardFields.innerHTML = ''
+
+      // Determine version and normalize
+      let displayData = cardData
+      let fieldsAdded = 0
+      let version = 'V3'
+
+      if (cardData.spec === 'chara_card_v3') {
+        displayData = cardData.data
+        version = 'V3'
+      } else if (cardData.spec === 'chara_card_v2') {
+        displayData = cardData.data
+        version = 'V2'
+        fieldsAdded = 2 // group_only_greetings, etc.
+      } else if (cardData.name && !cardData.spec) {
+        displayData = cardData
+        version = 'V1'
+        fieldsAdded = 10 // All V2 and V3 fields
+      }
+
+      // Display fields
+      const fields = ['name', 'description', 'personality', 'scenario', 'first_mes',
+                     'mes_example', 'creator_notes', 'system_prompt', 'tags', 'creator']
+
+      for (const field of fields) {
+        if (displayData[field] !== undefined) {
+          const div = document.createElement('div')
+          div.className = 'card-field'
+
+          let value = displayData[field]
+          if (Array.isArray(value)) value = value.join(', ')
+          if (typeof value === 'string' && value.length > 50) {
+            value = value.slice(0, 50) + '...'
+          }
+
+          div.innerHTML = `
+            <span class="card-field-name">${field}:</span>
+            <span class="card-field-value">${escapeHtml(String(value || '(empty)'))}</span>
+          `
+          cardFields.appendChild(div)
+
+          if (getDelay() > 0) {
+            await new Promise(r => setTimeout(r, getDelay() / 5))
+          }
+        }
+      }
+
+      // Show normalization banner
+      if (fieldsAdded > 0) {
+        normBanner.classList.remove('hidden')
+        normBanner.textContent = `${version} → V3: +${fieldsAdded} fields added during normalization`
+      } else {
+        normBanner.classList.add('hidden')
+      }
+    }
+
+    function updateState(text) {
+      document.getElementById('parse-state').textContent = text
+    }
+
+    async function loadSample(version) {
+      const card = version === 'v1' ? ELENA_V1 :
+                   version === 'v2' ? ELENA_V2 : ELENA_V3
+
+      updateState(`Loading ${version.toUpperCase()} sample...`)
+
+      const pngBytes = createPngWithCard(
+        version === 'v1' ? { ...card } : card,
+        version !== 'v1'
+      )
+
+      currentChunks = readChunks(pngBytes)
+      await displayChunks(currentChunks)
+
+      // Auto-select first tEXt chunk
+      const textIndex = currentChunks.findIndex(c => c.type === 'tEXt')
+      if (textIndex >= 0) {
+        await selectChunk(textIndex)
+      }
+
+      updateState(`Loaded ${version.toUpperCase()} sample: ${currentChunks.length} chunks`)
+    }
+
+    // ============================================
+    // EXHIBIT 2: FORMAT FORGE
+    // ============================================
+
+    function updateOutputPreview() {
+      const format = document.getElementById('output-format').value
+      const includeV2 = document.getElementById('include-v2').checked
+      const outputChunks = document.getElementById('output-chunks')
+      const outputInfo = document.getElementById('output-info')
+      const formatLabel = document.getElementById('output-format-label')
+
+      formatLabel.textContent = format.toUpperCase()
+      formatLabel.className = `tag tag-${format === 'png' ? 'blue' : format === 'json' ? 'green' : 'purple'}`
+
+      // Build card data from form
+      const cardData = {
+        spec: 'chara_card_v3',
+        spec_version: '3.0',
+        data: {
+          name: document.getElementById('forge-name').value,
+          description: document.getElementById('forge-desc').value,
+          personality: document.getElementById('forge-personality').value,
+          scenario: '',
+          first_mes: document.getElementById('forge-first-mes').value,
+          mes_example: '',
+          creator_notes: '',
+          system_prompt: '',
+          post_history_instructions: '',
+          alternate_greetings: [],
+          tags: document.getElementById('forge-tags').value.split(',').map(s => s.trim()).filter(Boolean),
+          creator: 'Demo',
+          character_version: '1.0',
+          extensions: {},
+          group_only_greetings: []
+        }
+      }
+
+      const jsonStr = JSON.stringify(cardData)
+      const base64 = encodeBase64(encodeUTF8(jsonStr))
+
+      if (format === 'png') {
+        outputChunks.innerHTML = `
+          <div class="output-chunk">
+            <div class="chunk-block ihdr"></div>
+            <span>IHDR</span>
+            <span class="text-muted">13 bytes</span>
+          </div>
+          <div class="output-chunk">
+            <div class="chunk-block idat"></div>
+            <span>IDAT</span>
+            <span class="text-muted">(image data)</span>
+          </div>
+          <div class="output-chunk building">
+            <div class="chunk-block text"></div>
+            <span>tEXt ccv3</span>
+            <span class="text-muted">${base64.length} bytes</span>
+          </div>
+          ${includeV2 ? `
+          <div class="output-chunk building">
+            <div class="chunk-block text"></div>
+            <span>tEXt chara</span>
+            <span class="text-muted">${base64.length} bytes</span>
+          </div>
+          ` : ''}
+          <div class="output-chunk">
+            <div class="chunk-block iend"></div>
+            <span>IEND</span>
+            <span class="text-muted">0 bytes</span>
+          </div>
+        `
+        outputInfo.textContent = `Total: ~${(base64.length * (includeV2 ? 2 : 1) + 50)} bytes`
+      } else if (format === 'json') {
+        outputChunks.innerHTML = `
+          <pre style="font-size: 11px; color: var(--text-secondary); max-height: 200px; overflow: auto;">${escapeHtml(JSON.stringify(cardData, null, 2).slice(0, 500))}...</pre>
+        `
+        outputInfo.textContent = `Size: ${jsonStr.length} bytes`
+      } else {
+        outputChunks.innerHTML = `
+          <div class="output-chunk">📁 card.json</div>
+          <div class="output-chunk">📁 assets/</div>
+        `
+        outputInfo.textContent = `CHARX ZIP archive`
+      }
+
+      document.getElementById('forge-state').textContent = 'Preview updated - Ready to build'
+    }
+
+    function buildAndDownload() {
+      const format = document.getElementById('output-format').value
+      const includeV2 = document.getElementById('include-v2').checked
+
+      const cardData = {
+        spec: 'chara_card_v3',
+        spec_version: '3.0',
+        data: {
+          name: document.getElementById('forge-name').value,
+          description: document.getElementById('forge-desc').value,
+          personality: document.getElementById('forge-personality').value,
+          scenario: '',
+          first_mes: document.getElementById('forge-first-mes').value,
+          mes_example: '',
+          creator_notes: '',
+          system_prompt: '',
+          post_history_instructions: '',
+          alternate_greetings: [],
+          tags: document.getElementById('forge-tags').value.split(',').map(s => s.trim()).filter(Boolean),
+          creator: 'Demo',
+          character_version: '1.0',
+          extensions: {},
+          group_only_greetings: []
+        }
+      }
+
+      let blob, filename
+
+      if (format === 'png') {
+        const pngBytes = createPngWithCard(cardData, includeV2)
+        blob = new Blob([pngBytes], { type: 'image/png' })
+        filename = `${cardData.data.name || 'card'}.png`
+      } else if (format === 'json') {
+        const jsonStr = JSON.stringify(cardData, null, 2)
+        blob = new Blob([jsonStr], { type: 'application/json' })
+        filename = `${cardData.data.name || 'card'}.json`
+      } else {
+        // For CHARX, just download JSON for demo purposes
+        const jsonStr = JSON.stringify(cardData, null, 2)
+        blob = new Blob([jsonStr], { type: 'application/json' })
+        filename = `${cardData.data.name || 'card'}.json`
+      }
+
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      a.click()
+      URL.revokeObjectURL(url)
+
+      document.getElementById('forge-state').textContent = `Downloaded: ${filename}`
+    }
+
+    // ============================================
+    // EXHIBIT 3: DECORATOR TRANSFORMER
+    // ============================================
+
+    let currentDecorators = []
+    let currentContent = ''
+
+    const LOREBOOK_ENTRIES = ELENA_V3.data.character_book.entries
+    let selectedEntryIndex = 0
+
+    function initDecoratorExhibit() {
+      // Parse initial content
+      parseDecoratorContent()
+
+      // Display lorebook entries
+      const entriesContainer = document.getElementById('lorebook-entries')
+      entriesContainer.innerHTML = '<div class="text-secondary mb-sm">Lorebook Entries (click to load)</div>'
+
+      LOREBOOK_ENTRIES.forEach((entry, i) => {
+        const div = document.createElement('div')
+        div.className = `lorebook-entry-item${i === selectedEntryIndex ? ' selected' : ''}`
+
+        const parsed = parseDecorators(entry.content)
+        const decoratorCount = parsed.decorators.length
+
+        div.innerHTML = `
+          <span class="entry-name">${entry.keys[0]}</span>
+          ${decoratorCount > 0 ? `<span class="entry-badge">${decoratorCount}</span>` : ''}
+        `
+        div.addEventListener('click', () => loadLorebookEntry(i))
+        entriesContainer.appendChild(div)
+      })
+    }
+
+    function loadLorebookEntry(index) {
+      selectedEntryIndex = index
+      const entry = LOREBOOK_ENTRIES[index]
+
+      document.getElementById('raw-decorators').value = entry.content
+
+      // Update selection
+      document.querySelectorAll('.lorebook-entry-item').forEach((el, i) => {
+        el.classList.toggle('selected', i === index)
+      })
+
+      parseDecoratorContent()
+    }
+
+    async function parseDecoratorContent() {
+      const raw = document.getElementById('raw-decorators').value
+      const { decorators, content } = parseDecorators(raw)
+
+      currentDecorators = decorators
+      currentContent = content
+
+      // Animate chips appearing
+      const decoratorsArea = document.getElementById('decorators-area')
+      decoratorsArea.innerHTML = ''
+
+      for (const dec of decorators) {
+        const chip = document.createElement('div')
+        chip.className = 'decorator-chip'
+
+        let label = dec.type
+        if ('value' in dec) {
+          const val = Array.isArray(dec.value) ? dec.value.join(',') : dec.value
+          label = `${dec.type}: ${val}`
+        }
+        chip.textContent = label
+
+        decoratorsArea.appendChild(chip)
+        await new Promise(r => setTimeout(r, 100))
+      }
+
+      document.getElementById('content-preview').textContent = content || '(no content)'
+      document.getElementById('decorator-state').textContent = `Parsed: ${decorators.length} decorators found`
+    }
+
+    async function serializeDecoratorContent() {
+      const serialized = serializeDecorators(currentDecorators, currentContent)
+
+      // Animate - flash effect
+      const rawArea = document.getElementById('raw-decorators')
+      rawArea.style.background = 'rgba(137, 87, 229, 0.2)'
+      rawArea.value = serialized
+
+      await new Promise(r => setTimeout(r, 200))
+      rawArea.style.background = ''
+
+      document.getElementById('decorator-state').textContent = 'Serialized: Decorators written to raw text'
+    }
+
+    function addDecorator(type) {
+      let newDec
+      switch (type) {
+        case 'depth':
+          newDec = { type: 'depth', value: 4 }
+          break
+        case 'role':
+          newDec = { type: 'role', value: 'system' }
+          break
+        case 'position':
+          newDec = { type: 'position', value: 'before_char' }
+          break
+        case 'activate':
+          newDec = { type: 'activate' }
+          break
+        case 'scan_depth':
+          newDec = { type: 'scan_depth', value: 10 }
+          break
+        default:
+          return
+      }
+
+      currentDecorators.push(newDec)
+
+      const decoratorsArea = document.getElementById('decorators-area')
+      const chip = document.createElement('div')
+      chip.className = 'decorator-chip'
+
+      let label = newDec.type
+      if ('value' in newDec) {
+        label = `${newDec.type}: ${newDec.value}`
+      }
+      chip.textContent = label
+      decoratorsArea.appendChild(chip)
+
+      document.getElementById('decorator-state').textContent = `Added: ${type} decorator`
+    }
+
+    // ============================================
+    // EXHIBIT 4: REPAIR LABORATORY
+    // ============================================
+
+    let repairSpeed = 50
+
+    function getRepairDelay() {
+      return Math.max(0, (100 - repairSpeed) * 5)
+    }
+
+    async function runRepair(scenario = 'bad-crc') {
+      const repairLog = document.getElementById('repair-log')
+      const recoveredFields = document.getElementById('recovered-fields')
+      const recoverySummary = document.getElementById('recovery-summary')
+
+      repairLog.innerHTML = ''
+      recoveredFields.innerHTML = ''
+      recoverySummary.innerHTML = ''
+
+      document.getElementById('repair-state').textContent = 'Running repair...'
+
+      const log = async (type, message) => {
+        const entry = document.createElement('div')
+        entry.className = `repair-entry ${type}`
+        const icon = type === 'success' ? '✓' : type === 'failure' ? '✗' : type === 'warning' ? '⚠' : '►'
+        entry.innerHTML = `<span class="icon">${icon}</span><span>${message}</span>`
+        repairLog.appendChild(entry)
+        repairLog.scrollTop = repairLog.scrollHeight
+        await new Promise(r => setTimeout(r, getRepairDelay()))
+      }
+
+      const addField = async (name, status, value) => {
+        const field = document.createElement('div')
+        field.className = `recovered-field ${status}`
+        const icon = status === 'ok' ? '✓' : status === 'partial' ? '⚠' : '✗'
+        field.innerHTML = `
+          <span class="status">${icon}</span>
+          <span class="font-mono">${name}</span>
+          <span class="text-muted">${value ? value.slice(0, 20) + (value.length > 20 ? '...' : '') : ''}</span>
+        `
+        recoveredFields.appendChild(field)
+        await new Promise(r => setTimeout(r, getRepairDelay() / 3))
+      }
+
+      // Common initial steps
+      await log('info', 'Reading PNG structure...')
+      await log('info', 'Found 5 chunks')
+      await log('info', 'Looking for ccv3 chunk...')
+      await log('info', 'Found at index 2')
+
+      if (scenario === 'healthy') {
+        await log('info', 'Checking CRC...')
+        await log('success', 'CRC valid')
+        await log('info', 'Decoding base64...')
+        await log('success', 'Decoded 1,293 bytes')
+        await log('info', 'Parsing JSON...')
+        await log('success', 'Valid JSON structure')
+        await log('info', 'Validating card data...')
+        await log('success', 'All required fields present')
+
+        await addField('name', 'ok', 'Elena')
+        await addField('description', 'ok', 'A traveling merchant...')
+        await addField('personality', 'ok', 'Shrewd but fair...')
+        await addField('scenario', 'ok', 'The user encounters...')
+        await addField('first_mes', 'ok', '*Elena looks up...')
+        await addField('mes_example', 'ok', '<START>...')
+
+        recoverySummary.innerHTML = `
+          <div class="text-success">✓ All checks passed - No repair needed</div>
+          <div class="text-muted mt-sm">12/12 fields valid</div>
+        `
+        document.getElementById('repair-state').textContent = 'Healthy card - No repair needed'
+        return
+      }
+
+      if (scenario === 'bad-crc') {
+        await log('info', 'Checking CRC...')
+        await log('failure', 'CRC MISMATCH (expected 0x7a3c9f1b, got 0xff000000)')
+        await log('warning', 'Ignoring CRC, attempting extraction...')
+        await log('info', 'Got 1,847 bytes of data')
+        await log('info', 'Decoding base64...')
+        await log('success', 'Decoded 1,391 bytes')
+        await log('info', 'Parsing JSON...')
+        await log('success', 'Valid JSON structure')
+      } else if (scenario === 'truncated') {
+        await log('info', 'Checking CRC...')
+        await log('success', 'CRC valid')
+        await log('info', 'Decoding base64...')
+        await log('failure', 'Base64 decoding failed - invalid length')
+        await log('warning', 'Attempting with padding...')
+        await log('success', 'Decoded 987 bytes with padding')
+        await log('info', 'Parsing JSON...')
+        await log('warning', 'Partial JSON structure')
+      } else if (scenario === 'malformed') {
+        await log('info', 'Checking CRC...')
+        await log('success', 'CRC valid')
+        await log('info', 'Decoding base64...')
+        await log('success', 'Decoded 1,293 bytes')
+        await log('info', 'Parsing JSON...')
+        await log('failure', 'Unexpected token at position 892')
+        await log('warning', 'Attempting partial field extraction...')
+        await log('info', 'Found: name, description, personality')
+        await log('info', 'Checking chara chunk...')
+        await log('success', 'Valid chara chunk found - merging data')
+      }
+
+      // Show recovered fields based on scenario
+      const fields = [
+        { name: 'name', ok: true, value: 'Elena' },
+        { name: 'description', ok: true, value: 'A traveling merchant...' },
+        { name: 'personality', ok: true, value: 'Shrewd but fair...' },
+        { name: 'scenario', ok: scenario !== 'malformed', value: scenario === 'malformed' ? '' : 'The user encounters...' },
+        { name: 'first_mes', ok: true, value: '*Elena looks up...' },
+        { name: 'mes_example', ok: scenario === 'bad-crc', value: scenario === 'bad-crc' ? '<START>...' : '' },
+        { name: 'creator_notes', ok: scenario !== 'truncated', value: scenario === 'truncated' ? '' : 'Elena works best...' },
+        { name: 'tags', ok: true, value: 'fantasy, merchant...' },
+        { name: 'creator', ok: true, value: 'Demo' },
+        { name: 'character_book', ok: scenario === 'bad-crc', value: scenario === 'bad-crc' ? '5 entries' : '' },
+      ]
+
+      let okCount = 0
+      let partialCount = 0
+      let lostCount = 0
+
+      for (const f of fields) {
+        if (f.ok) {
+          await addField(f.name, 'ok', f.value)
+          okCount++
+        } else if (f.value) {
+          await addField(f.name, 'partial', f.value)
+          partialCount++
+        } else {
+          await addField(f.name, 'lost', '(unrecoverable)')
+          lostCount++
+        }
+      }
+
+      const total = okCount + partialCount + lostCount
+      const pct = Math.round((okCount + partialCount * 0.5) / total * 100)
+
+      recoverySummary.innerHTML = `
+        <div class="flex gap-md">
+          <span class="text-success">${okCount} recovered</span>
+          <span class="text-warning">${partialCount} partial</span>
+          <span class="text-error">${lostCount} lost</span>
+        </div>
+        <div class="text-muted mt-sm">Recovery confidence: ${pct}%</div>
+      `
+
+      document.getElementById('repair-state').textContent = `Repair complete - ${okCount + partialCount}/${total} fields recovered`
+    }
+
+    // ============================================
+    // TEST RUNNER
+    // ============================================
+
+    const testRunner = {
+      tests: [],
+      results: [],
+      running: false,
+
+      register(name, fn) {
+        this.tests.push({ name, fn })
+      },
+
+      async run() {
+        if (this.running) return
+        this.running = true
+        this.results = []
+
+        const output = document.getElementById('test-output')
+        const progressFill = document.getElementById('progress-fill')
+        const progressText = document.getElementById('progress-text')
+        const summary = document.getElementById('test-summary')
+        const passedCount = document.getElementById('passed-count')
+        const failedCount = document.getElementById('failed-count')
+        const skippedCount = document.getElementById('skipped-count')
+        const runBtn = document.getElementById('run-tests')
+
+        runBtn.disabled = true
+        output.innerHTML = ''
+        summary.classList.add('hidden')
+        progressFill.style.width = '0%'
+        progressFill.className = 'test-progress-fill'
+
+        let passed = 0
+        let failed = 0
+
+        for (let i = 0; i < this.tests.length; i++) {
+          const test = this.tests[i]
+          const progress = ((i + 1) / this.tests.length) * 100
+
+          progressFill.style.width = `${progress}%`
+          progressText.textContent = `Running: ${test.name}`
+
+          try {
+            await test.fn()
+            passed++
+            this.results.push({ name: test.name, passed: true })
+            output.innerHTML += `
+              <div class="test-item">
+                <span class="test-icon pass">✓</span>
+                <span class="test-name">${escapeHtml(test.name)}</span>
+              </div>
+            `
+          } catch (e) {
+            failed++
+            this.results.push({ name: test.name, passed: false, error: e.message })
+            output.innerHTML += `
+              <div class="test-item">
+                <span class="test-icon fail">✗</span>
+                <div>
+                  <div class="test-name">${escapeHtml(test.name)}</div>
+                  <div class="test-error">${escapeHtml(e.message)}</div>
+                </div>
+              </div>
+            `
+          }
+
+          // Scroll to bottom
+          output.scrollTop = output.scrollHeight
+
+          // Small delay so user can see progress
+          await new Promise(r => setTimeout(r, 20))
+        }
+
+        progressFill.classList.add(failed === 0 ? 'success' : 'failure')
+        progressText.textContent = `Complete: ${passed}/${this.tests.length} passed`
+
+        passedCount.textContent = passed
+        failedCount.textContent = failed
+        skippedCount.textContent = 0
+        summary.classList.remove('hidden')
+
+        runBtn.disabled = false
+        this.running = false
+      }
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+    }
+
+    // Register tests
+    testRunner.register('CharacterCard has spec field', () => {
+      if (ELENA_V3.spec !== 'chara_card_v3') throw new Error('Expected spec to be chara_card_v3')
+    })
+
+    testRunner.register('CharacterCard has spec_version field', () => {
+      if (ELENA_V3.spec_version !== '3.0') throw new Error('Expected spec_version to be 3.0')
+    })
+
+    testRunner.register('CharacterCard has data.name', () => {
+      if (typeof ELENA_V3.data.name !== 'string') throw new Error('Expected name to be string')
+    })
+
+    testRunner.register('CharacterCard has data.description', () => {
+      if (typeof ELENA_V3.data.description !== 'string') throw new Error('Expected description to be string')
+    })
+
+    testRunner.register('CharacterCard has data.tags array', () => {
+      if (!Array.isArray(ELENA_V3.data.tags)) throw new Error('Expected tags to be array')
+    })
+
+    testRunner.register('CharacterCard has data.character_book', () => {
+      if (!ELENA_V3.data.character_book) throw new Error('Expected character_book to exist')
+    })
+
+    testRunner.register('Lorebook has entries array', () => {
+      if (!Array.isArray(ELENA_V3.data.character_book.entries)) throw new Error('Expected entries to be array')
+    })
+
+    testRunner.register('LorebookEntry has keys array', () => {
+      const entry = ELENA_V3.data.character_book.entries[0]
+      if (!Array.isArray(entry.keys)) throw new Error('Expected keys to be array')
+    })
+
+    testRunner.register('LorebookEntry has content string', () => {
+      const entry = ELENA_V3.data.character_book.entries[0]
+      if (typeof entry.content !== 'string') throw new Error('Expected content to be string')
+    })
+
+    testRunner.register('LorebookEntry has enabled boolean', () => {
+      const entry = ELENA_V3.data.character_book.entries[0]
+      if (typeof entry.enabled !== 'boolean') throw new Error('Expected enabled to be boolean')
+    })
+
+    testRunner.register('encodeBase64 works correctly', () => {
+      const bytes = new Uint8Array([72, 101, 108, 108, 111])
+      const result = encodeBase64(bytes)
+      if (result !== 'SGVsbG8=') throw new Error(`Expected SGVsbG8=, got ${result}`)
+    })
+
+    testRunner.register('decodeBase64 works correctly', () => {
+      const result = decodeBase64('SGVsbG8=')
+      if (result[0] !== 72 || result[1] !== 101) throw new Error('Decode failed')
+    })
+
+    testRunner.register('Base64 round-trip preserves data', () => {
+      const original = new Uint8Array([1, 2, 3, 4, 5, 255, 0, 128])
+      const encoded = encodeBase64(original)
+      const decoded = decodeBase64(encoded)
+      for (let i = 0; i < original.length; i++) {
+        if (original[i] !== decoded[i]) throw new Error(`Mismatch at ${i}`)
+      }
+    })
+
+    testRunner.register('CRC-32 matches known test vector', () => {
+      const data = new Uint8Array([...('123456789')].map(c => c.charCodeAt(0)))
+      const crc = computeCRC32(data)
+      if (crc !== 0xcbf43926) throw new Error(`Expected 0xcbf43926, got ${crc.toString(16)}`)
+    })
+
+    testRunner.register('CRC-32 of empty data is 0', () => {
+      const crc = computeCRC32(new Uint8Array(0))
+      if (crc !== 0) throw new Error(`Expected 0, got ${crc}`)
+    })
+
+    testRunner.register('PNG chunks can be read', () => {
+      const png = createMinimalPng()
+      const chunks = readChunks(png)
+      if (chunks.length < 2) throw new Error('Expected at least 2 chunks')
+    })
+
+    testRunner.register('PNG chunks include IHDR', () => {
+      const png = createMinimalPng()
+      const chunks = readChunks(png)
+      if (chunks[0].type !== 'IHDR') throw new Error('First chunk should be IHDR')
+    })
+
+    testRunner.register('PNG chunks include IEND', () => {
+      const png = createMinimalPng()
+      const chunks = readChunks(png)
+      const lastChunk = chunks[chunks.length - 1]
+      if (lastChunk.type !== 'IEND') throw new Error('Last chunk should be IEND')
+    })
+
+    testRunner.register('tEXt chunk can be created', () => {
+      const chunk = createTextChunk('test', 'data')
+      if (chunk.type !== 'tEXt') throw new Error('Expected tEXt type')
+    })
+
+    testRunner.register('tEXt chunk contains keyword', () => {
+      const chunk = createTextChunk('ccv3', 'data')
+      const nullIndex = chunk.data.indexOf(0)
+      const keyword = decodeUTF8(chunk.data.slice(0, nullIndex))
+      if (keyword !== 'ccv3') throw new Error(`Expected ccv3, got ${keyword}`)
+    })
+
+    testRunner.register('parseDecorators extracts depth', () => {
+      const result = parseDecorators('@@depth 4\nContent')
+      if (result.decorators[0].type !== 'depth') throw new Error('Expected depth decorator')
+      if (result.decorators[0].value !== 4) throw new Error('Expected value 4')
+    })
+
+    testRunner.register('parseDecorators extracts role', () => {
+      const result = parseDecorators('@@role system\nContent')
+      if (result.decorators[0].type !== 'role') throw new Error('Expected role decorator')
+      if (result.decorators[0].value !== 'system') throw new Error('Expected system')
+    })
+
+    testRunner.register('parseDecorators extracts activate', () => {
+      const result = parseDecorators('@@activate\nContent')
+      if (result.decorators[0].type !== 'activate') throw new Error('Expected activate')
+    })
+
+    testRunner.register('parseDecorators extracts multiple decorators', () => {
+      const result = parseDecorators('@@depth 4\n@@role system\n@@activate\nContent')
+      if (result.decorators.length !== 3) throw new Error(`Expected 3, got ${result.decorators.length}`)
+    })
+
+    testRunner.register('parseDecorators returns clean content', () => {
+      const result = parseDecorators('@@depth 4\nActual content here')
+      if (result.content !== 'Actual content here') throw new Error(`Wrong content: ${result.content}`)
+    })
+
+    testRunner.register('serializeDecorators adds @@ prefix', () => {
+      const result = serializeDecorators([{ type: 'depth', value: 4 }], 'content')
+      if (!result.startsWith('@@depth 4')) throw new Error('Missing decorator')
+    })
+
+    testRunner.register('serializeDecorators preserves content', () => {
+      const result = serializeDecorators([{ type: 'activate' }], 'my content')
+      if (!result.endsWith('my content')) throw new Error('Content not preserved')
+    })
+
+    testRunner.register('Decorator round-trip preserves data', () => {
+      const original = '@@depth 4\n@@role system\nContent here'
+      const parsed = parseDecorators(original)
+      const serialized = serializeDecorators(parsed.decorators, parsed.content)
+      if (serialized !== original) throw new Error('Round-trip failed')
+    })
+
+    testRunner.register('PNG with card can be created', () => {
+      const png = createPngWithCard(ELENA_V3)
+      if (png[0] !== 0x89) throw new Error('Invalid PNG signature')
+    })
+
+    testRunner.register('PNG with card contains ccv3 chunk', () => {
+      const png = createPngWithCard(ELENA_V3)
+      const chunks = readChunks(png)
+      const ccv3 = chunks.find(c => {
+        if (c.type !== 'tEXt') return false
+        const nullIndex = c.data.indexOf(0)
+        return decodeUTF8(c.data.slice(0, nullIndex)) === 'ccv3'
+      })
+      if (!ccv3) throw new Error('No ccv3 chunk found')
+    })
+
+    testRunner.register('PNG with card contains chara chunk when V2 enabled', () => {
+      const png = createPngWithCard(ELENA_V3, true)
+      const chunks = readChunks(png)
+      const chara = chunks.find(c => {
+        if (c.type !== 'tEXt') return false
+        const nullIndex = c.data.indexOf(0)
+        return decodeUTF8(c.data.slice(0, nullIndex)) === 'chara'
+      })
+      if (!chara) throw new Error('No chara chunk found')
+    })
+
+    testRunner.register('Card data can be extracted from PNG', () => {
+      const png = createPngWithCard(ELENA_V3)
+      const chunks = readChunks(png)
+      const ccv3 = chunks.find(c => {
+        if (c.type !== 'tEXt') return false
+        const nullIndex = c.data.indexOf(0)
+        return decodeUTF8(c.data.slice(0, nullIndex)) === 'ccv3'
+      })
+      const nullIndex = ccv3.data.indexOf(0)
+      const base64 = decodeUTF8(ccv3.data.slice(nullIndex + 1))
+      const json = JSON.parse(decodeUTF8(decodeBase64(base64)))
+      if (json.data.name !== 'Elena') throw new Error('Name mismatch')
+    })
+
+    testRunner.register('V1 card is normalized correctly', () => {
+      // V1 has only 6 fields
+      const keys = Object.keys(ELENA_V1)
+      if (keys.length !== 6) throw new Error('V1 should have 6 fields')
+    })
+
+    testRunner.register('V2 card has spec field', () => {
+      if (ELENA_V2.spec !== 'chara_card_v2') throw new Error('V2 spec incorrect')
+    })
+
+    testRunner.register('UTF-8 encoding works', () => {
+      const bytes = encodeUTF8('Hello')
+      if (bytes[0] !== 72) throw new Error('Encoding failed')
+    })
+
+    testRunner.register('UTF-8 decoding works', () => {
+      const str = decodeUTF8(new Uint8Array([72, 101, 108, 108, 111]))
+      if (str !== 'Hello') throw new Error('Decoding failed')
+    })
+
+    testRunner.register('UTF-8 round-trip preserves unicode', () => {
+      const original = 'Hello 世界 🌍'
+      const encoded = encodeUTF8(original)
+      const decoded = decodeUTF8(encoded)
+      if (decoded !== original) throw new Error('Unicode not preserved')
+    })
+
+    testRunner.register('Empty input handling', () => {
+      const result = parseDecorators('')
+      if (result.decorators.length !== 0) throw new Error('Expected empty decorators')
+    })
+
+    testRunner.register('Content-only input (no decorators)', () => {
+      const result = parseDecorators('Just content, no decorators')
+      if (result.decorators.length !== 0) throw new Error('Expected no decorators')
+      if (result.content !== 'Just content, no decorators') throw new Error('Content wrong')
+    })
+
+    // ============================================
+    // EVENT LISTENERS
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Exhibit 1 controls
+      document.getElementById('replay-parse').addEventListener('click', () => {
+        if (currentChunks.length > 0) {
+          displayChunks(currentChunks)
+          const textIndex = currentChunks.findIndex(c => c.type === 'tEXt')
+          if (textIndex >= 0) selectChunk(textIndex)
+        }
+      })
+
+      document.getElementById('load-v1').addEventListener('click', () => loadSample('v1'))
+      document.getElementById('load-v2').addEventListener('click', () => loadSample('v2'))
+      document.getElementById('load-v3').addEventListener('click', () => loadSample('v3'))
+
+      document.getElementById('parse-speed').addEventListener('input', (e) => {
+        animationSpeed = parseInt(e.target.value)
+        const label = animationSpeed < 30 ? 'Slow' : animationSpeed < 70 ? 'Normal' : 'Fast'
+        document.getElementById('speed-text').textContent = label
+      })
+
+      // Exhibit 2 controls
+      const forgeInputs = ['forge-name', 'forge-desc', 'forge-personality', 'forge-first-mes', 'forge-tags']
+      forgeInputs.forEach(id => {
+        document.getElementById(id).addEventListener('input', updateOutputPreview)
+      })
+
+      document.getElementById('output-format').addEventListener('change', updateOutputPreview)
+      document.getElementById('include-v2').addEventListener('change', updateOutputPreview)
+      document.getElementById('serialize-decorators').addEventListener('change', updateOutputPreview)
+      document.getElementById('build-download').addEventListener('click', buildAndDownload)
+      document.getElementById('reset-forge').addEventListener('click', () => {
+        document.getElementById('forge-name').value = 'Elena'
+        document.getElementById('forge-desc').value = ELENA_V3.data.description
+        document.getElementById('forge-personality').value = ELENA_V3.data.personality
+        document.getElementById('forge-first-mes').value = ELENA_V3.data.first_mes
+        document.getElementById('forge-tags').value = ELENA_V3.data.tags.join(', ')
+        updateOutputPreview()
+      })
+
+      // Exhibit 3 controls
+      document.getElementById('parse-decorators').addEventListener('click', parseDecoratorContent)
+      document.getElementById('serialize-btn').addEventListener('click', serializeDecoratorContent)
+      document.getElementById('raw-decorators').addEventListener('input', () => {
+        document.getElementById('decorator-state').textContent = 'Out of sync - Click Parse to update'
+      })
+
+      document.querySelectorAll('[data-decorator]').forEach(btn => {
+        btn.addEventListener('click', () => addDecorator(btn.dataset.decorator))
+      })
+
+      // Exhibit 4 controls
+      document.getElementById('replay-repair').addEventListener('click', () => runRepair('bad-crc'))
+      document.getElementById('load-bad-crc').addEventListener('click', () => runRepair('bad-crc'))
+      document.getElementById('load-truncated').addEventListener('click', () => runRepair('truncated'))
+      document.getElementById('load-malformed').addEventListener('click', () => runRepair('malformed'))
+      document.getElementById('load-healthy').addEventListener('click', () => runRepair('healthy'))
+
+      document.getElementById('repair-speed').addEventListener('input', (e) => {
+        repairSpeed = parseInt(e.target.value)
+      })
+
+      // Test runner
+      document.getElementById('run-tests').addEventListener('click', () => testRunner.run())
+
+      // Drop zones
+      const setupDropZone = (id, handler) => {
+        const zone = document.getElementById(id)
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault()
+          zone.classList.add('dragover')
+        })
+        zone.addEventListener('dragleave', () => {
+          zone.classList.remove('dragover')
+        })
+        zone.addEventListener('drop', async (e) => {
+          e.preventDefault()
+          zone.classList.remove('dragover')
+          const file = e.dataTransfer.files[0]
+          if (file) {
+            const bytes = new Uint8Array(await file.arrayBuffer())
+            handler(bytes, file.name)
+          }
+        })
+      }
+
+      setupDropZone('drop-zone-1', async (bytes, filename) => {
+        try {
+          currentChunks = readChunks(bytes)
+          await displayChunks(currentChunks)
+          const textIndex = currentChunks.findIndex(c => c.type === 'tEXt')
+          if (textIndex >= 0) await selectChunk(textIndex)
+          updateState(`Loaded: ${filename} (${currentChunks.length} chunks)`)
+        } catch (e) {
+          updateState(`Error: ${e.message}`)
+        }
+      })
+
+      setupDropZone('drop-zone-4', async (bytes, filename) => {
+        document.getElementById('repair-state').textContent = `Loaded: ${filename} - Click Replay to test`
+      })
+
+      // Initialize exhibits
+      loadSample('v2') // Pre-load V2 sample
+      updateOutputPreview()
+      initDecoratorExhibit()
+      runRepair('bad-crc') // Pre-run repair demo
+    })
+  </script>
+</body>
+</html>
