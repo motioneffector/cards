@@ -1376,8 +1376,8 @@ The Crystal Tower is an ancient spire built by the First Mages. Its walls shimme
       <div class="test-runner-header">
         <h2 class="test-runner-title">Test Suite</h2>
         <div class="test-runner-actions">
-          <button class="btn btn-primary" id="run-tests">Run Tests</button>
-          <button class="btn btn-secondary" id="run-fuzz" style="display: none;">Run Fuzz Tests</button>
+          <button class="btn btn-primary" id="run-tests">Run All Demos + Tests</button>
+          <button class="btn btn-secondary" id="reset-page">Reset Page</button>
         </div>
       </div>
       <div class="test-runner-content">
@@ -2745,6 +2745,148 @@ The Crystal Tower is an ancient spire built by the First Mages. Its walls shimme
     })
 
     // ============================================
+    // FULL SHOWCASE - DEMO ALL EXHIBITS
+    // ============================================
+
+    async function runFullShowcase() {
+      // Set speeds for visible but fast animations
+      const savedSpeed = animationSpeed
+      const savedRepairSpeed = repairSpeed
+      animationSpeed = 92
+      repairSpeed = 85
+
+      const scrollToExhibit = (id) => {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+
+      // === EXHIBIT 1: PNG Anatomy Theater ===
+      scrollToExhibit('exhibit-1')
+      document.getElementById('parse-state').textContent = 'Showcase: Loading V1 sample...'
+      await new Promise(r => setTimeout(r, 300))
+
+      // Load V1
+      await loadSample('v1')
+      await new Promise(r => setTimeout(r, 600))
+
+      // Load V2
+      document.getElementById('parse-state').textContent = 'Showcase: Loading V2 sample...'
+      await loadSample('v2')
+      await new Promise(r => setTimeout(r, 600))
+
+      // Load V3
+      document.getElementById('parse-state').textContent = 'Showcase: Loading V3 sample...'
+      await loadSample('v3')
+      await new Promise(r => setTimeout(r, 600))
+
+      // Click through different chunks
+      if (currentChunks.length > 1) {
+        for (let i = 0; i < Math.min(currentChunks.length, 4); i++) {
+          await selectChunk(i)
+          await new Promise(r => setTimeout(r, 300))
+        }
+      }
+
+      // === EXHIBIT 2: Format Forge ===
+      scrollToExhibit('exhibit-2')
+      await new Promise(r => setTimeout(r, 400))
+
+      document.getElementById('forge-state').textContent = 'Showcase: Editing card fields...'
+
+      // Modify a field
+      const nameInput = document.getElementById('forge-name')
+      nameInput.value = 'Elena the Wanderer'
+      updateOutputPreview()
+      await new Promise(r => setTimeout(r, 400))
+
+      // Toggle V2 chunk off and on
+      document.getElementById('include-v2').checked = false
+      updateOutputPreview()
+      document.getElementById('forge-state').textContent = 'Showcase: V2 chunk disabled'
+      await new Promise(r => setTimeout(r, 400))
+
+      document.getElementById('include-v2').checked = true
+      updateOutputPreview()
+      document.getElementById('forge-state').textContent = 'Showcase: V2 chunk enabled'
+      await new Promise(r => setTimeout(r, 400))
+
+      // Switch formats
+      document.getElementById('output-format').value = 'json'
+      updateOutputPreview()
+      document.getElementById('forge-state').textContent = 'Showcase: JSON format'
+      await new Promise(r => setTimeout(r, 400))
+
+      document.getElementById('output-format').value = 'charx'
+      updateOutputPreview()
+      document.getElementById('forge-state').textContent = 'Showcase: CHARX format'
+      await new Promise(r => setTimeout(r, 400))
+
+      document.getElementById('output-format').value = 'png'
+      updateOutputPreview()
+      document.getElementById('forge-state').textContent = 'Showcase: PNG format (default)'
+      await new Promise(r => setTimeout(r, 300))
+
+      // Reset name
+      nameInput.value = 'Elena'
+      updateOutputPreview()
+
+      // === EXHIBIT 3: Decorator Transformer ===
+      scrollToExhibit('exhibit-3')
+      await new Promise(r => setTimeout(r, 400))
+
+      document.getElementById('decorator-state').textContent = 'Showcase: Parsing decorators...'
+
+      // Parse decorators
+      await parseDecoratorContent()
+      await new Promise(r => setTimeout(r, 500))
+
+      // Add a decorator
+      document.getElementById('decorator-state').textContent = 'Showcase: Adding decorator...'
+      addDecorator('scan_depth')
+      await new Promise(r => setTimeout(r, 400))
+
+      // Serialize back
+      document.getElementById('decorator-state').textContent = 'Showcase: Serializing...'
+      await serializeDecoratorContent()
+      await new Promise(r => setTimeout(r, 400))
+
+      // Load different lorebook entries
+      for (let i = 1; i < Math.min(LOREBOOK_ENTRIES.length, 3); i++) {
+        loadLorebookEntry(i)
+        await new Promise(r => setTimeout(r, 300))
+        await parseDecoratorContent()
+        await new Promise(r => setTimeout(r, 300))
+      }
+
+      // === EXHIBIT 4: Repair Laboratory ===
+      scrollToExhibit('exhibit-4')
+      await new Promise(r => setTimeout(r, 400))
+
+      // Run different repair scenarios
+      document.getElementById('repair-state').textContent = 'Showcase: Testing bad CRC...'
+      await runRepair('bad-crc')
+      await new Promise(r => setTimeout(r, 500))
+
+      document.getElementById('repair-state').textContent = 'Showcase: Testing truncated base64...'
+      await runRepair('truncated')
+      await new Promise(r => setTimeout(r, 500))
+
+      document.getElementById('repair-state').textContent = 'Showcase: Testing healthy card...'
+      await runRepair('healthy')
+      await new Promise(r => setTimeout(r, 500))
+
+      // === SCROLL TO TEST RUNNER AND RUN TESTS ===
+      document.querySelector('.test-runner').scrollIntoView({ behavior: 'smooth', block: 'start' })
+      await new Promise(r => setTimeout(r, 400))
+
+      // Restore speeds
+      animationSpeed = savedSpeed
+      repairSpeed = savedRepairSpeed
+
+      // Now run the actual tests
+      await testRunner.run()
+    }
+
+    // ============================================
     // EVENT LISTENERS
     // ============================================
 
@@ -2809,8 +2951,9 @@ The Crystal Tower is an ancient spire built by the First Mages. Its walls shimme
         repairSpeed = parseInt(e.target.value)
       })
 
-      // Test runner
-      document.getElementById('run-tests').addEventListener('click', () => testRunner.run())
+      // Test runner with full showcase
+      document.getElementById('run-tests').addEventListener('click', () => runFullShowcase())
+      document.getElementById('reset-page').addEventListener('click', () => location.reload())
 
       // Drop zones
       const setupDropZone = (id, handler) => {
