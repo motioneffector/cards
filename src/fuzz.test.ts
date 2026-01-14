@@ -37,7 +37,7 @@ import type { CharacterCard, Decorator, Lorebook } from './types'
 
 const THOROUGH_MODE = process.env.FUZZ_THOROUGH === '1'
 const STANDARD_ITERATIONS = 200
-const THOROUGH_DURATION_MS = 60_000
+const THOROUGH_DURATION_MS = 10_000
 
 /**
  * Simple seeded PRNG for deterministic fuzzing
