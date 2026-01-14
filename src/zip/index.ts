@@ -14,6 +14,47 @@ const CENTRAL_DIR_HEADER_SIG = 0x02014b50
 const END_OF_CENTRAL_DIR_SIG = 0x06054b50
 
 /**
+ * Maximum allowed file size (100MB)
+ */
+const MAX_FILE_SIZE = 100 * 1024 * 1024
+
+/**
+ * Forbidden filename components for path traversal prevention
+ */
+const FORBIDDEN_PATH_COMPONENTS = new Set(['__proto__', 'constructor', 'prototype'])
+
+/**
+ * Validate and sanitize ZIP file path
+ */
+function sanitizeZipPath(fileName: string): string {
+  // Reject null bytes
+  if (fileName.includes('\0')) {
+    throw new Error('Path traversal detected: null byte in filename')
+  }
+
+  // Reject absolute paths
+  if (fileName.startsWith('/') || /^[a-zA-Z]:/.test(fileName)) {
+    throw new Error('Path traversal detected: absolute path')
+  }
+
+  // Check for directory traversal
+  const normalized = fileName.replace(/\\/g, '/')
+  if (normalized.includes('../') || normalized.includes('/..')) {
+    throw new Error('Path traversal detected: parent directory reference')
+  }
+
+  // Check for forbidden path components
+  const parts = normalized.split('/')
+  for (const part of parts) {
+    if (FORBIDDEN_PATH_COMPONENTS.has(part)) {
+      throw new Error(`Path traversal detected: forbidden component "${part}"`)
+    }
+  }
+
+  return normalized
+}
+
+/**
  * Extract files from ZIP archive
  *
  * @param bytes - ZIP file bytes
@@ -49,20 +90,33 @@ export function extractZip(bytes: Uint8Array): Map<string, Uint8Array> {
     const commentLength = readUint16LE(bytes, offset + 32)
     const localHeaderOffset = readUint32LE(bytes, offset + 42)
 
+    // Validate file size bounds
+    if (uncompressedSize > MAX_FILE_SIZE) {
+      throw new Error(`File size exceeds maximum allowed size of ${MAX_FILE_SIZE} bytes`)
+    }
+
     // Read filename
-    const fileName = decodeFileName(bytes.slice(offset + 46, offset + 46 + fileNameLength))
+    const rawFileName = decodeFileName(bytes.slice(offset + 46, offset + 46 + fileNameLength))
 
     // Move to next entry
     offset += 46 + fileNameLength + extraFieldLength + commentLength
 
     // Skip directories
-    if (fileName.endsWith('/')) {
+    if (rawFileName.endsWith('/')) {
       continue
     }
+
+    // Sanitize filename to prevent path traversal
+    const fileName = sanitizeZipPath(rawFileName)
 
     // Read from local file header
     const localExtraLength = readUint16LE(bytes, localHeaderOffset + 28)
     const dataOffset = localHeaderOffset + 30 + fileNameLength + localExtraLength
+
+    // Validate data offset bounds
+    if (dataOffset + compressedSize > bytes.length) {
+      throw new Error('Invalid ZIP file: data extends beyond file bounds')
+    }
 
     // Extract data
     const compressedData = bytes.slice(dataOffset, dataOffset + compressedSize)
@@ -74,6 +128,13 @@ export function extractZip(bytes: Uint8Array): Map<string, Uint8Array> {
       fileData = inflateRaw(compressedData, uncompressedSize)
     } else {
       throw new Error(`Unsupported compression method: ${String(compressionMethod)}`)
+    }
+
+    // Verify extracted size matches expected size
+    if (fileData.length !== uncompressedSize) {
+      throw new Error(
+        `Decompression size mismatch: expected ${uncompressedSize}, got ${fileData.length}`
+      )
     }
 
     files.set(fileName, fileData)
