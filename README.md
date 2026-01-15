@@ -18,7 +18,7 @@ A TypeScript library for parsing and writing Character Card V3 and Lorebook data
 - **Validation** - Permissive and strict validation modes
 - **Zero Dependencies** - No external libraries, no supply chain risk
 
-[Read the full manual →](PLAN.md)
+[Read the full manual →](https://motioneffector.github.io/cards/manual/)
 
 ## Quick Start
 
