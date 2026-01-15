@@ -1102,3 +1102,49 @@ textarea.form-input {
   color: var(--text-muted);
   min-width: 60px;
 }
+
+/* ============================================
+   TEST CONTROL BAR
+   ============================================ */
+
+.test-control-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.test-progress {
+  flex: 1;  /* Progress bar fills available space */
+}
+
+.test-runner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;  /* Buttons maintain their size */
+}
+
+/* ============================================
+   INTEGRITY TEST STYLING
+   ============================================ */
+
+/* Integrity test styling */
+.test-item[data-category="integrity"] .test-name {
+  color: var(--accent-purple);
+  font-weight: 500;
+}
+
+.test-name.integrity-test {
+  color: var(--accent-purple);
+  font-weight: 500;
+}
+
+/* Demo phase styling */
+.test-item.demo-phase .test-name {
+  color: var(--accent-cyan);
+  font-weight: 500;
+}
+
+.test-item.demo-step .test-icon {
+  color: var(--accent-cyan);
+}

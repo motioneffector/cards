@@ -391,7 +391,8 @@ export function buildAndDownload() {
 // ============================================
 
 export function initDecoratorExhibit() {
-  parseDecoratorContent()
+  // DO NOT call parseDecoratorContent() here - no auto-play!
+  // Only populate the lorebook entry list
 
   const entriesContainer = document.getElementById('lorebook-entries')
   entriesContainer.innerHTML = '<div class="text-secondary mb-sm">Lorebook Entries (click to load)</div>'
