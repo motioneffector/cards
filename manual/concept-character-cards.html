@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Character Cards - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Character Cards</h1>
+<p>A character card is a structured definition of an AI persona. It contains everything an application needs to roleplay as a specific character: their name, personality, background scenario, opening message, and optional extras like knowledge databases (lorebooks) and visual assets.</p>
+<h2>How It Works</h2>
+<p>Think of a character card as a portable character profile. When you share a card, you&#39;re sharing all the prompts and context needed to make an AI behave like that character. The card format is standardized, so cards created in one application work in others.</p>
+<p>The library normalizes all cards to V3 format internally. When you call <code>readCard()</code>, you always get back a V3 structure - even if the source file was a V1 or V2 card. This means you write code for one format and it handles all versions automatically.</p>
+<pre><code>V1 Card (legacy) ─┐
+V2 Card (common) ─┼─→ readCard() ─→ V3 CharacterCard
+V3 Card (latest) ─┘
+</code></pre>
+<h2>Basic Usage</h2>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+
+const card = readCard(fileBytes)
+
+// Core character fields
+console.log(card.data.name)           // Character&#39;s name
+console.log(card.data.description)    // Who they are
+console.log(card.data.personality)    // How they behave
+console.log(card.data.scenario)       // The situation/context
+console.log(card.data.first_mes)      // Opening message
+console.log(card.data.mes_example)    // Example dialogue format
+
+// Metadata
+console.log(card.data.creator)        // Who made the card
+console.log(card.data.tags)           // Categorization tags
+console.log(card.data.character_version)  // Version string
+</code></pre>
+<p>The <code>card.spec</code> is always <code>&#39;chara_card_v3&#39;</code> and <code>card.spec_version</code> is <code>&#39;3.0&#39;</code>.</p>
+<h2>Key Points</h2>
+<ul>
+<li><p><strong>Version normalization</strong> - V1/V2 cards are automatically upgraded to V3 structure. Missing fields get sensible defaults (empty strings, empty arrays).</p>
+</li>
+<li><p><strong>The <code>extensions</code> field</strong> - Apps can store custom data in <code>card.data.extensions</code>. The library preserves these even if it doesn&#39;t understand them. Never delete extensions you didn&#39;t create.</p>
+</li>
+<li><p><strong>Optional vs required fields</strong> - Core V1 fields (name, description, etc.) are always present. V3 additions like <code>nickname</code>, <code>assets</code>, and <code>character_book</code> are optional.</p>
+</li>
+</ul>
+<h2>Examples</h2>
+<h3>Creating a New Card</h3>
+<pre><code class="language-typescript">import type { CharacterCard } from &#39;@motioneffector/cards&#39;
+
+const card: CharacterCard = {
+  spec: &#39;chara_card_v3&#39;,
+  spec_version: &#39;3.0&#39;,
+  data: {
+    name: &#39;Elena&#39;,
+    description: &#39;A traveling merchant who deals in rare magical artifacts.&#39;,
+    personality: &#39;Shrewd but fair. Values honesty in business dealings.&#39;,
+    scenario: &#39;The user encounters Elena at a crossroads market.&#39;,
+    first_mes: &#39;*Elena looks up from arranging her wares* Ah, a customer! Looking for something specific, or just browsing?&#39;,
+    mes_example: &#39;&lt;START&gt;\n{{user}}: What do you have for sale?\n{{char}}: *gestures at the display* Mostly protective charms today.&#39;,
+    creator_notes: &#39;Works best with fantasy settings.&#39;,
+    system_prompt: &#39;&#39;,
+    post_history_instructions: &#39;&#39;,
+    alternate_greetings: [],
+    tags: [&#39;fantasy&#39;, &#39;merchant&#39;, &#39;original&#39;],
+    creator: &#39;your-username&#39;,
+    character_version: &#39;1.0.0&#39;,
+    extensions: {},
+    group_only_greetings: [],
+  },
+}
+</code></pre>
+<h3>Checking for Optional Data</h3>
+<pre><code class="language-typescript">const card = readCard(fileBytes)
+
+// Character book (lorebook) is optional
+if (card.data.character_book) {
+  console.log(`Lorebook has ${card.data.character_book.entries.length} entries`)
+}
+
+// Assets are optional
+if (card.data.assets &amp;&amp; card.data.assets.length &gt; 0) {
+  console.log(&#39;Card includes assets:&#39;)
+  for (const asset of card.data.assets) {
+    console.log(`  ${asset.type}: ${asset.name}`)
+  }
+}
+
+// Nickname is optional
+const displayName = card.data.nickname ?? card.data.name
+</code></pre>
+<h2>Related</h2>
+<ul>
+<li><strong><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></strong> - The knowledge database system embedded in cards</li>
+<li><strong><a href="concept-file-formats.html">File Formats</a></strong> - How cards are stored in PNG, JSON, and CHARX files</li>
+<li><strong><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></strong> - Full type definitions for CharacterCard</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

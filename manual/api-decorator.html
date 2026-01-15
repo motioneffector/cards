@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decorator API - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Decorator API</h1>
+<p>Functions for parsing and serializing V3 lorebook decorators.</p>
+<hr>
+<h2><code>parseDecorators()</code></h2>
+<p>Parse <code>@@decorator</code> lines from lorebook entry content.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function parseDecorators(content: string): ParsedDecorators
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>content</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Raw entry content with potential decorator lines</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>ParsedDecorators</code> — Parsed decorators and cleaned content.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { parseDecorators } from &#39;@motioneffector/cards&#39;
+
+const raw = `@@depth 4
+@@role system
+@@activate_only_after 3
+This is the actual entry content.`
+
+const { decorators, content } = parseDecorators(raw)
+
+console.log(decorators)
+// [
+//   { type: &#39;depth&#39;, value: 4 },
+//   { type: &#39;role&#39;, value: &#39;system&#39; },
+//   { type: &#39;activate_only_after&#39;, value: 3 }
+// ]
+
+console.log(content)
+// &quot;This is the actual entry content.&quot;
+</code></pre>
+<hr>
+<h2><code>serializeDecorators()</code></h2>
+<p>Convert decorator array back to <code>@@syntax</code> and prepend to content.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function serializeDecorators(
+  decorators: Decorator[],
+  content: string
+): string
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>decorators</code></td>
+<td><code>Decorator[]</code></td>
+<td>Yes</td>
+<td>Decorators to serialize</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Entry content to append after decorators</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>string</code> — Content string with decorator lines prepended.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { serializeDecorators } from &#39;@motioneffector/cards&#39;
+
+const decorators = [
+  { type: &#39;depth&#39;, value: 4 },
+  { type: &#39;role&#39;, value: &#39;system&#39; }
+]
+const content = &#39;The actual entry content.&#39;
+
+const result = serializeDecorators(decorators, content)
+// &quot;@@depth 4\n@@role system\nThe actual entry content.&quot;
+</code></pre>
+<hr>
+<h2>Types</h2>
+<h3><code>ParsedDecorators</code></h3>
+<pre><code class="language-typescript">interface ParsedDecorators {
+  decorators: Decorator[]
+  content: string
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>decorators</code></td>
+<td><code>Decorator[]</code></td>
+<td>Parsed decorator objects</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td><code>string</code></td>
+<td>Content with decorator lines removed</td>
+</tr>
+</tbody></table>
+<h3><code>Decorator</code></h3>
+<pre><code class="language-typescript">type Decorator =
+  // Activation
+  | { type: &#39;activate&#39; }
+  | { type: &#39;dont_activate&#39; }
+  | { type: &#39;activate_only_after&#39;; value: number }
+  | { type: &#39;activate_only_every&#39;; value: number }
+  | { type: &#39;keep_activate_after_match&#39; }
+  | { type: &#39;dont_activate_after_match&#39; }
+
+  // Position
+  | { type: &#39;depth&#39;; value: number }
+  | { type: &#39;instruct_depth&#39;; value: number }
+  | { type: &#39;reverse_depth&#39;; value: number }
+  | { type: &#39;position&#39;; value: string }
+  | { type: &#39;role&#39;; value: &#39;assistant&#39; | &#39;system&#39; | &#39;user&#39; }
+
+  // Scanning
+  | { type: &#39;scan_depth&#39;; value: number }
+  | { type: &#39;instruct_scan_depth&#39;; value: number }
+  | { type: &#39;is_greeting&#39;; value: number }
+
+  // Matching
+  | { type: &#39;additional_keys&#39;; value: string[] }
+  | { type: &#39;exclude_keys&#39;; value: string[] }
+  | { type: &#39;is_user_icon&#39;; value: string }
+
+  // UI
+  | { type: &#39;ignore_on_max_context&#39; }
+  | { type: &#39;disable_ui_prompt&#39;; value: string }
+
+  // Unknown (forward compatibility)
+  | { type: &#39;unknown&#39;; name: string; value?: string }
+</code></pre>
+<h3>Decorator Reference</h3>
+<table>
+<thead>
+<tr>
+<th>Decorator</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@@activate</code></td>
+<td>Activation</td>
+<td>Force activation (ignore keys)</td>
+</tr>
+<tr>
+<td><code>@@dont_activate</code></td>
+<td>Activation</td>
+<td>Force deactivation</td>
+</tr>
+<tr>
+<td><code>@@activate_only_after N</code></td>
+<td>Activation</td>
+<td>Only after N messages</td>
+</tr>
+<tr>
+<td><code>@@activate_only_every N</code></td>
+<td>Activation</td>
+<td>Every Nth activation</td>
+</tr>
+<tr>
+<td><code>@@keep_activate_after_match</code></td>
+<td>Activation</td>
+<td>Stay active once triggered</td>
+</tr>
+<tr>
+<td><code>@@dont_activate_after_match</code></td>
+<td>Activation</td>
+<td>Deactivate after first trigger</td>
+</tr>
+<tr>
+<td><code>@@depth N</code></td>
+<td>Position</td>
+<td>Insert at depth N (from end)</td>
+</tr>
+<tr>
+<td><code>@@instruct_depth N</code></td>
+<td>Position</td>
+<td>Depth in instruct mode</td>
+</tr>
+<tr>
+<td><code>@@reverse_depth N</code></td>
+<td>Position</td>
+<td>Depth from start</td>
+</tr>
+<tr>
+<td><code>@@position VALUE</code></td>
+<td>Position</td>
+<td>Named position</td>
+</tr>
+<tr>
+<td><code>@@role VALUE</code></td>
+<td>Position</td>
+<td>Message role (system/user/assistant)</td>
+</tr>
+<tr>
+<td><code>@@scan_depth N</code></td>
+<td>Scanning</td>
+<td>How far back to scan for keys</td>
+</tr>
+<tr>
+<td><code>@@instruct_scan_depth N</code></td>
+<td>Scanning</td>
+<td>Scan depth in instruct mode</td>
+</tr>
+<tr>
+<td><code>@@is_greeting N</code></td>
+<td>Scanning</td>
+<td>Greeting index</td>
+</tr>
+<tr>
+<td><code>@@additional_keys K1,K2</code></td>
+<td>Matching</td>
+<td>Extra trigger keys</td>
+</tr>
+<tr>
+<td><code>@@exclude_keys K1,K2</code></td>
+<td>Matching</td>
+<td>Keys that prevent activation</td>
+</tr>
+<tr>
+<td><code>@@is_user_icon VALUE</code></td>
+<td>Matching</td>
+<td>User icon trigger</td>
+</tr>
+<tr>
+<td><code>@@ignore_on_max_context</code></td>
+<td>UI</td>
+<td>Skip when context is full</td>
+</tr>
+<tr>
+<td><code>@@disable_ui_prompt VALUE</code></td>
+<td>UI</td>
+<td>Disable UI prompt</td>
+</tr>
+</tbody></table>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation &amp; Repair - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Validation &amp; Repair</h1>
+<p>Validation checks if a card has the correct structure and field types. Repair attempts to recover data from corrupted or malformed cards. Use validation before saving to catch problems early; use repair when loading fails and you want to salvage what you can.</p>
+<h2>How It Works</h2>
+<h3>Validation</h3>
+<p>Validation examines a card object and reports whether it conforms to the V3 spec:</p>
+<pre><code>Card object ─→ validateCard() ─→ { valid: true }
+                              or { valid: false, errors: [...] }
+</code></pre>
+<p>Two modes are available:</p>
+<ul>
+<li><strong>Permissive (default)</strong> - Checks required fields exist and have correct types. Allows unknown fields.</li>
+<li><strong>Strict</strong> - All permissive checks plus: warns on unknown extensions, validates asset URIs, checks for empty required strings.</li>
+</ul>
+<h3>Repair</h3>
+<p>Repair takes potentially corrupted bytes and does everything possible to extract card data:</p>
+<pre><code>Corrupted PNG bytes ─→ repairCard() ─→ {
+                                         card: CharacterCard,  // Best-effort recovery
+                                         image: Uint8Array,    // Clean image (no metadata)
+                                         warnings: string[],   // What went wrong
+                                         recovered: string[]   // Fields we saved
+                                       }
+</code></pre>
+<p>Repair strategies include:</p>
+<ul>
+<li>Ignoring CRC errors in PNG chunks</li>
+<li>Recovering truncated base64 data</li>
+<li>Parsing malformed UTF-8</li>
+<li>Extracting partial JSON fields</li>
+<li>Merging data from multiple chunks</li>
+</ul>
+<h2>Basic Usage</h2>
+<pre><code class="language-typescript">import { validateCard, validateLorebook, repairCard } from &#39;@motioneffector/cards&#39;
+
+// Validate a card
+const result = validateCard(card)
+if (result.valid) {
+  console.log(&#39;Card is valid&#39;)
+} else {
+  console.log(&#39;Validation errors:&#39;, result.errors)
+}
+
+// Strict validation
+const strictResult = validateCard(card, { strict: true })
+
+// Validate a lorebook
+const lbResult = validateLorebook(lorebook)
+
+// Repair a corrupted file
+const repairResult = repairCard(corruptedBytes)
+console.log(&#39;Warnings:&#39;, repairResult.warnings)
+console.log(&#39;Recovered fields:&#39;, repairResult.recovered)
+
+// Use the recovered card
+const card = repairResult.card
+</code></pre>
+<h2>Key Points</h2>
+<ul>
+<li><p><strong>Validation doesn&#39;t modify</strong> - It only reports problems; it doesn&#39;t fix them. Use it to check cards before saving or after programmatic modifications.</p>
+</li>
+<li><p><strong>Repair always returns something</strong> - Even if recovery fails completely, you get an empty card structure. Check <code>recovered</code> to see what was actually salvaged.</p>
+</li>
+<li><p><strong>Repair strips metadata</strong> - The <code>image</code> in repair results is the original PNG with all card chunks removed. Use this to re-embed a clean card.</p>
+</li>
+<li><p><strong>Strict mode is optional</strong> - Default validation is intentionally permissive. Strict mode is for when you want to enforce best practices or catch potential issues.</p>
+</li>
+</ul>
+<h2>Examples</h2>
+<h3>Validating Before Save</h3>
+<pre><code class="language-typescript">import { validateCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+function saveCard(card: CharacterCard, imageBytes: Uint8Array): Uint8Array {
+  const result = validateCard(card)
+
+  if (!result.valid) {
+    throw new Error(`Invalid card: ${result.errors?.join(&#39;, &#39;)}`)
+  }
+
+  return writeCardToPng(card, imageBytes)
+}
+</code></pre>
+<h3>Handling Validation Errors</h3>
+<pre><code class="language-typescript">const result = validateCard(card)
+
+if (!result.valid) {
+  for (const error of result.errors ?? []) {
+    if (error.includes(&#39;data.name&#39;)) {
+      console.error(&#39;Name field is invalid&#39;)
+    } else if (error.includes(&#39;data.description&#39;)) {
+      console.error(&#39;Description field is invalid&#39;)
+    } else {
+      console.error(&#39;Other error:&#39;, error)
+    }
+  }
+}
+</code></pre>
+<h3>Recovering a Corrupted Card</h3>
+<pre><code class="language-typescript">import { repairCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+function recoverCard(corruptedBytes: Uint8Array): Uint8Array | null {
+  const result = repairCard(corruptedBytes)
+
+  // Log what happened
+  if (result.warnings.length &gt; 0) {
+    console.warn(&#39;Repair warnings:&#39;)
+    for (const warning of result.warnings) {
+      console.warn(`  - ${warning}`)
+    }
+  }
+
+  // Check if we got anything useful
+  if (result.recovered.length === 0) {
+    console.error(&#39;No data could be recovered&#39;)
+    return null
+  }
+
+  console.log(&#39;Recovered fields:&#39;, result.recovered.join(&#39;, &#39;))
+
+  // Re-export as clean card
+  return writeCardToPng(result.card, result.image)
+}
+</code></pre>
+<h3>Strict Validation for Publishing</h3>
+<pre><code class="language-typescript">import { validateCard } from &#39;@motioneffector/cards&#39;
+
+function validateForPublishing(card: CharacterCard): string[] {
+  const result = validateCard(card, { strict: true })
+
+  const issues: string[] = []
+
+  if (!result.valid) {
+    issues.push(...(result.errors ?? []))
+  }
+
+  // Additional publishing checks
+  if (card.data.name.trim() === &#39;&#39;) {
+    issues.push(&#39;Name cannot be empty&#39;)
+  }
+  if (card.data.description.length &lt; 50) {
+    issues.push(&#39;Description should be at least 50 characters&#39;)
+  }
+  if (card.data.tags.length === 0) {
+    issues.push(&#39;At least one tag is recommended&#39;)
+  }
+
+  return issues
+}
+</code></pre>
+<h2>Related</h2>
+<ul>
+<li><strong><a href="guide-validation-and-repair.html">Validation &amp; Repair Guide</a></strong> - Step-by-step walkthrough</li>
+<li><strong><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></strong> - Function reference</li>
+<li><strong><a href="api-error-classes.html">Error Classes</a></strong> - ValidationError details</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

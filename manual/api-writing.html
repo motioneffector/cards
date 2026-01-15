@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing API - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Writing API</h1>
+<p>Functions for saving character cards and lorebooks to various formats.</p>
+<hr>
+<h2><code>writeCardToPng()</code></h2>
+<p>Embed a character card into a PNG image.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function writeCardToPng(
+  card: CharacterCard,
+  imageBytes: Uint8Array,
+  options?: WritePngOptions
+): Uint8Array
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>card</code></td>
+<td><code>CharacterCard</code></td>
+<td>Yes</td>
+<td>The card to embed</td>
+</tr>
+<tr>
+<td><code>imageBytes</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>Existing PNG image bytes</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>WritePngOptions</code></td>
+<td>No</td>
+<td>Writing options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>Uint8Array</code> — PNG bytes with embedded card data.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+const pngWithCard = writeCardToPng(card, baseImageBytes)
+
+// With options
+const pngV3Only = writeCardToPng(card, baseImageBytes, {
+  includeV2Chunk: false,
+  serializeDecorators: true
+})
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>Error</code> — When imageBytes is not a valid PNG</li>
+</ul>
+<hr>
+<h2><code>writeCardToJson()</code></h2>
+<p>Serialize a character card to JSON string.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function writeCardToJson(card: CharacterCard): string
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>card</code></td>
+<td><code>CharacterCard</code></td>
+<td>Yes</td>
+<td>The card to serialize</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>string</code> — Pretty-printed JSON string.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { writeCardToJson } from &#39;@motioneffector/cards&#39;
+
+const json = writeCardToJson(card)
+// Returns formatted JSON with 2-space indentation
+</code></pre>
+<hr>
+<h2><code>writeCardToCharx()</code></h2>
+<p>Create a CHARX (ZIP container) with the card and optional assets.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function writeCardToCharx(
+  card: CharacterCard,
+  options?: WriteCharxOptions
+): Uint8Array
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>card</code></td>
+<td><code>CharacterCard</code></td>
+<td>Yes</td>
+<td>The card to bundle</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>WriteCharxOptions</code></td>
+<td>No</td>
+<td>Assets to include</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>Uint8Array</code> — ZIP file bytes.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { writeCardToCharx } from &#39;@motioneffector/cards&#39;
+
+// Without assets
+const charx = writeCardToCharx(card)
+
+// With assets
+const charx = writeCardToCharx(card, {
+  assets: [
+    { type: &#39;icon&#39;, name: &#39;main&#39;, data: iconBytes, ext: &#39;png&#39; },
+    { type: &#39;emotion&#39;, name: &#39;happy&#39;, data: happyBytes, ext: &#39;png&#39; }
+  ]
+})
+</code></pre>
+<hr>
+<h2><code>writeLorebookToPng()</code></h2>
+<p>Embed a standalone lorebook into a PNG image.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function writeLorebookToPng(
+  lorebook: Lorebook,
+  imageBytes: Uint8Array
+): Uint8Array
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lorebook</code></td>
+<td><code>Lorebook</code></td>
+<td>Yes</td>
+<td>The lorebook to embed</td>
+</tr>
+<tr>
+<td><code>imageBytes</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>Existing PNG image bytes</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>Uint8Array</code> — PNG bytes with embedded lorebook data (uses <code>naidata</code> chunk).</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { writeLorebookToPng } from &#39;@motioneffector/cards&#39;
+
+const lorebookPng = writeLorebookToPng(lorebook, baseImageBytes)
+</code></pre>
+<hr>
+<h2><code>writeLorebookToJson()</code></h2>
+<p>Serialize a standalone lorebook to JSON string.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function writeLorebookToJson(lorebook: Lorebook): string
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lorebook</code></td>
+<td><code>Lorebook</code></td>
+<td>Yes</td>
+<td>The lorebook to serialize</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>string</code> — Pretty-printed JSON string with <code>lorebook_v3</code> wrapper.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { writeLorebookToJson } from &#39;@motioneffector/cards&#39;
+
+const json = writeLorebookToJson(lorebook)
+// Returns: {&quot;spec&quot;:&quot;lorebook_v3&quot;,&quot;data&quot;:{...}}
+</code></pre>
+<hr>
+<h2>Types</h2>
+<h3><code>WritePngOptions</code></h3>
+<pre><code class="language-typescript">interface WritePngOptions {
+  includeV2Chunk?: boolean
+  serializeDecorators?: boolean
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>includeV2Chunk</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Also write <code>chara</code> chunk for V2 app compatibility</td>
+</tr>
+<tr>
+<td><code>serializeDecorators</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Convert decorator arrays back to <code>@@</code> syntax in content</td>
+</tr>
+</tbody></table>
+<h3><code>WriteCharxOptions</code></h3>
+<pre><code class="language-typescript">interface WriteCharxOptions {
+  assets?: AssetData[]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>assets</code></td>
+<td><code>AssetData[]</code></td>
+<td><code>undefined</code></td>
+<td>Assets to bundle in the CHARX</td>
+</tr>
+</tbody></table>
+<h3><code>AssetData</code></h3>
+<pre><code class="language-typescript">interface AssetData {
+  type: string
+  name: string
+  data: Uint8Array
+  ext: string
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>type</code></td>
+<td><code>string</code></td>
+<td>Asset type: <code>&#39;icon&#39;</code>, <code>&#39;background&#39;</code>, <code>&#39;emotion&#39;</code>, etc.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td><code>string</code></td>
+<td>Asset identifier: <code>&#39;main&#39;</code>, <code>&#39;happy&#39;</code>, <code>&#39;sad&#39;</code>, etc.</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td><code>Uint8Array</code></td>
+<td>Raw file bytes</td>
+</tr>
+<tr>
+<td><code>ext</code></td>
+<td><code>string</code></td>
+<td>File extension: <code>&#39;png&#39;</code>, <code>&#39;jpg&#39;</code>, <code>&#39;webp&#39;</code>, etc.</td>
+</tr>
+</tbody></table>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

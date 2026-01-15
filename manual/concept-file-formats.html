@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Formats - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>File Formats</h1>
+<p>Character cards can be stored in three container formats: PNG images with embedded metadata, raw JSON files, and CHARX ZIP bundles. The library auto-detects which format you&#39;re dealing with, so you can use <code>readCard()</code> on any of them.</p>
+<h2>How It Works</h2>
+<h3>PNG Format</h3>
+<p>The most common format. Card data is embedded in the image&#39;s metadata as a tEXt chunk. The image displays normally in any image viewer, but applications that understand character cards can extract the embedded data.</p>
+<pre><code>PNG File
+├── Image data (what you see)
+└── tEXt chunks (invisible metadata)
+    ├── ccv3: [base64-encoded V3 card JSON]
+    └── chara: [base64-encoded V2 card JSON] (compatibility)
+</code></pre>
+<p>V3 cards use the <code>ccv3</code> keyword. Legacy V2/V1 cards use <code>chara</code>. When writing, the library includes both chunks by default for maximum compatibility.</p>
+<h3>JSON Format</h3>
+<p>Raw JSON files containing the card structure directly. Useful for editing cards in text editors or storing them in databases.</p>
+<pre><code class="language-json">{
+  &quot;spec&quot;: &quot;chara_card_v3&quot;,
+  &quot;spec_version&quot;: &quot;3.0&quot;,
+  &quot;data&quot;: {
+    &quot;name&quot;: &quot;Character Name&quot;,
+    &quot;description&quot;: &quot;...&quot;,
+    ...
+  }
+}
+</code></pre>
+<h3>CHARX Format</h3>
+<p>A ZIP container that bundles the card JSON with asset files (icons, backgrounds, emotion sprites). The file extension is <code>.charx</code> but it&#39;s a standard ZIP file.</p>
+<pre><code>character.charx (ZIP)
+├── card.json           # The character card
+└── assets/             # Embedded assets
+    ├── icon/
+    │   └── main.png
+    └── emotion/
+        ├── happy.png
+        └── sad.png
+</code></pre>
+<p>Asset URIs in the card reference embedded files:</p>
+<pre><code class="language-json">{
+  &quot;assets&quot;: [
+    { &quot;type&quot;: &quot;icon&quot;, &quot;name&quot;: &quot;main&quot;, &quot;uri&quot;: &quot;embeded://assets/icon/main.png&quot;, &quot;ext&quot;: &quot;png&quot; }
+  ]
+}
+</code></pre>
+<h2>Basic Usage</h2>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+
+// Auto-detect format from bytes or string
+const card = readCard(pngBytes)    // PNG file
+const card = readCard(jsonString)  // JSON string
+const card = readCard(charxBytes)  // CHARX ZIP
+
+// Format-specific functions if you know the type
+import { readCardFromPng, readCardFromJson, readCardFromCharx } from &#39;@motioneffector/cards&#39;
+
+const card = readCardFromPng(pngBytes)
+const card = readCardFromJson(jsonString)
+const card = readCardFromCharx(charxBytes)
+</code></pre>
+<p>Writing works the same way:</p>
+<pre><code class="language-typescript">import { writeCardToPng, writeCardToJson, writeCardToCharx } from &#39;@motioneffector/cards&#39;
+
+// Write to PNG (requires an existing image)
+const pngBytes = writeCardToPng(card, originalImageBytes)
+
+// Write to JSON
+const jsonString = writeCardToJson(card)
+
+// Write to CHARX with assets
+const charxBytes = writeCardToCharx(card, {
+  assets: [
+    { type: &#39;icon&#39;, name: &#39;main&#39;, data: iconPngBytes, ext: &#39;png&#39; }
+  ]
+})
+</code></pre>
+<h2>Key Points</h2>
+<ul>
+<li><p><strong>Auto-detection</strong> - <code>readCard()</code> examines the first few bytes to determine format. PNG starts with a specific signature, ZIP (CHARX) starts with <code>PK</code>, everything else is assumed to be JSON.</p>
+</li>
+<li><p><strong>V2 compatibility chunk</strong> - When writing to PNG, <code>writeCardToPng()</code> includes a <code>chara</code> chunk with V2-compatible data by default. This ensures older applications can still read your cards. Disable with <code>{ includeV2Chunk: false }</code>.</p>
+</li>
+<li><p><strong>Lorebook formats</strong> - Standalone lorebooks can also be PNG or JSON. PNG lorebooks use the <code>naidata</code> keyword (NovelAI format) or <code>chara</code> keyword.</p>
+</li>
+<li><p><strong>Base64 encoding</strong> - In PNG files, card data is base64-encoded. The library handles encoding/decoding automatically.</p>
+</li>
+</ul>
+<h2>Examples</h2>
+<h3>Checking Format Before Reading</h3>
+<pre><code class="language-typescript">function detectFormat(bytes: Uint8Array): &#39;png&#39; | &#39;charx&#39; | &#39;unknown&#39; {
+  // PNG signature: 0x89 0x50 0x4E 0x47
+  if (bytes[0] === 0x89 &amp;&amp; bytes[1] === 0x50) {
+    return &#39;png&#39;
+  }
+  // ZIP signature: 0x50 0x4B (PK)
+  if (bytes[0] === 0x50 &amp;&amp; bytes[1] === 0x4B) {
+    return &#39;charx&#39;
+  }
+  return &#39;unknown&#39;
+}
+
+// But you usually don&#39;t need this - just call readCard()
+const card = readCard(bytes) // Works for all formats
+</code></pre>
+<h3>Converting Between Formats</h3>
+<pre><code class="language-typescript">import { readCard, writeCardToPng, writeCardToJson, writeCardToCharx } from &#39;@motioneffector/cards&#39;
+
+// Read from any format
+const card = readCard(inputBytes)
+
+// Write to all formats
+const asPng = writeCardToPng(card, blankImageBytes)
+const asJson = writeCardToJson(card)
+const asCharx = writeCardToCharx(card)
+</code></pre>
+<h3>Reading Standalone Lorebooks</h3>
+<pre><code class="language-typescript">import { readLorebook } from &#39;@motioneffector/cards&#39;
+
+// From PNG (NovelAI-style)
+const lorebook = readLorebook(lorebookPngBytes)
+
+// From JSON
+const lorebook = readLorebook(lorebookJsonString)
+</code></pre>
+<h2>Related</h2>
+<ul>
+<li><strong><a href="guide-reading-cards.html">Reading Cards</a></strong> - Detailed guide on loading cards</li>
+<li><strong><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></strong> - Detailed guide on saving cards</li>
+<li><strong><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></strong> - Working with CHARX containers</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

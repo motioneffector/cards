@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Working with Decorators - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Working with Decorators</h1>
+<p>Parse, modify, and serialize V3 lorebook decorators. Decorators are metadata prefixed with <code>@@</code> that control how and when lorebook entries activate.</p>
+<h2>Prerequisites</h2>
+<p>Before starting, you should:</p>
+<ul>
+<li><a href="concept-lorebooks-and-decorators.html">Understand lorebooks</a></li>
+<li>Know how to <a href="guide-reading-cards.html">read</a> and <a href="guide-writing-and-exporting.html">write</a> cards</li>
+</ul>
+<h2>Overview</h2>
+<p>We&#39;ll cover:</p>
+<ol>
+<li>Accessing parsed decorators</li>
+<li>Adding and removing decorators</li>
+<li>Manual parsing and serialization</li>
+<li>Common decorator patterns</li>
+</ol>
+<h2>Step 1: Access Parsed Decorators</h2>
+<p>When you read a card, decorators are automatically parsed from entry content:</p>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+
+const card = readCard(fileBytes)
+const entries = card.data.character_book?.entries ?? []
+
+for (const entry of entries) {
+  console.log(`Entry: ${entry.name ?? entry.keys[0]}`)
+
+  // Decorators are parsed into an array
+  if (entry.decorators &amp;&amp; entry.decorators.length &gt; 0) {
+    for (const decorator of entry.decorators) {
+      console.log(`  @@ ${decorator.type}`, &#39;value&#39; in decorator ? decorator.value : &#39;&#39;)
+    }
+  }
+
+  // Content is clean (no @@ lines)
+  console.log(`  Content: ${entry.content.slice(0, 50)}...`)
+}
+</code></pre>
+<h2>Step 2: Add and Remove Decorators</h2>
+<p>Modify the <code>decorators</code> array directly:</p>
+<pre><code class="language-typescript">import type { Decorator } from &#39;@motioneffector/cards&#39;
+
+const entry = card.data.character_book!.entries[0]
+
+// Initialize if needed
+entry.decorators = entry.decorators ?? []
+
+// Add decorators
+entry.decorators.push({ type: &#39;depth&#39;, value: 4 })
+entry.decorators.push({ type: &#39;role&#39;, value: &#39;system&#39; })
+
+// Remove a specific decorator
+entry.decorators = entry.decorators.filter(d =&gt; d.type !== &#39;depth&#39;)
+
+// Clear all decorators
+entry.decorators = []
+</code></pre>
+<p>When you write the card, decorators are serialized back to <code>@@</code> syntax automatically.</p>
+<h2>Step 3: Manual Parsing and Serialization</h2>
+<p>For working with raw decorator strings outside of cards:</p>
+<pre><code class="language-typescript">import { parseDecorators, serializeDecorators } from &#39;@motioneffector/cards&#39;
+
+// Parse decorator lines from content
+const rawContent = `@@depth 4
+@@role system
+@@activate_only_after 3
+This is the actual entry content.
+It can have multiple lines.`
+
+const { decorators, content } = parseDecorators(rawContent)
+
+console.log(decorators)
+// [
+//   { type: &#39;depth&#39;, value: 4 },
+//   { type: &#39;role&#39;, value: &#39;system&#39; },
+//   { type: &#39;activate_only_after&#39;, value: 3 }
+// ]
+
+console.log(content)
+// &quot;This is the actual entry content.\nIt can have multiple lines.&quot;
+
+// Serialize back to string
+const serialized = serializeDecorators(decorators, content)
+// &quot;@@depth 4\n@@role system\n@@activate_only_after 3\nThis is the actual entry content.\n...&quot;
+</code></pre>
+<h2>Step 4: Common Decorator Patterns</h2>
+<h3>Control Insertion Depth</h3>
+<p>Place entries at specific depths in the context:</p>
+<pre><code class="language-typescript">// Insert at depth 4 (4 messages from the end)
+entry.decorators = [{ type: &#39;depth&#39;, value: 4 }]
+
+// Insert in reverse order (from start of conversation)
+entry.decorators = [{ type: &#39;reverse_depth&#39;, value: 0 }]
+</code></pre>
+<h3>Set Message Role</h3>
+<p>Make entries appear as system messages or user messages:</p>
+<pre><code class="language-typescript">// Inject as system message
+entry.decorators = [
+  { type: &#39;depth&#39;, value: 0 },
+  { type: &#39;role&#39;, value: &#39;system&#39; }
+]
+
+// Inject as user message
+entry.decorators = [{ type: &#39;role&#39;, value: &#39;user&#39; }]
+</code></pre>
+<h3>Conditional Activation</h3>
+<p>Control when entries activate:</p>
+<pre><code class="language-typescript">// Only activate after 3 messages in the conversation
+entry.decorators = [{ type: &#39;activate_only_after&#39;, value: 3 }]
+
+// Activate every 5th trigger (cooldown)
+entry.decorators = [{ type: &#39;activate_only_every&#39;, value: 5 }]
+
+// Stay active once triggered (don&#39;t deactivate)
+entry.decorators = [{ type: &#39;keep_activate_after_match&#39; }]
+
+// Forced activation (ignore keys)
+entry.decorators = [{ type: &#39;activate&#39; }]
+
+// Forced deactivation (always skip)
+entry.decorators = [{ type: &#39;dont_activate&#39; }]
+</code></pre>
+<h3>Additional Matching Control</h3>
+<p>Modify how entries are matched:</p>
+<pre><code class="language-typescript">// Add extra trigger keys
+entry.decorators = [{ type: &#39;additional_keys&#39;, value: [&#39;extra&#39;, &#39;keywords&#39;] }]
+
+// Exclude certain keys from triggering
+entry.decorators = [{ type: &#39;exclude_keys&#39;, value: [&#39;spoiler&#39;, &#39;secret&#39;] }]
+
+// Custom scan depth for this entry
+entry.decorators = [{ type: &#39;scan_depth&#39;, value: 20 }]
+</code></pre>
+<h2>Complete Example</h2>
+<pre><code class="language-typescript">import { readCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+import type { Decorator } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// Load card
+const bytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(bytes)
+
+// Find or create lorebook
+if (!card.data.character_book) {
+  card.data.character_book = { entries: [], extensions: {} }
+}
+
+// Add a new entry with decorators
+card.data.character_book.entries.push({
+  keys: [&#39;secret base&#39;, &#39;hideout&#39;, &#39;lair&#39;],
+  content: &#39;The secret base is hidden beneath the old lighthouse on the cliff.&#39;,
+  enabled: true,
+  insertion_order: 100,
+  use_regex: false,
+  extensions: {},
+  name: &#39;Secret Base Location&#39;,
+  decorators: [
+    { type: &#39;depth&#39;, value: 2 },
+    { type: &#39;role&#39;, value: &#39;system&#39; },
+    { type: &#39;activate_only_after&#39;, value: 5 }  // Only reveal after conversation develops
+  ]
+})
+
+// Modify existing entry decorators
+for (const entry of card.data.character_book.entries) {
+  // Add depth to entries without positioning
+  const hasPosition = entry.decorators?.some(d =&gt;
+    d.type === &#39;depth&#39; || d.type === &#39;position&#39; || d.type === &#39;reverse_depth&#39;
+  )
+
+  if (!hasPosition) {
+    entry.decorators = entry.decorators ?? []
+    entry.decorators.push({ type: &#39;depth&#39;, value: 4 })
+  }
+}
+
+// Save
+const output = writeCardToPng(card, bytes)
+writeFileSync(&#39;character-updated.png&#39;, output)
+</code></pre>
+<h2>Variations</h2>
+<h3>Preserving Unknown Decorators</h3>
+<p>Future or app-specific decorators are preserved:</p>
+<pre><code class="language-typescript">const { decorators } = parseDecorators(&#39;@@future_decorator some_value\nContent&#39;)
+
+// Unknown decorators stored with type &#39;unknown&#39;
+console.log(decorators[0])
+// { type: &#39;unknown&#39;, name: &#39;future_decorator&#39;, value: &#39;some_value&#39; }
+
+// They serialize back correctly
+const serialized = serializeDecorators(decorators, &#39;Content&#39;)
+// &quot;@@future_decorator some_value\nContent&quot;
+</code></pre>
+<h3>Bulk Decorator Updates</h3>
+<p>Apply decorators to all entries:</p>
+<pre><code class="language-typescript">const entries = card.data.character_book?.entries ?? []
+
+for (const entry of entries) {
+  entry.decorators = entry.decorators ?? []
+
+  // Ensure all entries have a role
+  if (!entry.decorators.some(d =&gt; d.type === &#39;role&#39;)) {
+    entry.decorators.push({ type: &#39;role&#39;, value: &#39;system&#39; })
+  }
+}
+</code></pre>
+<h3>Reading Without Decorator Parsing</h3>
+<p>Keep <code>@@</code> lines in content:</p>
+<pre><code class="language-typescript">const card = readCard(bytes, { parseDecorators: false })
+
+// entry.content includes @@lines
+// entry.decorators is undefined
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Decorators not appearing after write</h3>
+<p><strong>Symptom:</strong> You added decorators but the written file doesn&#39;t have <code>@@</code> lines.</p>
+<p><strong>Cause:</strong> You may have set <code>serializeDecorators: false</code> in write options.</p>
+<p><strong>Solution:</strong> Use default options or explicitly set <code>{ serializeDecorators: true }</code>.</p>
+<h3>Decorators duplicated after round-trip</h3>
+<p><strong>Symptom:</strong> Reading and writing a card doubles the decorators.</p>
+<p><strong>Cause:</strong> You&#39;re reading with <code>parseDecorators: false</code> (so decorators stay in content) but writing with <code>serializeDecorators: true</code> (which adds them again from the array).</p>
+<p><strong>Solution:</strong> Use consistent settings. Either parse and serialize (defaults), or skip both.</p>
+<h3>Unknown decorator type in array</h3>
+<p><strong>Symptom:</strong> A decorator has <code>type: &#39;unknown&#39;</code>.</p>
+<p><strong>Cause:</strong> The decorator name isn&#39;t in the V3 spec. It may be from a future version or app-specific.</p>
+<p><strong>Solution:</strong> This is normal - unknown decorators are preserved for forward compatibility. They&#39;ll serialize back correctly.</p>
+<h2>See Also</h2>
+<ul>
+<li><strong><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></strong> - Conceptual overview</li>
+<li><strong><a href="api-decorator.html">Decorator API</a></strong> - Function reference</li>
+<li><strong><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></strong> - Decorator type definitions</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

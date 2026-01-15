@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error Classes - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Error Classes</h1>
+<p>Custom error types thrown by library functions.</p>
+<hr>
+<h2><code>CardsError</code></h2>
+<p>Base error class for all library errors.</p>
+<pre><code class="language-typescript">class CardsError extends Error {
+  name: &#39;CardsError&#39;
+}
+</code></pre>
+<p>All library errors extend this class, so you can catch them uniformly:</p>
+<pre><code class="language-typescript">import { CardsError } from &#39;@motioneffector/cards&#39;
+
+try {
+  const card = readCard(bytes)
+} catch (error) {
+  if (error instanceof CardsError) {
+    console.error(&#39;Cards library error:&#39;, error.message)
+  }
+}
+</code></pre>
+<hr>
+<h2><code>ParseError</code></h2>
+<p>Thrown when parsing fails (invalid format, corrupted data, etc.).</p>
+<pre><code class="language-typescript">class ParseError extends CardsError {
+  name: &#39;ParseError&#39;
+  position?: number
+  input?: string
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>message</code></td>
+<td><code>string</code></td>
+<td>Error description</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td><code>number</code></td>
+<td>Character position where parsing failed (if applicable)</td>
+</tr>
+<tr>
+<td><code>input</code></td>
+<td><code>string</code></td>
+<td>The input that caused the error (if applicable)</td>
+</tr>
+</tbody></table>
+<p><strong>When thrown:</strong></p>
+<ul>
+<li><code>readCard()</code> - Invalid format, corrupted data, no card data found</li>
+<li><code>readCardFromPng()</code> - Invalid PNG, no card chunks</li>
+<li><code>readCardFromJson()</code> - Invalid JSON, unrecognized card format</li>
+<li><code>readCardFromCharx()</code> - Invalid ZIP, missing card.json</li>
+<li><code>readLorebook()</code> - Invalid format, no lorebook data found</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { readCard, ParseError } from &#39;@motioneffector/cards&#39;
+
+try {
+  const card = readCard(bytes)
+} catch (error) {
+  if (error instanceof ParseError) {
+    console.error(&#39;Parse failed:&#39;, error.message)
+
+    if (error.position !== undefined) {
+      console.error(&#39;At position:&#39;, error.position)
+    }
+  }
+}
+</code></pre>
+<hr>
+<h2><code>ValidationError</code></h2>
+<p>Thrown when validation fails in strict contexts.</p>
+<pre><code class="language-typescript">class ValidationError extends CardsError {
+  name: &#39;ValidationError&#39;
+  field?: string
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>message</code></td>
+<td><code>string</code></td>
+<td>Error description</td>
+</tr>
+<tr>
+<td><code>field</code></td>
+<td><code>string</code></td>
+<td>Field path that failed validation (if applicable)</td>
+</tr>
+</tbody></table>
+<p><strong>When thrown:</strong></p>
+<ul>
+<li><code>validateCard()</code> and <code>validateLorebook()</code> do not throw - they return <code>ValidationResult</code></li>
+<li>This error is available for use in your own validation logic</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { ValidationError } from &#39;@motioneffector/cards&#39;
+
+function requireValidName(card: CharacterCard) {
+  if (!card.data.name || card.data.name.trim() === &#39;&#39;) {
+    throw new ValidationError(&#39;Name is required&#39;, &#39;data.name&#39;)
+  }
+}
+
+try {
+  requireValidName(card)
+} catch (error) {
+  if (error instanceof ValidationError) {
+    console.error(`Validation failed for ${error.field}: ${error.message}`)
+  }
+}
+</code></pre>
+<hr>
+<h2>Error Handling Patterns</h2>
+<h3>Catch All Library Errors</h3>
+<pre><code class="language-typescript">import { readCard, CardsError } from &#39;@motioneffector/cards&#39;
+
+try {
+  const card = readCard(bytes)
+} catch (error) {
+  if (error instanceof CardsError) {
+    // Any library error
+    console.error(&#39;Library error:&#39;, error.message)
+  } else {
+    // Something else (system error, etc.)
+    throw error
+  }
+}
+</code></pre>
+<h3>Catch Specific Errors</h3>
+<pre><code class="language-typescript">import { readCard, ParseError, ValidationError } from &#39;@motioneffector/cards&#39;
+
+try {
+  const card = readCard(bytes, { strict: true })
+} catch (error) {
+  if (error instanceof ParseError) {
+    console.error(&#39;Failed to parse:&#39;, error.message)
+  } else if (error instanceof ValidationError) {
+    console.error(&#39;Invalid data:&#39;, error.message)
+  } else {
+    throw error
+  }
+}
+</code></pre>
+<h3>Graceful Fallback</h3>
+<pre><code class="language-typescript">import { readCard, repairCard, ParseError } from &#39;@motioneffector/cards&#39;
+
+function loadCardSafely(bytes: Uint8Array) {
+  try {
+    return readCard(bytes)
+  } catch (error) {
+    if (error instanceof ParseError) {
+      console.warn(&#39;Attempting repair...&#39;)
+      const result = repairCard(bytes)
+      return result.card
+    }
+    throw error
+  }
+}
+</code></pre>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

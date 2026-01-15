@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Format Compatibility - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Format Compatibility</h1>
+<p>Ensure your cards work with V2 applications like SillyTavern, Chub.ai, and other character card tools.</p>
+<h2>Prerequisites</h2>
+<p>Before starting, you should:</p>
+<ul>
+<li><a href="concept-file-formats.html">Understand file formats</a></li>
+<li><a href="guide-writing-and-exporting.html">Know how to write cards</a></li>
+</ul>
+<h2>Overview</h2>
+<p>We&#39;ll cover:</p>
+<ol>
+<li>How V2 compatibility works</li>
+<li>Enabling and disabling V2 chunks</li>
+<li>What data is preserved in V2</li>
+<li>Testing with common applications</li>
+</ol>
+<h2>Step 1: Understand V2 Compatibility</h2>
+<p>When you write a PNG card, the library embeds two chunks by default:</p>
+<pre><code>PNG File
+├── ccv3 chunk (V3 format - full data)
+└── chara chunk (V2 format - compatibility)
+</code></pre>
+<p>V3-aware applications read the <code>ccv3</code> chunk. Older V2-only applications read the <code>chara</code> chunk. Both chunks contain the card data, but V2 has limitations:</p>
+<ul>
+<li>No V3-only fields (nickname, group_only_greetings, assets, etc.)</li>
+<li>V3 fields are stored in <code>extensions</code> for preservation</li>
+<li>Decorators are serialized back to <code>@@</code> syntax in content</li>
+</ul>
+<h2>Step 2: Control V2 Chunk Generation</h2>
+<p>The V2 chunk is included by default:</p>
+<pre><code class="language-typescript">import { writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+// Default: includes both ccv3 and chara chunks
+const png = writeCardToPng(card, imageBytes)
+
+// Explicit: include V2 chunk
+const pngWithV2 = writeCardToPng(card, imageBytes, {
+  includeV2Chunk: true
+})
+
+// Skip V2 chunk (smaller file, V3-only)
+const pngV3Only = writeCardToPng(card, imageBytes, {
+  includeV2Chunk: false
+})
+</code></pre>
+<p>Only disable V2 compatibility if you&#39;re certain all consumers support V3.</p>
+<h2>Step 3: Understand V2 Data Mapping</h2>
+<p>V3 data maps to V2 like this:</p>
+<table>
+<thead>
+<tr>
+<th>V3 Field</th>
+<th>V2 Location</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>name, description, personality, etc.</td>
+<td>data.* (same)</td>
+</tr>
+<tr>
+<td>creator_notes, system_prompt, etc.</td>
+<td>data.* (same)</td>
+</tr>
+<tr>
+<td>tags, alternate_greetings</td>
+<td>data.* (same)</td>
+</tr>
+<tr>
+<td>character_book</td>
+<td>data.character_book (same)</td>
+</tr>
+<tr>
+<td><strong>nickname</strong></td>
+<td>data.extensions.v3_nickname</td>
+</tr>
+<tr>
+<td><strong>group_only_greetings</strong></td>
+<td>data.extensions.v3_group_only_greetings</td>
+</tr>
+<tr>
+<td><strong>assets</strong></td>
+<td>data.extensions.v3_assets</td>
+</tr>
+<tr>
+<td><strong>creation_date</strong></td>
+<td>Omitted</td>
+</tr>
+<tr>
+<td><strong>modification_date</strong></td>
+<td>Omitted</td>
+</tr>
+</tbody></table>
+<p>When a V2 app reads and writes the card, V3 data is preserved in extensions.</p>
+<h3>Decorator Handling</h3>
+<p>Decorators in lorebook entries are serialized back to <code>@@</code> syntax:</p>
+<pre><code class="language-typescript">// V3 entry (parsed)
+{
+  content: &quot;The secret base is underground.&quot;,
+  decorators: [{ type: &#39;depth&#39;, value: 4 }]
+}
+
+// V2 entry (serialized)
+{
+  content: &quot;@@depth 4\nThe secret base is underground.&quot;
+}
+</code></pre>
+<p>V2 apps pass through <code>@@</code> lines unchanged. When you read the card again, decorators are re-parsed.</p>
+<h2>Step 4: Test with Common Applications</h2>
+<h3>SillyTavern</h3>
+<p>SillyTavern reads the <code>chara</code> chunk. With V2 compatibility enabled:</p>
+<ul>
+<li>All V1/V2 fields display correctly</li>
+<li>Character book (lorebook) works normally</li>
+<li>V3 fields are stored in extensions (hidden but preserved)</li>
+</ul>
+<h3>Chub.ai</h3>
+<p>Chub.ai primarily uses V2 format. With V2 compatibility:</p>
+<ul>
+<li>Cards upload and display correctly</li>
+<li>Metadata (creator, version, tags) appears properly</li>
+<li>Downloads preserve V2 data; V3 extensions may be lost on re-download</li>
+</ul>
+<h3>NovelAI</h3>
+<p>NovelAI uses V1-style format for characters and a different lorebook format (<code>naidata</code>). For maximum compatibility:</p>
+<ul>
+<li>Use <code>writeLorebookToPng()</code> for standalone lorebooks (writes <code>naidata</code> chunk)</li>
+<li>Character cards work but may lose some fields</li>
+</ul>
+<h2>Complete Example</h2>
+<pre><code class="language-typescript">import { readCard, writeCardToPng, writeCardToJson } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// Load a V3 card
+const bytes = readFileSync(&#39;character-v3.png&#39;)
+const card = readCard(bytes)
+
+// Check for V3-only features
+const hasV3Features =
+  card.data.nickname ||
+  card.data.group_only_greetings.length &gt; 0 ||
+  (card.data.assets &amp;&amp; card.data.assets.length &gt; 0)
+
+if (hasV3Features) {
+  console.log(&#39;Card uses V3 features:&#39;)
+  if (card.data.nickname) console.log(`  - Nickname: ${card.data.nickname}`)
+  if (card.data.group_only_greetings.length &gt; 0)
+    console.log(`  - ${card.data.group_only_greetings.length} group-only greetings`)
+  if (card.data.assets?.length)
+    console.log(`  - ${card.data.assets.length} assets`)
+
+  console.log(&#39;These will be stored in V2 extensions.&#39;)
+}
+
+// Export with V2 compatibility
+const output = writeCardToPng(card, bytes, {
+  includeV2Chunk: true,
+  serializeDecorators: true
+})
+
+writeFileSync(&#39;character-compatible.png&#39;, output)
+console.log(&#39;Saved with V2 compatibility&#39;)
+</code></pre>
+<h2>Variations</h2>
+<h3>Force V3-Only for Modern Apps</h3>
+<pre><code class="language-typescript">// For apps that fully support V3, skip the overhead
+const output = writeCardToPng(card, imageBytes, {
+  includeV2Chunk: false
+})
+
+// Smaller file, but won&#39;t work in SillyTavern &lt; 1.12.0 etc.
+</code></pre>
+<h3>Inspect V2 Compatibility Chunk</h3>
+<pre><code class="language-typescript">import { readCardFromPng } from &#39;@motioneffector/cards&#39;
+
+// The library always returns V3, but you can examine what V2 apps see
+// by looking at what&#39;s stored in extensions when round-tripping
+
+const card = readCardFromPng(pngBytes)
+
+if (card.data.extensions.v3_nickname) {
+  console.log(&#39;V3 nickname is preserved:&#39;, card.data.extensions.v3_nickname)
+}
+</code></pre>
+<h3>Reading V2 Cards</h3>
+<p>Old V2 cards are automatically normalized to V3:</p>
+<pre><code class="language-typescript">const card = readCard(oldV2PngBytes)
+
+// card.spec is &#39;chara_card_v3&#39;
+// V2 fields are in their normal locations
+// V3 fields have defaults (empty strings, empty arrays)
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Card appears in V2 app but data is wrong</h3>
+<p><strong>Symptom:</strong> V2 app shows the card but fields are missing or garbled.</p>
+<p><strong>Cause:</strong> The V2 chunk may have encoding issues or the app has parsing bugs.</p>
+<p><strong>Solution:</strong> Export to JSON and compare. Try with a different V2 app to isolate the issue.</p>
+<h3>V3 features lost after round-trip through V2 app</h3>
+<p><strong>Symptom:</strong> Uploading to a V2 site and re-downloading loses V3 data.</p>
+<p><strong>Cause:</strong> The V2 app may strip unknown extension keys.</p>
+<p><strong>Solution:</strong> This is a limitation of V2 apps. Keep your original V3 file. Some V2 apps preserve extensions correctly.</p>
+<h3>Lorebook decorators not working in V2 app</h3>
+<p><strong>Symptom:</strong> <code>@@depth</code> and other decorators are ignored.</p>
+<p><strong>Cause:</strong> The V2 app may not support decorator syntax.</p>
+<p><strong>Solution:</strong> Decorators are a V3 feature. V2 apps that don&#39;t parse <code>@@</code> lines will include them as literal text. There&#39;s no workaround except using an app that supports decorators.</p>
+<h2>See Also</h2>
+<ul>
+<li><strong><a href="concept-file-formats.html">File Formats</a></strong> - Format structure details</li>
+<li><strong><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></strong> - Write options reference</li>
+<li><strong><a href="concept-character-cards.html">Character Cards</a></strong> - Field differences between versions</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

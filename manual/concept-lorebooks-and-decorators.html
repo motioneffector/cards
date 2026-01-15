@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lorebooks &amp; Decorators - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Lorebooks &amp; Decorators</h1>
+<p>A lorebook is a knowledge database that injects context into conversations when trigger keywords are detected. Entries activate automatically based on what&#39;s being discussed, adding relevant world-building, character knowledge, or instructions to the AI&#39;s context.</p>
+<h2>How It Works</h2>
+<p>Each lorebook entry has:</p>
+<ul>
+<li><strong>Keys</strong> - Words or phrases that trigger the entry</li>
+<li><strong>Content</strong> - Text that gets inserted into the prompt</li>
+<li><strong>Settings</strong> - Whether it&#39;s enabled, regex matching, insertion order</li>
+</ul>
+<p>When a user or character message contains a trigger key, that entry&#39;s content is added to the AI&#39;s context. This lets you build deep lore without bloating the main character description.</p>
+<pre><code>User message: &quot;Tell me about the Crystal Tower&quot;
+                    ↓
+Lorebook scans for keywords
+                    ↓
+Entry with key &quot;Crystal Tower&quot; found
+                    ↓
+Entry content added to context:
+&quot;The Crystal Tower is an ancient spire in the northern mountains.
+ It was built by the Archmage Valdris 2000 years ago...&quot;
+</code></pre>
+<h2>Basic Usage</h2>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+
+const card = readCard(fileBytes)
+
+// Access embedded lorebook
+if (card.data.character_book) {
+  const lorebook = card.data.character_book
+
+  console.log(`Lorebook: ${lorebook.name ?? &#39;Unnamed&#39;}`)
+  console.log(`Entries: ${lorebook.entries.length}`)
+
+  for (const entry of lorebook.entries) {
+    console.log(`  Keys: ${entry.keys.join(&#39;, &#39;)}`)
+    console.log(`  Enabled: ${entry.enabled}`)
+    console.log(`  Content: ${entry.content.slice(0, 50)}...`)
+  }
+}
+</code></pre>
+<p>Lorebooks can also be standalone files (not embedded in a card):</p>
+<pre><code class="language-typescript">import { readLorebook } from &#39;@motioneffector/cards&#39;
+
+const lorebook = readLorebook(fileBytes)
+</code></pre>
+<h2>Decorators</h2>
+<p>V3 introduced decorators - inline metadata that controls entry behavior. They appear at the start of entry content, prefixed with <code>@@</code>:</p>
+<pre><code>@@depth 4
+@@role system
+@@activate_only_after 3
+The Crystal Tower is an ancient spire...
+</code></pre>
+<p>When you read a card, decorators are parsed into a structured <code>decorators</code> array, and the content field contains only the actual text (without decorator lines).</p>
+<pre><code class="language-typescript">const entry = card.data.character_book.entries[0]
+
+// Decorators are parsed
+console.log(entry.decorators)
+// [
+//   { type: &#39;depth&#39;, value: 4 },
+//   { type: &#39;role&#39;, value: &#39;system&#39; },
+//   { type: &#39;activate_only_after&#39;, value: 3 }
+// ]
+
+// Content is clean
+console.log(entry.content)
+// &quot;The Crystal Tower is an ancient spire...&quot;
+</code></pre>
+<h3>Decorator Types</h3>
+<p><strong>Activation control:</strong></p>
+<ul>
+<li><code>@@activate</code> - Always activate (ignore keys)</li>
+<li><code>@@dont_activate</code> - Never activate</li>
+<li><code>@@activate_only_after N</code> - Only after N messages</li>
+<li><code>@@activate_only_every N</code> - Every Nth activation</li>
+<li><code>@@keep_activate_after_match</code> - Stay active once triggered</li>
+<li><code>@@dont_activate_after_match</code> - Deactivate after first trigger</li>
+</ul>
+<p><strong>Position control:</strong></p>
+<ul>
+<li><code>@@depth N</code> - Insert at depth N in context</li>
+<li><code>@@position VALUE</code> - Specific position (before_char, after_char, etc.)</li>
+<li><code>@@role VALUE</code> - Message role (system, user, assistant)</li>
+</ul>
+<p><strong>Scanning control:</strong></p>
+<ul>
+<li><code>@@scan_depth N</code> - How far back to scan for keys</li>
+<li><code>@@additional_keys KEY1,KEY2</code> - Extra trigger keys</li>
+<li><code>@@exclude_keys KEY1,KEY2</code> - Keys that prevent activation</li>
+</ul>
+<h2>Key Points</h2>
+<ul>
+<li><p><strong>Embedded vs standalone</strong> - Lorebooks can be embedded in cards (<code>character_book</code>) or stored as separate files. Both use the same structure.</p>
+</li>
+<li><p><strong>Decorator parsing is automatic</strong> - By default, <code>readCard()</code> parses decorators. Disable with <code>{ parseDecorators: false }</code> if you want raw content.</p>
+</li>
+<li><p><strong>Unknown decorators are preserved</strong> - If an entry contains <code>@@some_future_decorator</code>, it&#39;s stored as <code>{ type: &#39;unknown&#39;, name: &#39;some_future_decorator&#39;, value: &#39;...&#39; }</code>. This ensures forward compatibility.</p>
+</li>
+<li><p><strong>Order matters</strong> - The <code>insertion_order</code> field determines priority when multiple entries activate. Lower numbers insert first.</p>
+</li>
+</ul>
+<h2>Examples</h2>
+<h3>Creating a Lorebook Entry</h3>
+<pre><code class="language-typescript">import type { LorebookEntry } from &#39;@motioneffector/cards&#39;
+
+const entry: LorebookEntry = {
+  keys: [&#39;Crystal Tower&#39;, &#39;the tower&#39;, &#39;Valdris&#39;],
+  content: &#39;The Crystal Tower is an ancient spire built by Archmage Valdris.&#39;,
+  enabled: true,
+  insertion_order: 100,
+  use_regex: false,
+  extensions: {},
+  // Optional fields
+  name: &#39;Crystal Tower Lore&#39;,
+  priority: 10,
+  case_sensitive: false,
+}
+</code></pre>
+<h3>Adding Decorators Programmatically</h3>
+<pre><code class="language-typescript">import type { Decorator } from &#39;@motioneffector/cards&#39;
+
+const entry = card.data.character_book.entries[0]
+
+// Add decorators
+entry.decorators = [
+  { type: &#39;depth&#39;, value: 4 },
+  { type: &#39;role&#39;, value: &#39;system&#39; },
+]
+
+// When you write the card, decorators serialize back to @@syntax
+</code></pre>
+<h3>Manual Decorator Parsing</h3>
+<pre><code class="language-typescript">import { parseDecorators, serializeDecorators } from &#39;@motioneffector/cards&#39;
+
+// Parse decorator lines from content
+const raw = &#39;@@depth 4\n@@role system\nActual content here&#39;
+const { decorators, content } = parseDecorators(raw)
+// decorators: [{ type: &#39;depth&#39;, value: 4 }, { type: &#39;role&#39;, value: &#39;system&#39; }]
+// content: &#39;Actual content here&#39;
+
+// Serialize back
+const serialized = serializeDecorators(decorators, content)
+// &#39;@@depth 4\n@@role system\nActual content here&#39;
+</code></pre>
+<h2>Related</h2>
+<ul>
+<li><strong><a href="concept-character-cards.html">Character Cards</a></strong> - The parent structure that contains lorebooks</li>
+<li><strong><a href="guide-working-with-decorators.html">Working with Decorators</a></strong> - Practical guide to manipulating decorators</li>
+<li><strong><a href="api-decorator.html">Decorator API</a></strong> - Reference for parseDecorators and serializeDecorators</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
