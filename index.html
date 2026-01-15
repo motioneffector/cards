@@ -4,1786 +4,309 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@motioneffector/cards - Demo</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-      background: #f5f5f5;
-    }
-    h1 { color: #333; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
-    h2 { color: #555; margin-top: 30px; }
-    section {
-      margin: 20px 0;
-      padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .test-pass { color: green; }
-    .test-fail { color: red; font-weight: bold; }
-    .test-output {
-      background: #f5f5f5;
-      padding: 15px;
-      font-family: 'Courier New', monospace;
-      white-space: pre-wrap;
-      max-height: 400px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 13px;
-      line-height: 1.4;
-    }
-    button {
-      padding: 8px 16px;
-      margin: 4px;
-      cursor: pointer;
-      border: none;
-      border-radius: 4px;
-      font-size: 14px;
-      transition: background 0.2s;
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    .run-all {
-      background: #4CAF50;
-      color: white;
-      font-size: 16px;
-      padding: 12px 24px;
-      font-weight: bold;
-    }
-    .clear-btn {
-      background: #f44336;
-      color: white;
-    }
-    .summary {
-      font-size: 18px;
-      font-weight: bold;
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 4px;
-      background: #e3f2fd;
-    }
-    .interactive-section {
-      background: #fff9e6;
-    }
-    textarea {
-      width: 100%;
-      min-height: 100px;
-      font-family: 'Courier New', monospace;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 13px;
-    }
-    .output-box {
-      background: #f5f5f5;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-top: 10px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      white-space: pre-wrap;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    label {
-      display: block;
-      margin: 10px 0 5px 0;
-      font-weight: bold;
-      color: #555;
-    }
-    .action-btn {
-      background: #2196F3;
-      color: white;
-      margin-top: 10px;
-    }
-    .drop-zone {
-      border: 3px dashed #ccc;
-      border-radius: 8px;
-      padding: 40px;
-      text-align: center;
-      background: #fafafa;
-      cursor: pointer;
-      transition: all 0.3s;
-      margin: 20px 0;
-    }
-    .drop-zone:hover {
-      border-color: #4CAF50;
-      background: #f0f8f0;
-    }
-    .drop-zone.dragover {
-      border-color: #4CAF50;
-      background: #e8f5e9;
-      transform: scale(1.02);
-    }
-    .drop-zone-icon {
-      font-size: 48px;
-      margin-bottom: 10px;
-    }
-    .card-display {
-      background: #f5f5f5;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      margin-top: 15px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      white-space: pre-wrap;
-      max-height: 500px;
-      overflow-y: auto;
-    }
-    .card-preview {
-      display: flex;
-      gap: 20px;
-      margin-top: 15px;
-    }
-    .card-preview img {
-      max-width: 300px;
-      max-height: 400px;
-      border-radius: 8px;
-      border: 2px solid #ddd;
-    }
-    .card-info {
-      flex: 1;
-    }
-    .field-label {
-      font-weight: bold;
-      color: #4CAF50;
-      margin-top: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="demo-files/styles.css">
 </head>
 <body>
-  <h1>@motioneffector/cards Demo</h1>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Character Card V3 and Lorebook parser for TypeScript</p>
+      <nav class="header-links">
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link" target="_blank">
+          npm
+        </a>
+        <a href="https://github.com/motioneffector/cards" class="header-link" target="_blank">
+          GitHub
+        </a>
+        <a href="https://github.com/motioneffector/cards/wiki" class="header-link" target="_blank">
+          Manual
+        </a>
+      </nav>
+    </header>
 
-  <section>
-    <p><strong>@motioneffector/cards</strong> is a TypeScript library for parsing Character Card V3 and Lorebook data.</p>
-    <p>This demo showcases the foundation release (v0.1.0) features:</p>
-    <ul>
-      <li>Decorator System: Parse and serialize all 26 V3 decorator types</li>
-      <li>Validation: Card and lorebook structure validation</li>
-      <li>CRC-32: PNG chunk checksum computation</li>
-      <li>Base64/UTF-8: Multi-platform encoding/decoding</li>
-    </ul>
-  </section>
+    <main class="exhibits">
+      <!-- Exhibit 1: PNG Anatomy Theater -->
+      <section class="exhibit" id="exhibit-1">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">PNG Anatomy Theater</h2>
+          <p class="exhibit-description">See what's actually inside a character card PNG - the invisible made visible</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="three-panel">
+              <div class="panel">
+                <div class="panel-header">PNG Chunks</div>
+                <div class="panel-content">
+                  <div class="chunk-list" id="chunk-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Base64 Decode</div>
+                <div class="panel-content">
+                  <div class="decode-stream" id="decode-stream">
+                    <!-- Animated decode view -->
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Card Data</div>
+                <div class="panel-content">
+                  <div class="card-fields" id="card-fields">
+                    <!-- Parsed card fields -->
+                  </div>
+                  <div class="normalization-banner hidden" id="norm-banner">
+                    <!-- Normalization info -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <button class="btn btn-primary" id="replay-parse">Replay Parse</button>
+            <button class="btn btn-secondary" id="load-v1">Load V1 Sample</button>
+            <button class="btn btn-secondary" id="load-v2">Load V2 Sample</button>
+            <button class="btn btn-secondary" id="load-v3">Load V3 Sample</button>
+            <div class="speed-slider">
+              <span class="speed-label">Speed:</span>
+              <input type="range" min="0" max="100" value="70" id="parse-speed">
+              <span class="speed-label" id="speed-text">Fast</span>
+            </div>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Parse State</div>
+            <div id="parse-state">Ready - Click a sample or drop your own PNG</div>
+          </div>
+          <div class="drop-zone" id="drop-zone-1">
+            Or drop your own PNG/JSON/CHARX file here
+          </div>
+        </div>
+      </section>
 
-  <section class="interactive-section">
-    <h2>🎴 PNG Character Card Reader</h2>
-    <p>Drag and drop a PNG character card to extract and display its embedded metadata:</p>
-    <div class="drop-zone" id="drop-zone">
-      <div class="drop-zone-icon">📤</div>
-      <p><strong>Drag & Drop PNG file here</strong></p>
-      <p style="color: #666; font-size: 14px;">or click to browse</p>
-      <input type="file" id="file-input" accept="image/png" style="display: none;">
-    </div>
-    <div id="card-result"></div>
-  </section>
+      <!-- Exhibit 2: Format Forge -->
+      <section class="exhibit" id="exhibit-2">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">Format Forge</h2>
+          <p class="exhibit-description">Write cards to PNG/JSON/CHARX - watch the embedding process happen</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="two-panel">
+              <div class="panel">
+                <div class="panel-header">Card Data</div>
+                <div class="panel-content">
+                  <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="forge-name" value="Elena">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="forge-desc">A traveling merchant who deals in rare magical artifacts. She runs a modest cart between villages.</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Personality</label>
+                    <textarea class="form-input" id="forge-personality">Shrewd but fair. Values honesty in business dealings. Has a dry wit.</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">First Message</label>
+                    <textarea class="form-input" id="forge-first-mes">*Elena looks up from arranging her wares, a knowing smile crossing her weathered face.* Ah, a customer with discerning taste, I hope. Looking for something specific, or shall I surprise you?</textarea>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Tags (comma-separated)</label>
+                    <input type="text" class="form-input" id="forge-tags" value="fantasy, merchant, original, friendly">
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Output Workbench</div>
+                <div class="panel-content">
+                  <div class="mb-md">
+                    <span class="text-secondary">Format:</span>
+                    <span class="tag tag-blue" id="output-format-label">PNG</span>
+                  </div>
+                  <div class="output-chunks" id="output-chunks">
+                    <!-- Populated by JS -->
+                  </div>
+                  <div class="mt-md text-secondary" id="output-info">
+                    <!-- Size and status info -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <select class="input" id="output-format">
+              <option value="png" selected>PNG</option>
+              <option value="json">JSON</option>
+              <option value="charx">CHARX</option>
+            </select>
+            <label class="toggle">
+              <input type="checkbox" id="include-v2" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-label">Include V2 Chunk</span>
+            </label>
+            <label class="toggle">
+              <input type="checkbox" id="serialize-decorators" checked>
+              <span class="toggle-switch"></span>
+              <span class="toggle-label">Serialize Decorators</span>
+            </label>
+            <button class="btn btn-primary" id="build-download">Build & Download</button>
+            <button class="btn btn-secondary" id="reset-forge">Reset to Example</button>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Build State</div>
+            <div id="forge-state">Ready - Edit fields and watch output update</div>
+          </div>
+        </div>
+      </section>
 
-  <section id="test-runner">
-    <h2>Automated Tests</h2>
-    <button class="run-all" onclick="runAllTests()">▶ Run All Tests</button>
-    <button class="clear-btn" onclick="clearResults()">✕ Clear Results</button>
-    <div class="summary" id="summary"></div>
-    <div class="test-output" id="test-output"></div>
-  </section>
-
-  <section class="interactive-section">
-    <h2>Interactive: Decorator Parser</h2>
-    <p>Parse V3 lorebook decorators from content. Try editing the text below and clicking Parse:</p>
-    <label>Content with Decorators:</label>
-    <textarea id="decorator-input">@@depth 4
+      <!-- Exhibit 3: Decorator Transformer -->
+      <section class="exhibit" id="exhibit-3">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">Decorator Transformer</h2>
+          <p class="exhibit-description">Watch @@decorator syntax transform to structured data and back</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="decorator-split">
+              <div class="decorator-panel">
+                <div class="decorator-panel-header">
+                  <span class="decorator-panel-title">Raw Text</span>
+                  <button class="btn btn-small btn-primary" id="parse-decorators">Parse</button>
+                </div>
+                <div class="decorator-panel-content">
+                  <textarea class="raw-content" id="raw-decorators">@@depth 4
 @@role system
-@@additional_keys sword, weapon, combat
-This is the actual lorebook content about combat.</textarea>
-    <button class="action-btn" onclick="testDecoratorParser()">Parse Decorators</button>
-    <div class="output-box" id="decorator-output"></div>
-  </section>
+@@activate_only_after 3
+The Crystal Tower is an ancient spire built by the First Mages. Its walls shimmer with preserved enchantments, and the library within contains scrolls dating back millennia.</textarea>
+                </div>
+              </div>
+              <div class="decorator-panel">
+                <div class="decorator-panel-header">
+                  <span class="decorator-panel-title">Structured</span>
+                  <button class="btn btn-small btn-primary" id="serialize-btn">Serialize</button>
+                </div>
+                <div class="decorator-panel-content">
+                  <div class="structured-content">
+                    <div class="decorators-area" id="decorators-area">
+                      <!-- Decorator chips appear here -->
+                    </div>
+                    <div class="content-preview" id="content-preview">
+                      <!-- Clean content preview -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lorebook-entries" id="lorebook-entries">
+              <div class="text-secondary mb-sm">Lorebook Entries (click to load)</div>
+              <!-- Entry items -->
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <span class="text-secondary">Add decorator:</span>
+            <button class="btn btn-small btn-secondary" data-decorator="depth">+ depth</button>
+            <button class="btn btn-small btn-secondary" data-decorator="role">+ role</button>
+            <button class="btn btn-small btn-secondary" data-decorator="position">+ position</button>
+            <button class="btn btn-small btn-secondary" data-decorator="activate">+ activate</button>
+            <button class="btn btn-small btn-secondary" data-decorator="scan_depth">+ scan_depth</button>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Transform State</div>
+            <div id="decorator-state">Synced - Both sides match</div>
+          </div>
+        </div>
+      </section>
 
-  <section class="interactive-section">
-    <h2>Interactive: Decorator Serializer</h2>
-    <p>Serialize decorators back to V3 format. Try different decorator types:</p>
-    <label>Decorator Type:</label>
-    <select id="decorator-type">
-      <option value="depth">depth (number)</option>
-      <option value="role">role (string)</option>
-      <option value="activate">activate (boolean)</option>
-      <option value="additional_keys">additional_keys (array)</option>
-      <option value="position">position (string)</option>
-    </select>
-    <label>Decorator Value:</label>
-    <input type="text" id="decorator-value" placeholder="e.g., 5 or system or key1,key2" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    <label>Content:</label>
-    <textarea id="serialize-content" style="min-height: 60px;">This is the content.</textarea>
-    <button class="action-btn" onclick="testDecoratorSerializer()">Serialize</button>
-    <div class="output-box" id="serialize-output"></div>
-  </section>
+      <!-- Exhibit 4: Repair Laboratory -->
+      <section class="exhibit" id="exhibit-4">
+        <div class="exhibit-header">
+          <h2 class="exhibit-title">Repair Laboratory</h2>
+          <p class="exhibit-description">Watch recovery strategies probe corrupted data in real-time</p>
+        </div>
+        <div class="exhibit-content">
+          <div class="exhibit-interactive">
+            <div class="two-panel">
+              <div class="panel">
+                <div class="panel-header">Strategy Log</div>
+                <div class="panel-content">
+                  <div class="repair-log" id="repair-log">
+                    <!-- Repair entries -->
+                  </div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-header">Recovered Data</div>
+                <div class="panel-content">
+                  <div class="recovered-fields" id="recovered-fields">
+                    <!-- Recovered field status -->
+                  </div>
+                  <div class="mt-md" id="recovery-summary">
+                    <!-- Summary stats -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="exhibit-controls">
+            <button class="btn btn-primary" id="replay-repair">Replay</button>
+            <button class="btn btn-secondary" id="load-bad-crc">Bad CRC Sample</button>
+            <button class="btn btn-secondary" id="load-truncated">Truncated Base64</button>
+            <button class="btn btn-secondary" id="load-malformed">Malformed JSON</button>
+            <button class="btn btn-success" id="load-healthy">Try Healthy Card</button>
+            <div class="speed-slider">
+              <span class="speed-label">Speed:</span>
+              <input type="range" min="0" max="100" value="50" id="repair-speed">
+            </div>
+          </div>
+          <div class="exhibit-state">
+            <div class="exhibit-state-title">Repair State</div>
+            <div id="repair-state">Repair complete - 10/12 fields recovered</div>
+          </div>
+          <div class="drop-zone" id="drop-zone-4">
+            Or drop your own file to test repair
+          </div>
+        </div>
+      </section>
+    </main>
 
-  <section class="interactive-section">
-    <h2>Interactive: Base64 Encoder</h2>
-    <p>Encode text to Base64:</p>
-    <label>Text to Encode:</label>
-    <textarea id="base64-input" style="min-height: 60px;">Hello, World! 👋</textarea>
-    <button class="action-btn" onclick="testBase64Encode()">Encode to Base64</button>
-    <button class="action-btn" onclick="testBase64Decode()">Decode from Base64</button>
-    <div class="output-box" id="base64-output"></div>
-  </section>
+    <footer class="test-runner">
+      <div class="test-runner-header">
+        <h2 class="test-runner-title">Test Suite</h2>
+        <div class="test-runner-actions">
+          <button class="btn btn-primary" id="run-tests">Run All Tests</button>
+          <button class="btn btn-secondary" id="reset-page">Reset Page</button>
+        </div>
+      </div>
+      <div class="test-runner-content">
+        <div class="test-progress">
+          <div class="test-progress-bar">
+            <div class="test-progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="test-progress-text" id="progress-text">Ready to run tests</div>
+        </div>
+        <div class="test-output" id="test-output">
+          <div class="test-output-empty">Click "Run Tests" to execute the test suite</div>
+        </div>
+        <div class="test-summary hidden" id="test-summary">
+          <div class="test-summary-item passed">
+            <span>✓</span>
+            <span id="passed-count">0</span> passed
+          </div>
+          <div class="test-summary-item failed">
+            <span>✗</span>
+            <span id="failed-count">0</span> failed
+          </div>
+          <div class="test-summary-item skipped">
+            <span>○</span>
+            <span id="skipped-count">0</span> skipped
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
 
-  <section class="interactive-section">
-    <h2>Interactive: CRC-32 Calculator</h2>
-    <p>Calculate CRC-32 checksum for PNG chunks:</p>
-    <label>Text:</label>
-    <input type="text" id="crc-input" value="tEXthello" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
-    <button class="action-btn" onclick="testCRC32()">Calculate CRC-32</button>
-    <div class="output-box" id="crc-output"></div>
-  </section>
-
-  <script>
-    // ============================================
-    // INLINED LIBRARY CODE (from dist/index.js)
-    // ============================================
-    class W extends Error {
-      constructor(r) {
-        super(r), this.name = "CardsError";
-      }
-    }
-    class v extends W {
-      constructor(r, t, n) {
-        super(r), this.position = t, this.input = n, this.name = "ParseError";
-      }
-    }
-    class De extends W {
-      constructor(r, t) {
-        super(r), this.field = t, this.name = "ValidationError";
-      }
-    }
-    const B = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10]), $ = "ccv3", N = "chara", j = "naidata", ee = "chara_card_v3", te = "chara_card_v2";
-    let F = null;
-    function re() {
-      const e = new Uint32Array(256);
-      for (let r = 0; r < 256; r++) {
-        let t = r;
-        for (let n = 0; n < 8; n++)
-          t = t & 1 ? 3988292384 ^ t >>> 1 : t >>> 1;
-        e[r] = t;
-      }
-      return e;
-    }
-    function R(...e) {
-      F ?? (F = re());
-      let r = 4294967295;
-      for (const t of e)
-        for (let n = 0; n < t.length; n++) {
-          const a = t[n];
-          a !== void 0 && (r = r >>> 8 ^ (F[(r ^ a) & 255] ?? 0));
-        }
-      return (r ^ 4294967295) >>> 0;
-    }
-    function E(e) {
-      if (!ne(e))
-        throw new Error("Invalid PNG signature");
-      const r = [];
-      let t = 8;
-      for (; t < e.length; ) {
-        const n = (e[t] ?? 0) << 24 | (e[t + 1] ?? 0) << 16 | (e[t + 2] ?? 0) << 8 | (e[t + 3] ?? 0);
-        t += 4;
-        const a = e.slice(t, t + 4), s = String.fromCharCode(...a);
-        t += 4;
-        const o = e.slice(t, t + n);
-        t += n;
-        const i = (e[t] ?? 0) << 24 | (e[t + 1] ?? 0) << 16 | (e[t + 2] ?? 0) << 8 | (e[t + 3] ?? 0);
-        if (t += 4, r.push({ length: n, type: s, data: o, crc: i }), s === "IEND") break;
-      }
-      return r;
-    }
-    function z(e) {
-      let r = 8;
-      for (const a of e)
-        r += 12 + a.length;
-      const t = new Uint8Array(r);
-      let n = 0;
-      t.set(B, n), n += 8;
-      for (const a of e) {
-        t[n++] = a.length >> 24 & 255, t[n++] = a.length >> 16 & 255, t[n++] = a.length >> 8 & 255, t[n++] = a.length & 255;
-        const s = new Uint8Array(4);
-        for (let o = 0; o < 4; o++)
-          s[o] = a.type.charCodeAt(o);
-        t.set(s, n), n += 4, t.set(a.data, n), n += a.length, t[n++] = a.crc >> 24 & 255, t[n++] = a.crc >> 16 & 255, t[n++] = a.crc >> 8 & 255, t[n++] = a.crc & 255;
-      }
-      return t;
-    }
-    function T(e, r) {
-      const t = new Uint8Array(e.length + 1);
-      for (let i = 0; i < e.length; i++)
-        t[i] = e.charCodeAt(i);
-      t[e.length] = 0;
-      const n = new Uint8Array(r.length);
-      for (let i = 0; i < r.length; i++)
-        n[i] = r.charCodeAt(i);
-      const a = new Uint8Array(t.length + n.length);
-      a.set(t, 0), a.set(n, t.length);
-      const s = new Uint8Array([116, 69, 88, 116]), o = R(s, a);
-      return {
-        length: a.length,
-        type: "tEXt",
-        data: a,
-        crc: o
-      };
-    }
-    function ne(e) {
-      if (e.length < 8) return !1;
-      for (let r = 0; r < 8; r++)
-        if (e[r] !== B[r])
-          return !1;
-      return !0;
-    }
-    function P(e) {
-      if (typeof btoa < "u") {
-        let r = "";
-        for (let t = 0; t < e.length; t++)
-          r += String.fromCharCode(e[t] ?? 0);
-        return btoa(r);
-      }
-      return typeof Buffer < "u" ? Buffer.from(e).toString("base64") : ae(e);
-    }
-    function I(e) {
-      if (typeof atob < "u") {
-        const r = atob(e), t = new Uint8Array(r.length);
-        for (let n = 0; n < r.length; n++)
-          t[n] = r.charCodeAt(n);
-        return t;
-      }
-      return typeof Buffer < "u" ? new Uint8Array(Buffer.from(e, "base64")) : se(e);
-    }
-    function ae(e) {
-      const r = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-      let t = "", n = 0;
-      for (; n < e.length; ) {
-        const a = e[n++] ?? 0, s = e[n++] ?? 0, o = e[n++] ?? 0, i = a << 16 | s << 8 | o;
-        t += r[i >> 18 & 63] ?? "", t += r[i >> 12 & 63] ?? "", t += n > e.length + 1 ? "=" : r[i >> 6 & 63] ?? "", t += n > e.length ? "=" : r[i & 63] ?? "";
-      }
-      return t;
-    }
-    function se(e) {
-      const r = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", t = new Map();
-      for (let o = 0; o < r.length; o++) {
-        const i = r[o];
-        i !== void 0 && t.set(i, o);
-      }
-      const n = e.replace(/[=\s]/g, ""), a = [];
-      let s = 0;
-      for (; s < n.length; ) {
-        const o = t.get(n[s++] ?? "") ?? 0, i = t.get(n[s++] ?? "") ?? 0, l = t.get(n[s++] ?? "") ?? 0, u = t.get(n[s++] ?? "") ?? 0, c = o << 18 | i << 12 | l << 6 | u;
-        a.push(c >> 16 & 255), s <= n.length + 1 && a.push(c >> 8 & 255), s <= n.length && a.push(c & 255);
-      }
-      return new Uint8Array(a);
-    }
-    function D(e) {
-      if (typeof TextEncoder < "u")
-        return new TextEncoder().encode(e);
-      const r = [];
-      for (let t = 0; t < e.length; t++) {
-        let n = e.charCodeAt(t);
-        if (n < 128)
-          r.push(n);
-        else if (n < 2048)
-          r.push(192 | n >> 6), r.push(128 | n & 63);
-        else if (n < 55296 || n >= 57344)
-          r.push(224 | n >> 12), r.push(128 | n >> 6 & 63), r.push(128 | n & 63);
-        else {
-          t++;
-          const a = e.charCodeAt(t);
-          n = 65536 + ((n & 1023) << 10 | a & 1023), r.push(240 | n >> 18), r.push(128 | n >> 12 & 63), r.push(128 | n >> 6 & 63), r.push(128 | n & 63);
-        }
-      }
-      return new Uint8Array(r);
-    }
-    function U(e) {
-      if (typeof TextDecoder < "u")
-        return new TextDecoder("utf-8").decode(e);
-      const r = [];
-      let t = 0;
-      for (; t < e.length; ) {
-        const n = e[t++] ?? 0;
-        if (n < 128)
-          r.push(String.fromCharCode(n));
-        else if ((n & 224) === 192) {
-          const a = e[t++] ?? 0;
-          r.push(String.fromCharCode((n & 31) << 6 | a & 63));
-        } else if ((n & 240) === 224) {
-          const a = e[t++] ?? 0, s = e[t++] ?? 0;
-          r.push(
-            String.fromCharCode((n & 15) << 12 | (a & 63) << 6 | s & 63)
-          );
-        } else if ((n & 248) === 240) {
-          const a = e[t++] ?? 0, s = e[t++] ?? 0, o = e[t++] ?? 0;
-          let i = (n & 7) << 18 | (a & 63) << 12 | (s & 63) << 6 | o & 63;
-          i -= 65536, r.push(String.fromCharCode(55296 | i >> 10)), r.push(String.fromCharCode(56320 | i & 1023));
-        }
-      }
-      return r.join("");
-    }
-    function oe(e) {
-      var s;
-      const r = e.split(`
-`), t = [];
-      let n = 0;
-      for (let o = 0; o < r.length; o++) {
-        const i = ((s = r[o]) == null ? void 0 : s.trim()) ?? "";
-        if (!i.startsWith("@@")) {
-          n = o;
-          break;
-        }
-        const l = ie(i);
-        l && t.push(l);
-      }
-      const a = r.slice(n).join(`
-`);
-      return {
-        decorators: t,
-        content: a
-      };
-    }
-    function ce(e, r) {
-      const t = [];
-      for (const n of e) {
-        const a = le(n);
-        a && t.push(a);
-      }
-      return t.length > 0 ? (t.push(r), t.join(`
-`)) : r;
-    }
-    function ie(e) {
-      const t = e.slice(2).trim().split(/\s+/), n = t[0], a = t.slice(1).join(" ");
-      if (!n) return null;
-      switch (n) {
-        case "activate":
-          return { type: "activate" };
-        case "dont_activate":
-          return { type: "dont_activate" };
-        case "activate_only_after":
-          return { type: "activate_only_after", value: parseInt(a, 10) };
-        case "activate_only_every":
-          return { type: "activate_only_every", value: parseInt(a, 10) };
-        case "keep_activate_after_match":
-          return { type: "keep_activate_after_match" };
-        case "dont_activate_after_match":
-          return { type: "dont_activate_after_match" };
-        case "depth":
-          return { type: "depth", value: parseInt(a, 10) };
-        case "instruct_depth":
-          return { type: "instruct_depth", value: parseInt(a, 10) };
-        case "reverse_depth":
-          return { type: "reverse_depth", value: parseInt(a, 10) };
-        case "position":
-          return { type: "position", value: a };
-        case "role":
-          return { type: "role", value: a };
-        case "scan_depth":
-          return { type: "scan_depth", value: parseInt(a, 10) };
-        case "instruct_scan_depth":
-          return { type: "instruct_scan_depth", value: parseInt(a, 10) };
-        case "is_greeting":
-          return { type: "is_greeting", value: parseInt(a, 10) };
-        case "additional_keys":
-          return { type: "additional_keys", value: a.split(",").map((s) => s.trim()) };
-        case "exclude_keys":
-          return { type: "exclude_keys", value: a.split(",").map((s) => s.trim()) };
-        case "is_user_icon":
-          return { type: "is_user_icon", value: a };
-        case "ignore_on_max_context":
-          return { type: "ignore_on_max_context" };
-        case "disable_ui_prompt":
-          return { type: "disable_ui_prompt", value: a };
-        default:
-          return { type: "unknown", name: n, value: a };
-      }
-    }
-    function le(e) {
-      switch (e.type) {
-        case "activate":
-          return "@@activate";
-        case "dont_activate":
-          return "@@dont_activate";
-        case "activate_only_after":
-          return `@@activate_only_after ${String(e.value)}`;
-        case "activate_only_every":
-          return `@@activate_only_every ${String(e.value)}`;
-        case "keep_activate_after_match":
-          return "@@keep_activate_after_match";
-        case "dont_activate_after_match":
-          return "@@dont_activate_after_match";
-        case "depth":
-          return `@@depth ${String(e.value)}`;
-        case "instruct_depth":
-          return `@@instruct_depth ${String(e.value)}`;
-        case "reverse_depth":
-          return `@@reverse_depth ${String(e.value)}`;
-        case "position":
-          return `@@position ${e.value}`;
-        case "role":
-          return `@@role ${e.value}`;
-        case "scan_depth":
-          return `@@scan_depth ${String(e.value)}`;
-        case "instruct_scan_depth":
-          return `@@instruct_scan_depth ${String(e.value)}`;
-        case "is_greeting":
-          return `@@is_greeting ${String(e.value)}`;
-        case "additional_keys":
-          return `@@additional_keys ${e.value.join(",")}`;
-        case "exclude_keys":
-          return `@@exclude_keys ${e.value.join(",")}`;
-        case "is_user_icon":
-          return `@@is_user_icon ${e.value}`;
-        case "ignore_on_max_context":
-          return "@@ignore_on_max_context";
-        case "disable_ui_prompt":
-          return `@@disable_ui_prompt ${e.value}`;
-        case "unknown":
-          return e.value ? `@@${e.name} ${e.value}` : `@@${e.name}`;
-        default:
-          return null;
-      }
-    }
-    const J = 0, de = 8, ue = 67324752, X = 33639248, K = 101010256;
-    function fe(e) {
-      const r = new Map(), t = pe(e);
-      if (t < 0)
-        throw new Error("Invalid ZIP file: no end of central directory found");
-      const n = b(e, t + 16), a = C(e, t + 10);
-      let s = n;
-      for (let o = 0; o < a && b(e, s) === X; o++) {
-        const l = C(e, s + 10), u = b(e, s + 20), c = b(e, s + 24), h = C(e, s + 28), f = C(e, s + 30), g = C(e, s + 32), m = b(e, s + 42), k = _e(e.slice(s + 46, s + 46 + h));
-        if (s += 46 + h + f + g, k.endsWith("/"))
-          continue;
-        const y = C(e, m + 28), d = m + 30 + h + y, p = e.slice(d, d + u);
-        let x;
-        if (l === J)
-          x = p;
-        else if (l === de)
-          x = ve(p, c);
-        else
-          throw new Error(`Unsupported compression method: ${String(l)}`);
-        r.set(k, x);
-      }
-      return r;
-    }
-    function he(e) {
-      const r = [], t = [], n = [];
-      let a = 0;
-      for (const [f, g] of e) {
-        n.push(a);
-        const m = ge(f), k = me(g), y = new Uint8Array(30 + m.length + g.length);
-        let d = 0;
-        w(y, d, ue), d += 4, _(y, d, 20), d += 2, _(y, d, 0), d += 2, _(y, d, J), d += 2, _(y, d, 0), d += 2, _(y, d, 0), d += 2, w(y, d, k), d += 4, w(y, d, g.length), d += 4, w(y, d, g.length), d += 4, _(y, d, m.length), d += 2, _(y, d, 0), d += 2, y.set(m, d), d += m.length, y.set(g, d), r.push(y), a += y.length;
-        const p = new Uint8Array(46 + m.length);
-        d = 0, w(p, d, X), d += 4, _(p, d, 20), d += 2, _(p, d, 20), d += 2, _(p, d, 0), d += 2, _(p, d, J), d += 2, _(p, d, 0), d += 2, _(p, d, 0), d += 2, w(p, d, k), d += 4, w(p, d, g.length), d += 4, w(p, d, g.length), d += 4, _(p, d, m.length), d += 2, _(p, d, 0), d += 2, _(p, d, 0), d += 2, _(p, d, 0), d += 2, _(p, d, 0), d += 2, w(p, d, 0), d += 4, w(p, d, n[n.length - 1] ?? 0), d += 4, p.set(m, d), t.push(p);
-      }
-      const s = a;
-      let o = 0;
-      for (const f of t)
-        o += f.length;
-      const i = new Uint8Array(22);
-      let l = 0;
-      w(i, l, K), l += 4, _(i, l, 0), l += 2, _(i, l, 0), l += 2, _(i, l, e.size), l += 2, _(i, l, e.size), l += 2, w(i, l, o), l += 4, w(i, l, s), l += 4, _(i, l, 0);
-      let u = 0;
-      for (const f of r)
-        u += f.length;
-      for (const f of t)
-        u += f.length;
-      u += i.length;
-      const c = new Uint8Array(u);
-      let h = 0;
-      for (const f of r)
-        c.set(f, h), h += f.length;
-      for (const f of t)
-        c.set(f, h), h += f.length;
-      return c.set(i, h), c;
-    }
-    function pe(e) {
-      for (let r = e.length - 22; r >= 0; r--)
-        if (b(e, r) === K)
-          return r;
-      return -1;
-    }
-    function C(e, r) {
-      return (e[r] ?? 0) | (e[r + 1] ?? 0) << 8;
-    }
-    function b(e, r) {
-      return ((e[r] ?? 0) | (e[r + 1] ?? 0) << 8 | (e[r + 2] ?? 0) << 16 | (e[r + 3] ?? 0) << 24) >>> 0;
-    }
-    function _(e, r, t) {
-      e[r] = t & 255, e[r + 1] = t >> 8 & 255;
-    }
-    function w(e, r, t) {
-      e[r] = t & 255, e[r + 1] = t >> 8 & 255, e[r + 2] = t >> 16 & 255, e[r + 3] = t >> 24 & 255;
-    }
-    function _e(e) {
-      let r = "";
-      for (let t = 0; t < e.length; t++)
-        r += String.fromCharCode(e[t] ?? 0);
-      return r;
-    }
-    function ge(e) {
-      const r = new Uint8Array(e.length);
-      for (let t = 0; t < e.length; t++)
-        r[t] = e.charCodeAt(t);
-      return r;
-    }
-    function me(e) {
-      let r = 4294967295;
-      const t = ye();
-      for (let n = 0; n < e.length; n++) {
-        const a = e[n] ?? 0;
-        r = (r >>> 8 ^ (t[(r ^ a) & 255] ?? 0)) >>> 0;
-      }
-      return (r ^ 4294967295) >>> 0;
-    }
-    let S = null;
-    function ye() {
-      if (S) return S;
-      S = new Uint32Array(256);
-      for (let e = 0; e < 256; e++) {
-        let r = e;
-        for (let t = 0; t < 8; t++)
-          r = r & 1 ? 3988292384 ^ r >>> 1 : r >>> 1;
-        S[e] = r;
-      }
-      return S;
-    }
-    function ve(e, r) {
-      const t = new Uint8Array(r);
-      let n = 0, a = 0;
-      for (; a < e.length && n < r; ) {
-        const s = (e[a] ?? 0) & 1, o = (e[a] ?? 0) >> 1 & 3;
-        if (a++, o === 0) {
-          const i = C(e, a);
-          a += 4;
-          for (let l = 0; l < i && n < r; l++)
-            t[n++] = e[a++] ?? 0;
-        } else if (o === 1 || o === 2)
-          for (; a < e.length && n < r; )
-            t[n++] = e[a++] ?? 0;
-        if (s) break;
-      }
-      return t.slice(0, n);
-    }
-    function Oe(e, r) {
-      if (typeof e == "string")
-        return V(e, r);
-      if (M(e))
-        return we(e, r);
-      if (be(e))
-        return ke(e, r);
-      throw new v("Unrecognized format: not PNG, JSON, or CHARX");
-    }
-    function we(e, r) {
-      const t = (r == null ? void 0 : r.strict) ?? !1, n = (r == null ? void 0 : r.parseDecorators) ?? !0;
-      let a;
-      try {
-        a = E(e);
-      } catch {
-        throw new v("Invalid PNG file");
-      }
-      let s = null, o = null, i = !0, l = !0;
-      for (const f of a)
-        if (f.type === "tEXt") {
-          const { keyword: g, text: m, crcValid: k } = Z(f.data, f.crc);
-          g === $ ? (s = m, i = k) : g === N && (o = m, l = k);
-        }
-      let u = null, c = !0;
-      if (s ? (u = s, c = i) : o && (u = o, c = l), !u)
-        throw new v("No character card data found in PNG");
-      if (t && !c)
-        throw new v("CRC mismatch in card chunk");
-      let h;
-      try {
-        const f = I(u);
-        h = U(f);
-      } catch {
-        throw new v("Failed to decode base64 card data");
-      }
-      return V(h, { ...r, parseDecorators: n });
-    }
-    function V(e, r) {
-      const t = (r == null ? void 0 : r.strict) ?? !1, n = (r == null ? void 0 : r.parseDecorators) ?? !0;
-      let a;
-      try {
-        a = JSON.parse(e);
-      } catch {
-        throw new v("Invalid JSON");
-      }
-      if (!a || typeof a != "object")
-        throw new v("JSON must be an object");
-      const s = a;
-      if (s.spec === ee) {
-        const o = a;
-        return n && o.data.character_book && (o.data.character_book = A(o.data.character_book)), o;
-      } else {
-        if (s.spec === te)
-          return xe(a, n);
-        if ("name" in s && "description" in s)
-          return Ce(a);
-      }
-      throw t ? new v("Unrecognized card format") : new v("Unrecognized card format");
-    }
-    function ke(e, r) {
-      let t;
-      try {
-        t = fe(e);
-      } catch {
-        throw new v("Invalid CHARX/ZIP file");
-      }
-      const n = t.get("card.json");
-      if (!n)
-        throw new v("Missing card.json in CHARX file");
-      const a = U(n), s = V(a, r);
-      if (s.data.assets) {
-        for (const o of s.data.assets)
-          if (o.uri.startsWith("embeded://")) {
-            const i = o.uri.slice(10), l = t.get(i);
-            l && (o.uri = `data:application/octet-stream;base64,${Buffer.from(l).toString("base64")}`);
-          }
-      }
-      return s;
-    }
-    function Ue(e, r) {
-      const t = (r == null ? void 0 : r.parseDecorators) ?? !0;
-      if (typeof e == "string")
-        return G(e, t);
-      if (!M(e))
-        throw new v("Lorebook data must be PNG or JSON");
-      let n;
-      try {
-        n = E(e);
-      } catch {
-        throw new v("Invalid PNG file");
-      }
-      let a = null, s = null;
-      for (const l of n)
-        if (l.type === "tEXt") {
-          const { keyword: u, text: c } = Z(l.data, l.crc);
-          u === j ? a = c : u === N && (s = c);
-        }
-      const o = a ?? s;
-      if (!o)
-        throw new v("No lorebook data found in PNG");
-      let i;
-      try {
-        const l = I(o);
-        i = U(l);
-      } catch {
-        throw new v("Failed to decode base64 lorebook data");
-      }
-      return G(i, t);
-    }
-    function G(e, r) {
-      let t;
-      try {
-        t = JSON.parse(e);
-      } catch {
-        throw new v("Invalid JSON");
-      }
-      if (!t || typeof t != "object")
-        throw new v("JSON must be an object");
-      const n = t;
-      if (n.spec === "lorebook_v3" && n.data) {
-        const o = t.data;
-        return r ? A(o) : o;
-      }
-      if (Array.isArray(t)) {
-        const s = {
-          entries: t,
-          extensions: {}
-        };
-        return r ? A(s) : s;
-      }
-      const a = t;
-      return r ? A(a) : a;
-    }
-    function Z(e, r) {
-      let t = -1;
-      for (let c = 0; c < e.length; c++)
-        if (e[c] === 0) {
-          t = c;
-          break;
-        }
-      if (t === -1)
-        return { keyword: "", text: "", crcValid: !1 };
-      const n = e.slice(0, t);
-      let a = "";
-      for (let c = 0; c < n.length; c++)
-        a += String.fromCharCode(n[c] ?? 0);
-      const s = e.slice(t + 1);
-      let o = "";
-      for (let c = 0; c < s.length; c++)
-        o += String.fromCharCode(s[c] ?? 0);
-      const i = new Uint8Array([116, 69, 88, 116]), u = R(i, e) === r;
-      return { keyword: a, text: o, crcValid: u };
-    }
-    function Ce(e, r) {
-      return {
-        spec: "chara_card_v3",
-        spec_version: "3.0",
-        data: {
-          name: e.name,
-          description: e.description,
-          personality: e.personality,
-          scenario: e.scenario,
-          first_mes: e.first_mes,
-          mes_example: e.mes_example,
-          creator_notes: "",
-          system_prompt: "",
-          post_history_instructions: "",
-          alternate_greetings: [],
-          tags: [],
-          creator: "",
-          character_version: "",
-          extensions: {},
-          group_only_greetings: []
-        }
-      };
-    }
-    function xe(e, r) {
-      const t = {
-        spec: "chara_card_v3",
-        spec_version: "3.0",
-        data: {
-          name: e.data.name,
-          description: e.data.description,
-          personality: e.data.personality,
-          scenario: e.data.scenario,
-          first_mes: e.data.first_mes,
-          mes_example: e.data.mes_example,
-          creator_notes: e.data.creator_notes,
-          system_prompt: e.data.system_prompt,
-          post_history_instructions: e.data.post_history_instructions,
-          alternate_greetings: e.data.alternate_greetings,
-          tags: e.data.tags,
-          creator: e.data.creator,
-          character_version: e.data.character_version,
-          extensions: e.data.extensions,
-          group_only_greetings: [],
-          ...e.data.character_book !== void 0 && { character_book: e.data.character_book }
-        }
-      };
-      return r && t.data.character_book && (t.data.character_book = A(t.data.character_book)), t;
-    }
-    function A(e) {
-      return {
-        ...e,
-        entries: e.entries.map((r) => {
-          const { decorators: t, content: n } = oe(r.content);
-          return {
-            ...r,
-            content: n,
-            decorators: t
-          };
-        })
-      };
-    }
-    function M(e) {
-      return e.length < 8 ? !1 : e[0] === 137 && e[1] === 80 && e[2] === 78 && e[3] === 71 && e[4] === 13 && e[5] === 10 && e[6] === 26 && e[7] === 10;
-    }
-    function be(e) {
-      return e.length < 4 ? !1 : e[0] === 80 && e[1] === 75 && e[2] === 3 && e[3] === 4 || e[0] === 80 && e[1] === 75 && e[2] === 5 && e[3] === 6;
-    }
-    function $e(e, r, t) {
-      const n = (t == null ? void 0 : t.includeV2Chunk) ?? !0, a = (t == null ? void 0 : t.serializeDecorators) ?? !0, o = E(r).filter(
-        (m) => !(m.type === "tEXt" && (O(m.data) === $ || O(m.data) === N))
-      ), i = a ? Se(e) : e, l = JSON.stringify(i), u = D(l), c = P(u), h = T($, c), f = o.findIndex((m) => m.type === "IEND"), g = [...o];
-      if (f >= 0 ? g.splice(f, 0, h) : g.push(h), n) {
-        const m = Ae(i), k = JSON.stringify(m), y = D(k), d = P(y), p = T(N, d), x = g.findIndex((Q) => Q.type === "IEND");
-        x >= 0 ? g.splice(x, 0, p) : g.push(p);
-      }
-      return z(g);
-    }
-    function je(e) {
-      return JSON.stringify(e, null, 2);
-    }
-    function Te(e, r) {
-      const t = new Map(), n = JSON.parse(JSON.stringify(e));
-      if (r != null && r.assets) {
-        n.data.assets = [];
-        for (const s of r.assets) {
-          const o = `assets/${s.type}/${s.name}.${s.ext}`;
-          t.set(o, s.data), n.data.assets.push({
-            type: s.type,
-            name: s.name,
-            uri: `embeded://${o}`,
-            ext: s.ext
-          });
-        }
-      }
-      const a = JSON.stringify(n, null, 2);
-      return t.set("card.json", D(a)), he(t);
-    }
-    function Pe(e, r) {
-      const n = E(r).filter(
-        (f) => !(f.type === "tEXt" && (O(f.data) === j || O(f.data) === N))
-      ), s = {
-        spec: "lorebook_v3",
-        data: Y(e)
-      }, o = JSON.stringify(s), i = D(o), l = P(i), u = T(j, l), c = n.findIndex((f) => f.type === "IEND"), h = [...n];
-      return c >= 0 ? h.splice(c, 0, u) : h.push(u), z(h);
-    }
-    function Je(e) {
-      return JSON.stringify(
-        {
-          spec: "lorebook_v3",
-          data: e
-        },
-        null,
-        2
-      );
-    }
-    function O(e) {
-      let r = "";
-      for (let t = 0; t < e.length && e[t] !== 0; t++)
-        r += String.fromCharCode(e[t] ?? 0);
-      return r;
-    }
-    function Se(e) {
-      return e.data.character_book ? {
-        ...e,
-        data: {
-          ...e.data,
-          character_book: Y(e.data.character_book)
-        }
-      } : e;
-    }
-    function Y(e) {
-      return {
-        ...e,
-        entries: e.entries.map((r) => {
-          if (!r.decorators || r.decorators.length === 0)
-            return r;
-          const t = ce(r.decorators, r.content), { decorators: n, ...a } = r;
-          return {
-            ...a,
-            content: t
-          };
-        })
-      };
-    }
-    function Ae(e) {
-      return {
-        spec: "chara_card_v2",
-        spec_version: "2.0",
-        data: {
-          name: e.data.name,
-          description: e.data.description,
-          personality: e.data.personality,
-          scenario: e.data.scenario,
-          first_mes: e.data.first_mes,
-          mes_example: e.data.mes_example,
-          creator_notes: e.data.creator_notes,
-          system_prompt: e.data.system_prompt,
-          post_history_instructions: e.data.post_history_instructions,
-          alternate_greetings: e.data.alternate_greetings,
-          tags: e.data.tags,
-          creator: e.data.creator,
-          character_version: e.data.character_version,
-          extensions: {
-            ...e.data.extensions,
-            ...e.data.nickname ? { v3_nickname: e.data.nickname } : {},
-            ...e.data.group_only_greetings.length > 0 ? { v3_group_only_greetings: e.data.group_only_greetings } : {},
-            ...e.data.assets && e.data.assets.length > 0 ? { v3_assets: e.data.assets } : {}
-          },
-          ...e.data.character_book !== void 0 && { character_book: e.data.character_book }
-        }
-      };
-    }
-    function Be(e, r) {
-      const t = [], n = (r == null ? void 0 : r.strict) ?? !1;
-      if (!e || typeof e != "object")
-        return { valid: !1, errors: ["Card must be an object"] };
-      const a = e;
-      if (a.spec !== "chara_card_v3" && t.push('Invalid spec: expected "chara_card_v3"'), !a.data || typeof a.data != "object")
-        return { valid: !1, errors: [...t, "Missing or invalid data object"] };
-      const s = a.data, o = [
-        "name",
-        "description",
-        "personality",
-        "scenario",
-        "first_mes",
-        "mes_example"
-      ];
-      for (const l of o) {
-        const u = s[l];
-        typeof u != "string" ? t.push(`data.${l}: expected string, got ${typeof u}`) : n && l === "name" && u.trim() === "" && t.push("data.name: required string is empty");
-      }
-      const i = [
-        "creator_notes",
-        "system_prompt",
-        "post_history_instructions",
-        "creator",
-        "character_version"
-      ];
-      for (const l of i)
-        s[l] !== void 0 && typeof s[l] != "string" && t.push(`data.${l}: expected string, got ${typeof s[l]}`);
-      if (s.alternate_greetings !== void 0 && !Array.isArray(s.alternate_greetings) && t.push("data.alternate_greetings: expected array"), s.tags !== void 0 && !Array.isArray(s.tags) && t.push("data.tags: expected array"), s.group_only_greetings !== void 0 && !Array.isArray(s.group_only_greetings) && t.push("data.group_only_greetings: expected array"), s.extensions !== void 0 && typeof s.extensions != "object" && t.push("data.extensions: expected object"), n) {
-        if (s.extensions && typeof s.extensions == "object") {
-          const l = new Set(["depth", "talkativeness", "fav"]), u = s.extensions;
-          for (const c of Object.keys(u))
-            !l.has(c) && !c.startsWith("v3_") && t.push(`data.extensions.${c}: unknown extension key`);
-        }
-        if (s.assets && Array.isArray(s.assets))
-          for (let l = 0; l < s.assets.length; l++) {
-            const u = s.assets[l];
-            if (!u || typeof u != "object") continue;
-            const c = u;
-            if (c.uri && typeof c.uri == "string") {
-              const h = c.uri;
-              !h.startsWith("http://") && !h.startsWith("https://") && !h.startsWith("data:") && !h.startsWith("embeded://") && !h.startsWith("ccdefault:") && t.push(`data.assets[${String(l)}].uri: invalid URI format`);
-            }
-          }
-        if (s.character_book && typeof s.character_book == "object") {
-          const l = s.character_book;
-          if (Array.isArray(l.entries))
-            for (let u = 0; u < l.entries.length; u++) {
-              const c = l.entries[u];
-              if (c && c.decorators && Array.isArray(c.decorators))
-                for (const h of c.decorators)
-                  typeof h != "object" && t.push(`data.character_book.entries[${String(u)}].decorators: invalid decorator`);
-            }
-        }
-      }
-      return t.length === 0 ? { valid: !0 } : { valid: !1, errors: t };
-    }
-    function Re(e, r) {
-      const t = [];
-      if (!e || typeof e != "object")
-        return { valid: !1, errors: ["Lorebook must be an object"] };
-      const n = e;
-      if (!Array.isArray(n.entries))
-        return { valid: !1, errors: ["Lorebook must have entries array"] };
-      for (let a = 0; a < n.entries.length; a++) {
-        const s = n.entries[a];
-        if (!s || typeof s != "object") {
-          t.push(`entries[${String(a)}]: must be an object`);
-          continue;
-        }
-        const o = s;
-        Array.isArray(o.keys) || t.push(`entries[${String(a)}].keys: expected array`), typeof o.content != "string" && t.push(`entries[${String(a)}].content: expected string, got ${typeof o.content}`), typeof o.enabled != "boolean" && t.push(`entries[${String(a)}].enabled: expected boolean, got ${typeof o.enabled}`), typeof o.insertion_order != "number" && t.push(
-          `entries[${String(a)}].insertion_order: expected number, got ${typeof o.insertion_order}`
-        ), typeof o.use_regex != "boolean" && t.push(`entries[${String(a)}].use_regex: expected boolean, got ${typeof o.use_regex}`);
-      }
-      return n.name !== void 0 && typeof n.name != "string" && t.push("name: expected string"), n.description !== void 0 && typeof n.description != "string" && t.push("description: expected string"), n.scan_depth !== void 0 && typeof n.scan_depth != "number" && t.push("scan_depth: expected number"), n.token_budget !== void 0 && typeof n.token_budget != "number" && t.push("token_budget: expected number"), n.recursive_scanning !== void 0 && typeof n.recursive_scanning != "boolean" && t.push("recursive_scanning: expected boolean"), n.extensions !== void 0 && typeof n.extensions != "object" && t.push("extensions: expected object"), t.length === 0 ? { valid: !0 } : { valid: !1, errors: t };
-    }
-
-    // Expose exports to window
-    window.CardsError = W;
-    window.ParseError = v;
-    window.ValidationError = De;
-    window.computeCRC32 = R;
-    window.decodeBase64 = I;
-    window.encodeBase64 = P;
-    window.parseDecorators = oe;
-    window.serializeDecorators = ce;
-    window.validateCard = Be;
-    window.validateLorebook = Re;
-    window.encodeUTF8 = D;
-    window.decodeUTF8 = U;
-    // PNG-specific exports
-    window.writeCardToPng = $e;
-    window.readCardFromPng = we;
-    window.isPngSignature = M;
-    window.createTextChunk = T;
-    window.parsePngChunks = E;
-    window.writePngChunks = z;
-    // ============================================
-  </script>
-
-  <script>
-    // ============================================
-    // DEMO AND TEST CODE
-    // ============================================
-
-    const tests = [
-      // Decorator parsing tests
-      {
-        name: 'parseDecorators: depth decorator',
-        fn: async () => {
-          const result = window.parseDecorators('@@depth 4\nContent')
-          if (result.decorators.length !== 1) throw new Error(`Expected 1 decorator, got ${result.decorators.length}`)
-          if (result.decorators[0].type !== 'depth') throw new Error(`Expected type 'depth', got '${result.decorators[0].type}'`)
-          if (result.decorators[0].value !== 4) throw new Error(`Expected value 4, got ${result.decorators[0].value}`)
-          if (result.content !== 'Content') throw new Error(`Expected content 'Content', got '${result.content}'`)
-        }
-      },
-      {
-        name: 'parseDecorators: role decorator',
-        fn: async () => {
-          const result = window.parseDecorators('@@role system\nContent')
-          if (result.decorators[0].type !== 'role') throw new Error('Wrong type')
-          if (result.decorators[0].value !== 'system') throw new Error('Wrong value')
-        }
-      },
-      {
-        name: 'parseDecorators: activate decorator (boolean)',
-        fn: async () => {
-          const result = window.parseDecorators('@@activate\nContent')
-          if (result.decorators[0].type !== 'activate') throw new Error('Wrong type')
-          if (result.content !== 'Content') throw new Error('Wrong content')
-        }
-      },
-      {
-        name: 'parseDecorators: additional_keys (array)',
-        fn: async () => {
-          const result = window.parseDecorators('@@additional_keys sword, weapon, combat\nContent')
-          if (result.decorators[0].type !== 'additional_keys') throw new Error('Wrong type')
-          if (!Array.isArray(result.decorators[0].value)) throw new Error('Value should be array')
-          if (result.decorators[0].value.length !== 3) throw new Error('Wrong array length')
-          if (result.decorators[0].value[0] !== 'sword') throw new Error('Wrong first key')
-        }
-      },
-      {
-        name: 'parseDecorators: multiple decorators',
-        fn: async () => {
-          const result = window.parseDecorators('@@depth 4\n@@role system\n@@activate\nContent')
-          if (result.decorators.length !== 3) throw new Error(`Expected 3 decorators, got ${result.decorators.length}`)
-          if (result.content !== 'Content') throw new Error('Wrong content')
-        }
-      },
-      {
-        name: 'parseDecorators: position decorator',
-        fn: async () => {
-          const result = window.parseDecorators('@@position after_char\nContent')
-          if (result.decorators[0].type !== 'position') throw new Error('Wrong type')
-          if (result.decorators[0].value !== 'after_char') throw new Error('Wrong value')
-        }
-      },
-      {
-        name: 'parseDecorators: scan_depth decorator',
-        fn: async () => {
-          const result = window.parseDecorators('@@scan_depth 100\nContent')
-          if (result.decorators[0].type !== 'scan_depth') throw new Error('Wrong type')
-          if (result.decorators[0].value !== 100) throw new Error('Wrong value')
-        }
-      },
-      {
-        name: 'parseDecorators: unknown decorator preserved',
-        fn: async () => {
-          const result = window.parseDecorators('@@custom_thing value\nContent')
-          if (result.decorators[0].type !== 'unknown') throw new Error('Should be unknown type')
-          if (result.decorators[0].name !== 'custom_thing') throw new Error('Wrong name')
-          if (result.decorators[0].value !== 'value') throw new Error('Wrong value')
-        }
-      },
-
-      // Serialization tests
-      {
-        name: 'serializeDecorators: depth',
-        fn: async () => {
-          const result = window.serializeDecorators([{ type: 'depth', value: 5 }], 'Content')
-          if (!result.includes('@@depth 5')) throw new Error('Missing depth decorator')
-          if (!result.includes('Content')) throw new Error('Missing content')
-        }
-      },
-      {
-        name: 'serializeDecorators: multiple decorators',
-        fn: async () => {
-          const decorators = [
-            { type: 'depth', value: 4 },
-            { type: 'role', value: 'system' }
-          ]
-          const result = window.serializeDecorators(decorators, 'Content')
-          if (!result.includes('@@depth 4')) throw new Error('Missing depth')
-          if (!result.includes('@@role system')) throw new Error('Missing role')
-          if (!result.includes('Content')) throw new Error('Missing content')
-        }
-      },
-      {
-        name: 'serializeDecorators: array values',
-        fn: async () => {
-          const result = window.serializeDecorators([
-            { type: 'additional_keys', value: ['sword', 'weapon'] }
-          ], 'Content')
-          if (!result.includes('@@additional_keys sword,weapon')) throw new Error('Wrong serialization')
-        }
-      },
-      {
-        name: 'serializeDecorators: round-trip consistency',
-        fn: async () => {
-          const original = '@@depth 4\n@@role system\nContent'
-          const parsed = window.parseDecorators(original)
-          const serialized = window.serializeDecorators(parsed.decorators, parsed.content)
-          const reparsed = window.parseDecorators(serialized)
-          if (reparsed.decorators.length !== parsed.decorators.length) throw new Error('Round-trip failed')
-          if (reparsed.content !== parsed.content) throw new Error('Content changed')
-        }
-      },
-
-      // PNG tests
-      {
-        name: 'PNG: signature detection valid',
-        fn: async () => {
-          const pngSig = new Uint8Array([137, 80, 78, 71, 13, 10, 26, 10])
-          if (!window.isPngSignature(pngSig)) throw new Error('Valid PNG signature not recognized')
-        }
-      },
-      {
-        name: 'PNG: signature detection invalid',
-        fn: async () => {
-          const notPng = new Uint8Array([0, 0, 0, 0, 0, 0, 0, 0])
-          if (window.isPngSignature(notPng)) throw new Error('Invalid data recognized as PNG')
-        }
-      },
-      {
-        name: 'PNG: create tEXt chunk',
-        fn: async () => {
-          const chunk = window.createTextChunk('test', 'value')
-          if (chunk.type !== 'tEXt') throw new Error('Wrong chunk type')
-          if (chunk.data.length < 5) throw new Error('Chunk data too short')
-          if (typeof chunk.crc !== 'number') throw new Error('CRC not computed')
-        }
-      },
-      {
-        name: 'PNG: write and read card round-trip',
-        fn: async () => {
-          // Create a minimal valid V3 card
-          const card = {
-            spec: 'chara_card_v3',
-            spec_version: '3.0',
-            data: {
-              name: 'Test',
-              description: 'Test desc',
-              personality: 'Test pers',
-              scenario: 'Test scen',
-              first_mes: 'Hello',
-              mes_example: 'Ex',
-              creator_notes: '',
-              system_prompt: '',
-              post_history_instructions: '',
-              alternate_greetings: [],
-              tags: ['test'],
-              creator: 'tester',
-              character_version: '1.0',
-              extensions: {},
-              group_only_greetings: []
-            }
-          }
-
-          // Create a minimal PNG (just signature + IEND)
-          const minimalPng = new Uint8Array([
-            137, 80, 78, 71, 13, 10, 26, 10, // PNG signature
-            0, 0, 0, 0, // IEND length
-            73, 69, 78, 68, // "IEND"
-            0xAE, 0x42, 0x60, 0x82 // IEND CRC
-          ])
-
-          // Write card to PNG
-          const pngWithCard = window.writeCardToPng(card, minimalPng)
-          if (pngWithCard.length < minimalPng.length) throw new Error('PNG not written')
-
-          // Read it back
-          const readCard = window.readCardFromPng(pngWithCard)
-          if (readCard.data.name !== 'Test') throw new Error('Name mismatch')
-          if (readCard.data.tags[0] !== 'test') throw new Error('Tags mismatch')
-        }
-      },
-      {
-        name: 'PNG: card with decorators',
-        fn: async () => {
-          const card = {
-            spec: 'chara_card_v3',
-            spec_version: '3.0',
-            data: {
-              name: 'Test',
-              description: 'Test',
-              personality: 'Test',
-              scenario: 'Test',
-              first_mes: 'Hello',
-              mes_example: 'Ex',
-              creator_notes: '',
-              system_prompt: '',
-              post_history_instructions: '',
-              alternate_greetings: [],
-              tags: [],
-              creator: '',
-              character_version: '',
-              extensions: {},
-              group_only_greetings: [],
-              character_book: {
-                entries: [{
-                  keys: ['key1'],
-                  content: 'Test content',
-                  enabled: true,
-                  insertion_order: 100,
-                  use_regex: false,
-                  decorators: [{ type: 'depth', value: 5 }]
-                }],
-                extensions: {}
-              }
-            }
-          }
-
-          const minimalPng = new Uint8Array([
-            137, 80, 78, 71, 13, 10, 26, 10,
-            0, 0, 0, 0, 73, 69, 78, 68, 0xAE, 0x42, 0x60, 0x82
-          ])
-
-          const pngWithCard = window.writeCardToPng(card, minimalPng, { serializeDecorators: false })
-          const readCard = window.readCardFromPng(pngWithCard, { parseDecorators: false })
-
-          if (!readCard.data.character_book) throw new Error('Lorebook missing')
-          if (!readCard.data.character_book.entries[0].decorators) throw new Error('Decorators missing')
-          if (readCard.data.character_book.entries[0].decorators[0].type !== 'depth') throw new Error('Decorator type mismatch')
-        }
-      },
-
-      // Validation tests
-      {
-        name: 'validateCard: valid V3 card',
-        fn: async () => {
-          const card = {
-            spec: 'chara_card_v3',
-            spec_version: '3.0',
-            data: {
-              name: 'Test Character',
-              description: 'A test character',
-              personality: 'Friendly',
-              scenario: 'Test scenario',
-              first_mes: 'Hello!',
-              mes_example: 'Example',
-              creator_notes: '',
-              system_prompt: '',
-              post_history_instructions: '',
-              alternate_greetings: [],
-              tags: [],
-              creator: '',
-              character_version: '',
-              extensions: {},
-              group_only_greetings: []
-            }
-          }
-          const result = window.validateCard(card)
-          if (!result.valid) throw new Error(`Validation failed: ${result.errors?.join(', ')}`)
-        }
-      },
-      {
-        name: 'validateCard: missing required field',
-        fn: async () => {
-          const card = {
-            spec: 'chara_card_v3',
-            data: {
-              name: 'Test',
-              // missing other required fields
-            }
-          }
-          const result = window.validateCard(card)
-          if (result.valid) throw new Error('Should have failed validation')
-          if (!result.errors || result.errors.length === 0) throw new Error('Should have errors')
-        }
-      },
-      {
-        name: 'validateCard: wrong spec',
-        fn: async () => {
-          const card = {
-            spec: 'wrong_spec',
-            data: {
-              name: 'Test',
-              description: 'Test',
-              personality: '',
-              scenario: '',
-              first_mes: '',
-              mes_example: ''
-            }
-          }
-          const result = window.validateCard(card)
-          if (result.valid) throw new Error('Should fail with wrong spec')
-        }
-      },
-      {
-        name: 'validateLorebook: valid lorebook',
-        fn: async () => {
-          const lorebook = {
-            entries: [
-              {
-                keys: ['key1', 'key2'],
-                content: 'Test content',
-                enabled: true,
-                insertion_order: 100,
-                use_regex: false
-              }
-            ],
-            extensions: {}
-          }
-          const result = window.validateLorebook(lorebook)
-          if (!result.valid) throw new Error(`Validation failed: ${result.errors?.join(', ')}`)
-        }
-      },
-      {
-        name: 'validateLorebook: missing entries array',
-        fn: async () => {
-          const lorebook = { name: 'Test' }
-          const result = window.validateLorebook(lorebook)
-          if (result.valid) throw new Error('Should fail without entries')
-        }
-      },
-      {
-        name: 'validateLorebook: invalid entry',
-        fn: async () => {
-          const lorebook = {
-            entries: [
-              {
-                keys: ['key1'],
-                content: 'Test',
-                enabled: 'wrong', // should be boolean
-                insertion_order: 100,
-                use_regex: false
-              }
-            ]
-          }
-          const result = window.validateLorebook(lorebook)
-          if (result.valid) throw new Error('Should fail with wrong type')
-        }
-      },
-
-      // Base64 tests
-      {
-        name: 'encodeBase64: simple text',
-        fn: async () => {
-          const bytes = window.encodeUTF8('Hello')
-          const result = window.encodeBase64(bytes)
-          if (result !== 'SGVsbG8=') throw new Error(`Expected 'SGVsbG8=', got '${result}'`)
-        }
-      },
-      {
-        name: 'decodeBase64: simple text',
-        fn: async () => {
-          const bytes = window.decodeBase64('SGVsbG8=')
-          const result = window.decodeUTF8(bytes)
-          if (result !== 'Hello') throw new Error(`Expected 'Hello', got '${result}'`)
-        }
-      },
-      {
-        name: 'base64: round-trip with special chars',
-        fn: async () => {
-          const original = 'Hello, World! 🎉'
-          const bytes = window.encodeUTF8(original)
-          const encoded = window.encodeBase64(bytes)
-          const decoded = window.decodeBase64(encoded)
-          const result = window.decodeUTF8(decoded)
-          if (result !== original) throw new Error(`Round-trip failed: expected '${original}', got '${result}'`)
-        }
-      },
-      {
-        name: 'base64: empty string',
-        fn: async () => {
-          const bytes = window.encodeUTF8('')
-          const encoded = window.encodeBase64(bytes)
-          const decoded = window.decodeBase64(encoded)
-          const result = window.decodeUTF8(decoded)
-          if (result !== '') throw new Error('Empty string failed')
-        }
-      },
-
-      // CRC-32 tests
-      {
-        name: 'computeCRC32: simple data',
-        fn: async () => {
-          const data = new Uint8Array([104, 101, 108, 108, 111]) // "hello"
-          const crc = window.computeCRC32(data)
-          if (typeof crc !== 'number') throw new Error('CRC should be a number')
-          if (crc < 0) throw new Error('CRC should be positive')
-        }
-      },
-      {
-        name: 'computeCRC32: consistency',
-        fn: async () => {
-          const data = new Uint8Array([1, 2, 3, 4, 5])
-          const crc1 = window.computeCRC32(data)
-          const crc2 = window.computeCRC32(data)
-          if (crc1 !== crc2) throw new Error('CRC should be consistent')
-        }
-      },
-      {
-        name: 'computeCRC32: different data gives different CRC',
-        fn: async () => {
-          const data1 = new Uint8Array([1, 2, 3])
-          const data2 = new Uint8Array([4, 5, 6])
-          const crc1 = window.computeCRC32(data1)
-          const crc2 = window.computeCRC32(data2)
-          if (crc1 === crc2) throw new Error('Different data should give different CRC')
-        }
-      },
-      {
-        name: 'computeCRC32: empty data',
-        fn: async () => {
-          const data = new Uint8Array([])
-          const crc = window.computeCRC32(data)
-          if (typeof crc !== 'number') throw new Error('Should return a number')
-        }
-      },
-
-      // Error handling tests
-      {
-        name: 'parseDecorators: no decorators',
-        fn: async () => {
-          const result = window.parseDecorators('Just content, no decorators')
-          if (result.decorators.length !== 0) throw new Error('Should have no decorators')
-          if (result.content !== 'Just content, no decorators') throw new Error('Wrong content')
-        }
-      },
-      {
-        name: 'serializeDecorators: empty decorators array',
-        fn: async () => {
-          const result = window.serializeDecorators([], 'Content')
-          if (result !== 'Content') throw new Error('Should just return content')
-        }
-      }
-    ]
-
-    function logResult(name, status, error) {
-      const output = document.getElementById('test-output')
-      const className = status === 'PASS' ? 'test-pass' : 'test-fail'
-      const errorMsg = error ? ` - ${error}` : ''
-      output.innerHTML += `<div class="${className}">[${status}] ${name}${errorMsg}</div>`
-      output.scrollTop = output.scrollHeight
-    }
-
-    function logSummary(passed, failed) {
-      const summary = document.getElementById('summary')
-      const total = passed + failed
-      const className = failed === 0 ? 'test-pass' : 'test-fail'
-      summary.innerHTML = `<span class="${className}">✓ ${passed}/${total} tests passed</span>`
-      if (failed > 0) {
-        summary.innerHTML += ` <span class="test-fail">✗ ${failed} failed</span>`
-      }
-    }
-
-    async function runAllTests() {
-      clearResults()
-      let passed = 0, failed = 0
-      for (const test of tests) {
-        try {
-          await test.fn()
-          logResult(test.name, 'PASS')
-          passed++
-        } catch (e) {
-          logResult(test.name, 'FAIL', e.message)
-          failed++
-        }
-      }
-      logSummary(passed, failed)
-    }
-
-    function clearResults() {
-      document.getElementById('test-output').innerHTML = ''
-      document.getElementById('summary').innerHTML = ''
-    }
-
-    // Interactive demo functions
-    function testDecoratorParser() {
-      const input = document.getElementById('decorator-input').value
-      const output = document.getElementById('decorator-output')
-      try {
-        const result = window.parseDecorators(input)
-        output.textContent = 'Parsed Result:\n\n' +
-          'Decorators: ' + JSON.stringify(result.decorators, null, 2) + '\n\n' +
-          'Content: ' + JSON.stringify(result.content)
-      } catch (e) {
-        output.textContent = 'Error: ' + e.message
-      }
-    }
-
-    function testDecoratorSerializer() {
-      const type = document.getElementById('decorator-type').value
-      const value = document.getElementById('decorator-value').value
-      const content = document.getElementById('serialize-content').value
-      const output = document.getElementById('serialize-output')
-
-      try {
-        let decorator
-
-        if (type === 'depth' || type === 'scan_depth') {
-          decorator = { type: type, value: parseInt(value, 10) }
-        } else if (type === 'activate') {
-          decorator = { type: type }
-        } else if (type === 'additional_keys') {
-          decorator = { type: type, value: value.split(',').map(s => s.trim()) }
-        } else {
-          decorator = { type: type, value: value }
-        }
-
-        const result = window.serializeDecorators([decorator], content)
-        output.textContent = 'Serialized Result:\n\n' + result
-      } catch (e) {
-        output.textContent = 'Error: ' + e.message
-      }
-    }
-
-    function testBase64Encode() {
-      const input = document.getElementById('base64-input').value
-      const output = document.getElementById('base64-output')
-      try {
-        const bytes = window.encodeUTF8(input)
-        const encoded = window.encodeBase64(bytes)
-        output.textContent = 'Base64 Encoded:\n\n' + encoded
-      } catch (e) {
-        output.textContent = 'Error: ' + e.message
-      }
-    }
-
-    function testBase64Decode() {
-      const input = document.getElementById('base64-input').value
-      const output = document.getElementById('base64-output')
-      try {
-        const bytes = window.decodeBase64(input)
-        const decoded = window.decodeUTF8(bytes)
-        output.textContent = 'Base64 Decoded:\n\n' + decoded
-      } catch (e) {
-        output.textContent = 'Error: ' + e.message
-      }
-    }
-
-    function testCRC32() {
-      const input = document.getElementById('crc-input').value
-      const output = document.getElementById('crc-output')
-      try {
-        const bytes = window.encodeUTF8(input)
-        const crc = window.computeCRC32(bytes)
-        output.textContent = 'CRC-32 Checksum:\n\n' +
-          'Decimal: ' + crc + '\n' +
-          'Hexadecimal: 0x' + crc.toString(16).toUpperCase().padStart(8, '0')
-      } catch (e) {
-        output.textContent = 'Error: ' + e.message
-      }
-    }
-
-    // PNG Card Reader functionality
-    function setupDropZone() {
-      const dropZone = document.getElementById('drop-zone')
-      const fileInput = document.getElementById('file-input')
-
-      // Click to browse
-      dropZone.addEventListener('click', () => fileInput.click())
-
-      // Drag and drop handlers
-      dropZone.addEventListener('dragover', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        dropZone.classList.add('dragover')
-      })
-
-      dropZone.addEventListener('dragleave', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        dropZone.classList.remove('dragover')
-      })
-
-      dropZone.addEventListener('drop', (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        dropZone.classList.remove('dragover')
-
-        const files = e.dataTransfer.files
-        if (files.length > 0) {
-          handleFile(files[0])
-        }
-      })
-
-      // File input handler
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-          handleFile(e.target.files[0])
-        }
-      })
-    }
-
-    function handleFile(file) {
-      if (!file.type.startsWith('image/png')) {
-        displayError('Please select a PNG file')
-        return
-      }
-
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        try {
-          const arrayBuffer = e.target.result
-          const uint8Array = new Uint8Array(arrayBuffer)
-
-          // Try to read the card
-          const card = window.readCardFromPng(uint8Array)
-
-          // Create image preview
-          const imageUrl = URL.createObjectURL(file)
-
-          displayCard(card, imageUrl)
-        } catch (error) {
-          displayError('Failed to read card: ' + error.message)
-        }
-      }
-      reader.readAsArrayBuffer(file)
-    }
-
-    function displayCard(card, imageUrl) {
-      const resultDiv = document.getElementById('card-result')
-
-      let html = '<div class="card-preview">'
-      html += `<img src="${imageUrl}" alt="Character Card">`
-      html += '<div class="card-info">'
-
-      // Display key information
-      html += `<div class="field-label">Name:</div><div>${escapeHtml(card.data.name)}</div>`
-
-      if (card.data.creator) {
-        html += `<div class="field-label">Creator:</div><div>${escapeHtml(card.data.creator)}</div>`
-      }
-
-      html += `<div class="field-label">Spec:</div><div>${escapeHtml(card.spec)} v${escapeHtml(card.spec_version)}</div>`
-
-      if (card.data.description) {
-        html += `<div class="field-label">Description:</div><div>${escapeHtml(truncate(card.data.description, 200))}</div>`
-      }
-
-      if (card.data.personality) {
-        html += `<div class="field-label">Personality:</div><div>${escapeHtml(truncate(card.data.personality, 150))}</div>`
-      }
-
-      if (card.data.tags && card.data.tags.length > 0) {
-        html += `<div class="field-label">Tags:</div><div>${card.data.tags.map(escapeHtml).join(', ')}</div>`
-      }
-
-      if (card.data.character_book && card.data.character_book.entries) {
-        html += `<div class="field-label">Lorebook Entries:</div><div>${card.data.character_book.entries.length} entries</div>`
-      }
-
-      html += '</div></div>'
-
-      // Full JSON display
-      html += '<div class="field-label" style="margin-top: 20px;">Full Card Data (JSON):</div>'
-      html += `<div class="card-display">${escapeHtml(JSON.stringify(card, null, 2))}</div>`
-
-      resultDiv.innerHTML = html
-    }
-
-    function displayError(message) {
-      const resultDiv = document.getElementById('card-result')
-      resultDiv.innerHTML = `<div class="output-box" style="color: red; border-color: red;">${escapeHtml(message)}</div>`
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div')
-      div.textContent = text
-      return div.innerHTML
-    }
-
-    function truncate(text, maxLength) {
-      if (text.length <= maxLength) return text
-      return text.substring(0, maxLength) + '...'
-    }
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      setupDropZone()
-    })
-  </script>
+  <script type="module" src="demo-files/main.js"></script>
 </body>
 </html>
