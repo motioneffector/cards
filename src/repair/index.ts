@@ -324,14 +324,14 @@ function mergeCardData(
   for (const key of Object.keys(existing)) {
     if (FORBIDDEN_KEYS.has(key)) continue
     if (!Object.hasOwn(existing, key)) continue
-    result[key as keyof CharacterCard['data']] = existing[key as keyof CharacterCard['data']]
+    ;(result as Record<string, unknown>)[key] = existing[key as keyof CharacterCard['data']]
   }
 
   // Safely copy incoming properties
   for (const key of Object.keys(incoming)) {
     if (FORBIDDEN_KEYS.has(key)) continue
     if (!Object.hasOwn(incoming, key)) continue
-    result[key as keyof CharacterCard['data']] = incoming[key as keyof CharacterCard['data']]
+    ;(result as Record<string, unknown>)[key] = incoming[key as keyof CharacterCard['data']]
   }
 
   // Prefer non-empty values - only set if defined
