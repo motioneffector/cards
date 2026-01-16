@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation &amp; Repair - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Validation &amp; Repair</h1>
+<p>Check card structure before saving and recover data from corrupted files.</p>
+<h2>Prerequisites</h2>
+<p>Before starting, you should:</p>
+<ul>
+<li><a href="concept-character-cards.html">Understand the card structure</a></li>
+<li><a href="concept-validation-and-repair.html">Know how validation and repair work</a></li>
+</ul>
+<h2>Overview</h2>
+<p>We&#39;ll cover:</p>
+<ol>
+<li>Validating cards before saving</li>
+<li>Interpreting validation errors</li>
+<li>Repairing corrupted cards</li>
+<li>Re-exporting repaired data</li>
+</ol>
+<h2>Step 1: Validate Cards Before Saving</h2>
+<p>Run validation before writing to catch problems early:</p>
+<pre><code class="language-typescript">import { validateCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+function safeWriteCard(card: CharacterCard, imageBytes: Uint8Array): Uint8Array {
+  const result = validateCard(card)
+
+  if (!result.valid) {
+    console.error(&#39;Card validation failed:&#39;)
+    for (const error of result.errors ?? []) {
+      console.error(`  - ${error}`)
+    }
+    throw new Error(&#39;Cannot save invalid card&#39;)
+  }
+
+  return writeCardToPng(card, imageBytes)
+}
+</code></pre>
+<h2>Step 2: Interpret Validation Errors</h2>
+<p>Validation errors describe what&#39;s wrong:</p>
+<pre><code class="language-typescript">import { validateCard } from &#39;@motioneffector/cards&#39;
+
+const result = validateCard(card)
+
+if (!result.valid) {
+  for (const error of result.errors ?? []) {
+    // Errors follow a pattern: &quot;path: problem&quot;
+    // Examples:
+    // &quot;data.name: expected string, got number&quot;
+    // &quot;data.tags: expected array&quot;
+    // &quot;Invalid spec: expected \&quot;chara_card_v3\&quot;&quot;
+
+    if (error.includes(&#39;data.name&#39;)) {
+      // Fix name field
+      card.data.name = String(card.data.name ?? &#39;Unknown&#39;)
+    }
+    if (error.includes(&#39;data.tags&#39;)) {
+      // Fix tags field
+      card.data.tags = Array.isArray(card.data.tags) ? card.data.tags : []
+    }
+  }
+}
+</code></pre>
+<h3>Strict Mode</h3>
+<p>For stricter validation (publishing, quality checks):</p>
+<pre><code class="language-typescript">const result = validateCard(card, { strict: true })
+</code></pre>
+<p>Strict mode adds checks for:</p>
+<ul>
+<li>Unknown extension keys (warnings)</li>
+<li>Empty required strings</li>
+<li>Invalid asset URIs</li>
+<li>Decorator syntax issues</li>
+</ul>
+<h2>Step 3: Repair Corrupted Cards</h2>
+<p>When <code>readCard()</code> fails, try repair:</p>
+<pre><code class="language-typescript">import { readCard, repairCard, ParseError } from &#39;@motioneffector/cards&#39;
+
+function loadCardSafely(bytes: Uint8Array) {
+  try {
+    return { card: readCard(bytes), repaired: false }
+  } catch (error) {
+    if (error instanceof ParseError) {
+      console.warn(&#39;Card is damaged, attempting repair...&#39;)
+
+      const result = repairCard(bytes)
+
+      // Log what happened
+      for (const warning of result.warnings) {
+        console.warn(`  Warning: ${warning}`)
+      }
+
+      if (result.recovered.length &gt; 0) {
+        console.log(`  Recovered: ${result.recovered.join(&#39;, &#39;)}`)
+        return { card: result.card, repaired: true, result }
+      } else {
+        throw new Error(&#39;Could not recover any data&#39;)
+      }
+    }
+    throw error
+  }
+}
+</code></pre>
+<h2>Step 4: Re-export Repaired Data</h2>
+<p>After repair, write a clean card:</p>
+<pre><code class="language-typescript">import { repairCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+function recoverAndExport(corruptedBytes: Uint8Array): Uint8Array {
+  const result = repairCard(corruptedBytes)
+
+  if (result.recovered.length === 0) {
+    throw new Error(&#39;No data could be recovered&#39;)
+  }
+
+  // result.image is the original PNG without card metadata
+  // result.card is the recovered V3 card
+
+  // Re-embed the recovered card into a clean image
+  return writeCardToPng(result.card, result.image)
+}
+</code></pre>
+<h2>Complete Example</h2>
+<pre><code class="language-typescript">import {
+  readCard,
+  validateCard,
+  repairCard,
+  writeCardToPng,
+  ParseError
+} from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+function processCard(inputPath: string, outputPath: string) {
+  const bytes = readFileSync(inputPath)
+  let card
+  let imageBytes = bytes
+
+  // Try normal read first
+  try {
+    card = readCard(bytes)
+    console.log(&#39;Card loaded successfully&#39;)
+  } catch (error) {
+    if (!(error instanceof ParseError)) throw error
+
+    // Attempt repair
+    console.warn(&#39;Card is damaged, repairing...&#39;)
+    const result = repairCard(bytes)
+
+    for (const warning of result.warnings) {
+      console.warn(`  - ${warning}`)
+    }
+
+    if (result.recovered.length === 0) {
+      throw new Error(&#39;Repair failed - no data recovered&#39;)
+    }
+
+    console.log(`Recovered: ${result.recovered.join(&#39;, &#39;)}`)
+    card = result.card
+    imageBytes = result.image
+  }
+
+  // Validate before saving
+  const validation = validateCard(card)
+  if (!validation.valid) {
+    console.warn(&#39;Validation issues:&#39;)
+    for (const error of validation.errors ?? []) {
+      console.warn(`  - ${error}`)
+    }
+    // Continue anyway - these are warnings, not blockers
+  }
+
+  // Save
+  const output = writeCardToPng(card, imageBytes)
+  writeFileSync(outputPath, output)
+  console.log(`Saved to ${outputPath}`)
+}
+
+processCard(&#39;damaged-card.png&#39;, &#39;recovered-card.png&#39;)
+</code></pre>
+<h2>Variations</h2>
+<h3>Validate Lorebooks Separately</h3>
+<pre><code class="language-typescript">import { validateLorebook } from &#39;@motioneffector/cards&#39;
+
+if (card.data.character_book) {
+  const result = validateLorebook(card.data.character_book)
+
+  if (!result.valid) {
+    console.error(&#39;Lorebook validation failed:&#39;, result.errors)
+  }
+}
+</code></pre>
+<h3>Check Repair Coverage</h3>
+<pre><code class="language-typescript">const result = repairCard(bytes)
+
+const criticalFields = [&#39;name&#39;, &#39;description&#39;, &#39;first_mes&#39;]
+const recovered = new Set(result.recovered)
+
+const missing = criticalFields.filter(f =&gt; !recovered.has(f))
+if (missing.length &gt; 0) {
+  console.warn(`Critical fields not recovered: ${missing.join(&#39;, &#39;)}`)
+}
+</code></pre>
+<h3>Batch Repair</h3>
+<pre><code class="language-typescript">import { readdirSync, readFileSync, writeFileSync } from &#39;fs&#39;
+import { join } from &#39;path&#39;
+
+function repairDirectory(inputDir: string, outputDir: string) {
+  const files = readdirSync(inputDir).filter(f =&gt; f.endsWith(&#39;.png&#39;))
+
+  for (const file of files) {
+    const bytes = readFileSync(join(inputDir, file))
+    const result = repairCard(bytes)
+
+    if (result.recovered.length &gt; 0) {
+      const output = writeCardToPng(result.card, result.image)
+      writeFileSync(join(outputDir, file), output)
+      console.log(`${file}: Recovered ${result.recovered.length} fields`)
+    } else {
+      console.log(`${file}: No data to recover`)
+    }
+  }
+}
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Repair returns empty card</h3>
+<p><strong>Symptom:</strong> <code>repairCard()</code> returns a card with all empty fields.</p>
+<p><strong>Cause:</strong> The file is completely corrupted or isn&#39;t a character card.</p>
+<p><strong>Solution:</strong> Check if <code>result.recovered</code> is empty - if so, the file may not be a character card at all.</p>
+<h3>Validation passes but app rejects card</h3>
+<p><strong>Symptom:</strong> <code>validateCard()</code> returns valid, but another app won&#39;t load the card.</p>
+<p><strong>Cause:</strong> The other app may have stricter requirements not covered by standard validation.</p>
+<p><strong>Solution:</strong> Try strict mode. Check if the app requires specific extension fields.</p>
+<h3>Repair warnings but card works</h3>
+<p><strong>Symptom:</strong> Repair logs warnings but the recovered card seems complete.</p>
+<p><strong>Cause:</strong> Normal - warnings are informational. They explain what was wrong, not what&#39;s missing.</p>
+<p><strong>Solution:</strong> Warnings are expected for damaged files. Focus on <code>recovered</code> to see what was salvaged.</p>
+<h2>See Also</h2>
+<ul>
+<li><strong><a href="concept-validation-and-repair.html">Validation &amp; Repair Concept</a></strong> - How it works under the hood</li>
+<li><strong><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></strong> - Function reference</li>
+<li><strong><a href="api-error-classes.html">Error Classes</a></strong> - Error types</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

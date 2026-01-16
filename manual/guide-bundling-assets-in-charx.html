@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bundling Assets in CHARX - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Bundling Assets in CHARX</h1>
+<p>Create CHARX files that bundle character cards with images like icons, backgrounds, and emotion sprites.</p>
+<h2>Prerequisites</h2>
+<p>Before starting, you should:</p>
+<ul>
+<li><a href="concept-file-formats.html">Understand file formats</a></li>
+<li><a href="guide-writing-and-exporting.html">Know how to write cards</a></li>
+</ul>
+<h2>Overview</h2>
+<p>We&#39;ll cover:</p>
+<ol>
+<li>Understanding CHARX structure</li>
+<li>Bundling basic assets</li>
+<li>Organizing asset types</li>
+<li>Reading assets from CHARX</li>
+</ol>
+<h2>Step 1: Understand CHARX Structure</h2>
+<p>A CHARX file is a ZIP container:</p>
+<pre><code>character.charx
+├── card.json              # The character card
+└── assets/                # Asset files
+    ├── icon/
+    │   └── main.png       # Character icon
+    ├── background/
+    │   └── default.png    # Background image
+    └── emotion/
+        ├── neutral.png    # Emotion sprites
+        ├── happy.png
+        └── angry.png
+</code></pre>
+<p>The card&#39;s <code>assets</code> array references these files:</p>
+<pre><code class="language-json">{
+  &quot;assets&quot;: [
+    { &quot;type&quot;: &quot;icon&quot;, &quot;name&quot;: &quot;main&quot;, &quot;uri&quot;: &quot;embeded://assets/icon/main.png&quot;, &quot;ext&quot;: &quot;png&quot; }
+  ]
+}
+</code></pre>
+<h2>Step 2: Bundle Basic Assets</h2>
+<pre><code class="language-typescript">import { writeCardToCharx } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// Load your asset files
+const iconBytes = readFileSync(&#39;images/icon.png&#39;)
+
+// Create the CHARX with bundled assets
+const charxBytes = writeCardToCharx(card, {
+  assets: [
+    {
+      type: &#39;icon&#39;,
+      name: &#39;main&#39;,
+      data: iconBytes,
+      ext: &#39;png&#39;
+    }
+  ]
+})
+
+writeFileSync(&#39;character.charx&#39;, charxBytes)
+</code></pre>
+<p>The library automatically:</p>
+<ul>
+<li>Creates the <code>assets/</code> folder structure</li>
+<li>Places files at <code>assets/{type}/{name}.{ext}</code></li>
+<li>Updates <code>card.data.assets</code> with <code>embeded://</code> URIs</li>
+</ul>
+<h2>Step 3: Organize Asset Types</h2>
+<p>Different asset types serve different purposes:</p>
+<pre><code class="language-typescript">import { writeCardToCharx } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+const assets = [
+  // Character icon (displayed in lists, chat headers)
+  {
+    type: &#39;icon&#39;,
+    name: &#39;main&#39;,
+    data: readFileSync(&#39;assets/icon.png&#39;),
+    ext: &#39;png&#39;
+  },
+
+  // Background image (scene setting)
+  {
+    type: &#39;background&#39;,
+    name: &#39;default&#39;,
+    data: readFileSync(&#39;assets/background.jpg&#39;),
+    ext: &#39;jpg&#39;
+  },
+
+  // Emotion sprites (expression changes)
+  {
+    type: &#39;emotion&#39;,
+    name: &#39;neutral&#39;,
+    data: readFileSync(&#39;assets/emotions/neutral.png&#39;),
+    ext: &#39;png&#39;
+  },
+  {
+    type: &#39;emotion&#39;,
+    name: &#39;happy&#39;,
+    data: readFileSync(&#39;assets/emotions/happy.png&#39;),
+    ext: &#39;png&#39;
+  },
+  {
+    type: &#39;emotion&#39;,
+    name: &#39;angry&#39;,
+    data: readFileSync(&#39;assets/emotions/angry.png&#39;),
+    ext: &#39;png&#39;
+  },
+  {
+    type: &#39;emotion&#39;,
+    name: &#39;sad&#39;,
+    data: readFileSync(&#39;assets/emotions/sad.png&#39;),
+    ext: &#39;png&#39;
+  },
+
+  // User icon (for the human in the conversation)
+  {
+    type: &#39;user_icon&#39;,
+    name: &#39;default&#39;,
+    data: readFileSync(&#39;assets/user.png&#39;),
+    ext: &#39;png&#39;
+  }
+]
+
+const charx = writeCardToCharx(card, { assets })
+writeFileSync(&#39;character.charx&#39;, charx)
+</code></pre>
+<h3>Standard Asset Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Purpose</th>
+<th>Common Names</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>icon</code></td>
+<td>Character portrait/avatar</td>
+<td><code>main</code></td>
+</tr>
+<tr>
+<td><code>background</code></td>
+<td>Scene/environment image</td>
+<td><code>default</code>, location names</td>
+</tr>
+<tr>
+<td><code>emotion</code></td>
+<td>Expression sprites</td>
+<td><code>neutral</code>, <code>happy</code>, <code>sad</code>, <code>angry</code>, etc.</td>
+</tr>
+<tr>
+<td><code>user_icon</code></td>
+<td>Avatar for the user/player</td>
+<td><code>default</code></td>
+</tr>
+</tbody></table>
+<p>Custom types are allowed - the library doesn&#39;t validate type names.</p>
+<h2>Step 4: Read Assets from CHARX</h2>
+<p>When you read a CHARX, embedded assets are converted to data URIs:</p>
+<pre><code class="language-typescript">import { readCardFromCharx } from &#39;@motioneffector/cards&#39;
+import { readFileSync } from &#39;fs&#39;
+
+const charxBytes = readFileSync(&#39;character.charx&#39;)
+const card = readCardFromCharx(charxBytes)
+
+// Assets have data: URIs with the embedded content
+for (const asset of card.data.assets ?? []) {
+  console.log(`${asset.type}/${asset.name}: ${asset.uri.slice(0, 50)}...`)
+  // &quot;icon/main: data:application/octet-stream;base64,iVBORw0K...&quot;
+
+  // To use the asset, parse the data URI
+  if (asset.uri.startsWith(&#39;data:&#39;)) {
+    const base64 = asset.uri.split(&#39;,&#39;)[1]
+    const bytes = Buffer.from(base64, &#39;base64&#39;)
+    // Now you have the raw image bytes
+  }
+}
+</code></pre>
+<h2>Complete Example</h2>
+<pre><code class="language-typescript">import { readCard, writeCardToCharx } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync, readdirSync } from &#39;fs&#39;
+import { join, extname, basename } from &#39;path&#39;
+
+// Load an existing card
+const pngBytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(pngBytes)
+
+// Collect all emotion sprites from a folder
+const emotionDir = &#39;assets/emotions&#39;
+const emotionFiles = readdirSync(emotionDir).filter(f =&gt; f.endsWith(&#39;.png&#39;))
+
+const assets = [
+  // Main icon
+  {
+    type: &#39;icon&#39;,
+    name: &#39;main&#39;,
+    data: readFileSync(&#39;assets/icon.png&#39;),
+    ext: &#39;png&#39;
+  },
+  // All emotions
+  ...emotionFiles.map(file =&gt; ({
+    type: &#39;emotion&#39;,
+    name: basename(file, extname(file)),  // &#39;happy.png&#39; -&gt; &#39;happy&#39;
+    data: readFileSync(join(emotionDir, file)),
+    ext: &#39;png&#39;
+  }))
+]
+
+console.log(`Bundling ${assets.length} assets`)
+
+const charx = writeCardToCharx(card, { assets })
+writeFileSync(&#39;character.charx&#39;, charx)
+
+console.log(&#39;Created character.charx&#39;)
+</code></pre>
+<h2>Variations</h2>
+<h3>Extract Assets from CHARX</h3>
+<pre><code class="language-typescript">import { extractZip } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync, mkdirSync } from &#39;fs&#39;
+import { dirname, join } from &#39;path&#39;
+
+// extractZip is a low-level utility
+const charxBytes = readFileSync(&#39;character.charx&#39;)
+const files = extractZip(charxBytes)
+
+// files is Map&lt;string, Uint8Array&gt;
+for (const [path, data] of files) {
+  if (path.startsWith(&#39;assets/&#39;)) {
+    const outputPath = join(&#39;extracted&#39;, path)
+    mkdirSync(dirname(outputPath), { recursive: true })
+    writeFileSync(outputPath, data)
+    console.log(`Extracted: ${path}`)
+  }
+}
+</code></pre>
+<h3>Convert PNG Card to CHARX</h3>
+<pre><code class="language-typescript">import { readCard, writeCardToCharx } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// Read the PNG card
+const pngBytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(pngBytes)
+
+// The PNG image itself becomes the icon
+const charx = writeCardToCharx(card, {
+  assets: [
+    { type: &#39;icon&#39;, name: &#39;main&#39;, data: pngBytes, ext: &#39;png&#39; }
+  ]
+})
+
+writeFileSync(&#39;character.charx&#39;, charx)
+</code></pre>
+<h3>CHARX Without Assets</h3>
+<p>You can create a CHARX with just the card:</p>
+<pre><code class="language-typescript">const charx = writeCardToCharx(card)  // No assets option
+
+// Result is a ZIP with only card.json
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>CHARX file won&#39;t open in other apps</h3>
+<p><strong>Symptom:</strong> The app rejects the CHARX file or shows no assets.</p>
+<p><strong>Cause:</strong> Apps may expect specific folder structures or naming conventions.</p>
+<p><strong>Solution:</strong> Check the app&#39;s documentation for CHARX requirements. Try extracting the ZIP to verify structure.</p>
+<h3>Assets missing after read</h3>
+<p><strong>Symptom:</strong> <code>card.data.assets</code> is empty or URIs don&#39;t contain data.</p>
+<p><strong>Cause:</strong> The assets might not have been bundled correctly, or the CHARX is malformed.</p>
+<p><strong>Solution:</strong> Extract the ZIP manually and verify assets exist. Check that <code>embeded://</code> URIs in card.json match actual paths.</p>
+<h3>Large CHARX file size</h3>
+<p><strong>Symptom:</strong> The CHARX is much larger than expected.</p>
+<p><strong>Cause:</strong> High-resolution images or many emotion sprites add up.</p>
+<p><strong>Solution:</strong> Optimize images before bundling. Consider PNG compression or WebP format (if supported by target apps).</p>
+<h2>See Also</h2>
+<ul>
+<li><strong><a href="concept-file-formats.html">File Formats</a></strong> - CHARX format details</li>
+<li><strong><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></strong> - Other export formats</li>
+<li><strong><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></strong> - Asset and AssetData types</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

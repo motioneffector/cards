@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Utilities API - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Utilities API</h1>
+<p>Low-level utility functions for encoding and PNG operations.</p>
+<hr>
+<h2><code>encodeBase64()</code></h2>
+<p>Encode bytes to Base64 string.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function encodeBase64(bytes: Uint8Array): string
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>bytes</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>Bytes to encode</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>string</code> — Base64-encoded string.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { encodeBase64 } from &#39;@motioneffector/cards&#39;
+
+const bytes = new Uint8Array([72, 101, 108, 108, 111])
+const base64 = encodeBase64(bytes)
+// &quot;SGVsbG8=&quot;
+</code></pre>
+<hr>
+<h2><code>decodeBase64()</code></h2>
+<p>Decode Base64 string to bytes.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function decodeBase64(base64: string): Uint8Array
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>base64</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>Base64-encoded string</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>Uint8Array</code> — Decoded bytes.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { decodeBase64 } from &#39;@motioneffector/cards&#39;
+
+const bytes = decodeBase64(&#39;SGVsbG8=&#39;)
+// Uint8Array [72, 101, 108, 108, 111]
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>Error</code> — When the input is not valid Base64</li>
+</ul>
+<hr>
+<h2><code>computeCRC32()</code></h2>
+<p>Compute CRC-32 checksum for PNG chunk validation.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function computeCRC32(type: Uint8Array, data: Uint8Array): number
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>type</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>4-byte chunk type (e.g., &quot;tEXt&quot; as bytes)</td>
+</tr>
+<tr>
+<td><code>data</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>Chunk data bytes</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>number</code> — CRC-32 checksum as unsigned 32-bit integer.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { computeCRC32 } from &#39;@motioneffector/cards&#39;
+
+const type = new Uint8Array([116, 69, 88, 116]) // &quot;tEXt&quot;
+const data = new Uint8Array([...]) // chunk data
+
+const crc = computeCRC32(type, data)
+</code></pre>
+<hr>
+<h2>Notes</h2>
+<p>These utilities are exported for advanced use cases. Most applications won&#39;t need them directly:</p>
+<ul>
+<li><p><strong>Base64</strong>: Used internally for PNG text chunk encoding. May be useful if you&#39;re handling raw card data strings.</p>
+</li>
+<li><p><strong>CRC-32</strong>: Used internally for PNG chunk validation. Useful if you&#39;re implementing custom PNG manipulation.</p>
+</li>
+</ul>
+<p>The library handles all encoding and checksum computation automatically when you use the high-level read/write functions.</p>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

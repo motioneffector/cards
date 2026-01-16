@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading API - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Reading API</h1>
+<p>Functions for loading character cards and lorebooks from various formats.</p>
+<hr>
+<h2><code>readCard()</code></h2>
+<p>Load a character card from any supported format (PNG, JSON, or CHARX) with automatic format detection.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function readCard(
+  data: Uint8Array | string,
+  options?: ReadOptions
+): CharacterCard
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>data</code></td>
+<td><code>Uint8Array | string</code></td>
+<td>Yes</td>
+<td>File bytes (PNG/CHARX) or JSON string</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>ReadOptions</code></td>
+<td>No</td>
+<td>Reading options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>CharacterCard</code> — The parsed card normalized to V3 format.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+
+// From PNG bytes
+const card = readCard(pngBytes)
+
+// From JSON string
+const card = readCard(&#39;{&quot;spec&quot;:&quot;chara_card_v3&quot;,...}&#39;)
+
+// With options
+const card = readCard(bytes, { strict: true, parseDecorators: false })
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ParseError</code> — When the format is unrecognized or parsing fails</li>
+</ul>
+<hr>
+<h2><code>readCardFromPng()</code></h2>
+<p>Load a character card specifically from PNG bytes.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function readCardFromPng(
+  bytes: Uint8Array,
+  options?: ReadOptions
+): CharacterCard
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>bytes</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>PNG file bytes</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>ReadOptions</code></td>
+<td>No</td>
+<td>Reading options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>CharacterCard</code> — The parsed card normalized to V3 format.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { readCardFromPng } from &#39;@motioneffector/cards&#39;
+
+const card = readCardFromPng(pngBytes)
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ParseError</code> — When the file is not a valid PNG or contains no card data</li>
+</ul>
+<hr>
+<h2><code>readCardFromJson()</code></h2>
+<p>Load a character card from a JSON string.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function readCardFromJson(
+  json: string,
+  options?: ReadOptions
+): CharacterCard
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>json</code></td>
+<td><code>string</code></td>
+<td>Yes</td>
+<td>JSON string containing card data</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>ReadOptions</code></td>
+<td>No</td>
+<td>Reading options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>CharacterCard</code> — The parsed card normalized to V3 format.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { readCardFromJson } from &#39;@motioneffector/cards&#39;
+
+const json = &#39;{&quot;spec&quot;:&quot;chara_card_v3&quot;,&quot;spec_version&quot;:&quot;3.0&quot;,&quot;data&quot;:{...}}&#39;
+const card = readCardFromJson(json)
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ParseError</code> — When JSON is invalid or doesn&#39;t contain valid card data</li>
+</ul>
+<hr>
+<h2><code>readCardFromCharx()</code></h2>
+<p>Load a character card from CHARX (ZIP container) bytes.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function readCardFromCharx(
+  bytes: Uint8Array,
+  options?: ReadOptions
+): CharacterCard
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>bytes</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>CHARX file bytes</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>ReadOptions</code></td>
+<td>No</td>
+<td>Reading options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>CharacterCard</code> — The parsed card normalized to V3 format. Embedded assets are converted to data URIs.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { readCardFromCharx } from &#39;@motioneffector/cards&#39;
+
+const card = readCardFromCharx(charxBytes)
+
+// Assets have data: URIs
+for (const asset of card.data.assets ?? []) {
+  console.log(asset.uri) // &quot;data:application/octet-stream;base64,...&quot;
+}
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ParseError</code> — When the file is not a valid ZIP or missing card.json</li>
+</ul>
+<hr>
+<h2><code>readLorebook()</code></h2>
+<p>Load a standalone lorebook from PNG or JSON.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function readLorebook(
+  data: Uint8Array | string,
+  options?: ReadOptions
+): Lorebook
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>data</code></td>
+<td><code>Uint8Array | string</code></td>
+<td>Yes</td>
+<td>PNG bytes or JSON string</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>ReadOptions</code></td>
+<td>No</td>
+<td>Reading options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>Lorebook</code> — The parsed lorebook (not wrapped in a card).</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { readLorebook } from &#39;@motioneffector/cards&#39;
+
+// From PNG (NovelAI-style)
+const lorebook = readLorebook(pngBytes)
+
+// From JSON
+const lorebook = readLorebook(&#39;{&quot;spec&quot;:&quot;lorebook_v3&quot;,&quot;data&quot;:{...}}&#39;)
+
+console.log(`Entries: ${lorebook.entries.length}`)
+</code></pre>
+<p><strong>Throws:</strong></p>
+<ul>
+<li><code>ParseError</code> — When the format is invalid or contains no lorebook data</li>
+</ul>
+<hr>
+<h2>Types</h2>
+<h3><code>ReadOptions</code></h3>
+<pre><code class="language-typescript">interface ReadOptions {
+  strict?: boolean
+  parseDecorators?: boolean
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>strict</code></td>
+<td><code>boolean</code></td>
+<td><code>false</code></td>
+<td>Throw on invalid data instead of best-effort parsing</td>
+</tr>
+<tr>
+<td><code>parseDecorators</code></td>
+<td><code>boolean</code></td>
+<td><code>true</code></td>
+<td>Parse <code>@@decorators</code> in lorebook entry content</td>
+</tr>
+</tbody></table>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

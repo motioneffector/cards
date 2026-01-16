@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Cards - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Reading Cards</h1>
+<p>Load character cards from PNG images, JSON files, or CHARX containers. The library auto-detects format and normalizes everything to V3.</p>
+<h2>Prerequisites</h2>
+<p>Before starting, you should:</p>
+<ul>
+<li><a href="installation.html">Have the library installed</a></li>
+<li>Understand <a href="concept-character-cards.html">what character cards contain</a></li>
+</ul>
+<h2>Overview</h2>
+<p>We&#39;ll cover:</p>
+<ol>
+<li>Loading cards with auto-detection</li>
+<li>Using format-specific functions</li>
+<li>Reading standalone lorebooks</li>
+<li>Handling read options</li>
+</ol>
+<h2>Step 1: Load a Card with Auto-Detection</h2>
+<p>The simplest approach - let <code>readCard()</code> figure out the format:</p>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+import { readFileSync } from &#39;fs&#39;
+
+// Works for PNG, JSON, or CHARX
+const bytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(bytes)
+
+console.log(card.data.name)
+</code></pre>
+<p>For JSON stored as a string:</p>
+<pre><code class="language-typescript">const jsonString = &#39;{&quot;spec&quot;:&quot;chara_card_v3&quot;,...}&#39;
+const card = readCard(jsonString)
+</code></pre>
+<p>The function examines the input to determine format:</p>
+<ul>
+<li><code>Uint8Array</code> starting with PNG signature → PNG</li>
+<li><code>Uint8Array</code> starting with <code>PK</code> → CHARX (ZIP)</li>
+<li><code>string</code> → JSON</li>
+</ul>
+<h2>Step 2: Use Format-Specific Functions</h2>
+<p>When you know the format, use the specific function for clearer code:</p>
+<pre><code class="language-typescript">import {
+  readCardFromPng,
+  readCardFromJson,
+  readCardFromCharx
+} from &#39;@motioneffector/cards&#39;
+
+// PNG file
+const pngCard = readCardFromPng(pngBytes)
+
+// JSON string
+const jsonCard = readCardFromJson(jsonString)
+
+// CHARX file
+const charxCard = readCardFromCharx(charxBytes)
+</code></pre>
+<p>These throw <code>ParseError</code> if the format doesn&#39;t match.</p>
+<h2>Step 3: Read Standalone Lorebooks</h2>
+<p>Lorebooks can exist as separate files (not embedded in a card):</p>
+<pre><code class="language-typescript">import { readLorebook } from &#39;@motioneffector/cards&#39;
+
+// From PNG (NovelAI-style lorebook image)
+const lorebook = readLorebook(lorebookPngBytes)
+
+// From JSON
+const lorebook = readLorebook(lorebookJsonString)
+
+console.log(`Entries: ${lorebook.entries.length}`)
+</code></pre>
+<p>Standalone lorebooks use the <code>Lorebook</code> type, not wrapped in a card structure.</p>
+<h2>Step 4: Configure Read Options</h2>
+<p>Control parsing behavior with options:</p>
+<pre><code class="language-typescript">const card = readCard(bytes, {
+  strict: true,          // Throw on invalid data instead of best-effort parsing
+  parseDecorators: true, // Parse @@decorators in lorebook entries (default: true)
+})
+</code></pre>
+<h3>Strict Mode</h3>
+<p>By default, the library is permissive - it tries to read whatever it can. Strict mode throws errors on:</p>
+<ul>
+<li>Invalid CRC checksums in PNG chunks</li>
+<li>Unrecognized card formats</li>
+</ul>
+<pre><code class="language-typescript">import { readCard, ParseError } from &#39;@motioneffector/cards&#39;
+
+try {
+  const card = readCard(bytes, { strict: true })
+} catch (error) {
+  if (error instanceof ParseError) {
+    console.error(&#39;Card is malformed:&#39;, error.message)
+  }
+}
+</code></pre>
+<h3>Disable Decorator Parsing</h3>
+<p>If you want raw lorebook content without parsing <code>@@</code> decorators:</p>
+<pre><code class="language-typescript">const card = readCard(bytes, { parseDecorators: false })
+
+// entry.content will include the @@decorator lines
+// entry.decorators will be undefined
+</code></pre>
+<h2>Complete Example</h2>
+<pre><code class="language-typescript">import { readCard, ParseError } from &#39;@motioneffector/cards&#39;
+import { readFileSync } from &#39;fs&#39;
+
+function loadCard(filePath: string) {
+  const bytes = readFileSync(filePath)
+
+  try {
+    const card = readCard(bytes)
+
+    console.log(`Loaded: ${card.data.name}`)
+    console.log(`Creator: ${card.data.creator || &#39;Unknown&#39;}`)
+    console.log(`Tags: ${card.data.tags.join(&#39;, &#39;) || &#39;None&#39;}`)
+
+    if (card.data.character_book) {
+      console.log(`Lorebook entries: ${card.data.character_book.entries.length}`)
+    }
+
+    return card
+  } catch (error) {
+    if (error instanceof ParseError) {
+      console.error(`Failed to parse ${filePath}: ${error.message}`)
+    }
+    throw error
+  }
+}
+</code></pre>
+<h2>Variations</h2>
+<h3>Reading from URL (Browser)</h3>
+<pre><code class="language-typescript">async function loadCardFromUrl(url: string) {
+  const response = await fetch(url)
+  const bytes = new Uint8Array(await response.arrayBuffer())
+  return readCard(bytes)
+}
+</code></pre>
+<h3>Reading from Base64</h3>
+<pre><code class="language-typescript">import { readCard, decodeBase64 } from &#39;@motioneffector/cards&#39;
+
+const base64String = &#39;iVBORw0KGgo...&#39;
+const bytes = decodeBase64(base64String)
+const card = readCard(bytes)
+</code></pre>
+<h3>Batch Reading</h3>
+<pre><code class="language-typescript">import { readCard } from &#39;@motioneffector/cards&#39;
+import { readFileSync, readdirSync } from &#39;fs&#39;
+import { join } from &#39;path&#39;
+
+function loadAllCards(directory: string) {
+  const files = readdirSync(directory).filter(f =&gt; f.endsWith(&#39;.png&#39;))
+
+  return files.map(file =&gt; {
+    const bytes = readFileSync(join(directory, file))
+    try {
+      return { file, card: readCard(bytes) }
+    } catch {
+      return { file, card: null, error: &#39;Failed to parse&#39; }
+    }
+  })
+}
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>ParseError: No character card data found</h3>
+<p><strong>Symptom:</strong> Reading a PNG throws &quot;No character card data found in PNG&quot;</p>
+<p><strong>Cause:</strong> The PNG doesn&#39;t contain embedded card data - it&#39;s just a regular image.</p>
+<p><strong>Solution:</strong> Verify the file is actually a character card, not just an image of a character.</p>
+<h3>ParseError: Invalid JSON</h3>
+<p><strong>Symptom:</strong> Reading throws &quot;Invalid JSON&quot;</p>
+<p><strong>Cause:</strong> The file contents aren&#39;t valid JSON, or the base64 decoding produced garbage.</p>
+<p><strong>Solution:</strong> For JSON files, check for syntax errors. For PNG files, the embedded data may be corrupted - try <code>repairCard()</code>.</p>
+<h3>Unexpected V1/V2 Fields</h3>
+<p><strong>Symptom:</strong> A card parsed from an old source has empty V3 fields.</p>
+<p><strong>Cause:</strong> Normal behavior - V1/V2 cards don&#39;t have V3 fields, so they&#39;re set to defaults.</p>
+<p><strong>Solution:</strong> This is expected. Check for undefined/empty before using optional fields.</p>
+<h2>See Also</h2>
+<ul>
+<li><strong><a href="concept-file-formats.html">File Formats</a></strong> - How cards are stored in different formats</li>
+<li><strong><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></strong> - Handling corrupted cards</li>
+<li><strong><a href="api-reading.html">Reading API</a></strong> - Full function reference</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

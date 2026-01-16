@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation &amp; Repair API - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Validation &amp; Repair API</h1>
+<p>Functions for checking card structure and recovering corrupted data.</p>
+<hr>
+<h2><code>validateCard()</code></h2>
+<p>Check if a card object conforms to the V3 specification.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function validateCard(
+  card: unknown,
+  options?: { strict?: boolean }
+): ValidationResult
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>card</code></td>
+<td><code>unknown</code></td>
+<td>Yes</td>
+<td>The card object to validate</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>{ strict?: boolean }</code></td>
+<td>No</td>
+<td>Validation options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>ValidationResult</code> — Validation result with errors if invalid.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { validateCard } from &#39;@motioneffector/cards&#39;
+
+const result = validateCard(card)
+if (result.valid) {
+  console.log(&#39;Card is valid&#39;)
+} else {
+  console.log(&#39;Errors:&#39;, result.errors)
+}
+
+// Strict mode
+const strictResult = validateCard(card, { strict: true })
+</code></pre>
+<hr>
+<h2><code>validateLorebook()</code></h2>
+<p>Check if a lorebook object conforms to the specification.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function validateLorebook(
+  lorebook: unknown,
+  options?: { strict?: boolean }
+): ValidationResult
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lorebook</code></td>
+<td><code>unknown</code></td>
+<td>Yes</td>
+<td>The lorebook object to validate</td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td><code>{ strict?: boolean }</code></td>
+<td>No</td>
+<td>Validation options</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>ValidationResult</code> — Validation result with errors if invalid.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { validateLorebook } from &#39;@motioneffector/cards&#39;
+
+const result = validateLorebook(lorebook)
+if (!result.valid) {
+  console.log(&#39;Lorebook errors:&#39;, result.errors)
+}
+</code></pre>
+<hr>
+<h2><code>repairCard()</code></h2>
+<p>Attempt to recover data from a corrupted or malformed character card PNG.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-typescript">function repairCard(bytes: Uint8Array): RepairResult
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>bytes</code></td>
+<td><code>Uint8Array</code></td>
+<td>Yes</td>
+<td>Possibly corrupted PNG bytes</td>
+</tr>
+</tbody></table>
+<p><strong>Returns:</strong> <code>RepairResult</code> — Recovered card, clean image, and diagnostic information.</p>
+<p><strong>Example:</strong></p>
+<pre><code class="language-typescript">import { repairCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+const result = repairCard(corruptedBytes)
+
+console.log(&#39;Warnings:&#39;, result.warnings)
+console.log(&#39;Recovered:&#39;, result.recovered)
+
+// Re-export the repaired card
+const cleanPng = writeCardToPng(result.card, result.image)
+</code></pre>
+<hr>
+<h2>Types</h2>
+<h3><code>ValidationResult</code></h3>
+<pre><code class="language-typescript">interface ValidationResult {
+  valid: boolean
+  errors?: string[]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>valid</code></td>
+<td><code>boolean</code></td>
+<td>Whether the data is valid</td>
+</tr>
+<tr>
+<td><code>errors</code></td>
+<td><code>string[]</code></td>
+<td>List of validation errors (only if invalid)</td>
+</tr>
+</tbody></table>
+<h3><code>RepairResult</code></h3>
+<pre><code class="language-typescript">interface RepairResult {
+  card: CharacterCard
+  image: Uint8Array
+  warnings: string[]
+  recovered: string[]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>card</code></td>
+<td><code>CharacterCard</code></td>
+<td>Best-effort recovered card in V3 format</td>
+</tr>
+<tr>
+<td><code>image</code></td>
+<td><code>Uint8Array</code></td>
+<td>Original PNG with all card metadata removed</td>
+</tr>
+<tr>
+<td><code>warnings</code></td>
+<td><code>string[]</code></td>
+<td>Issues encountered during repair</td>
+</tr>
+<tr>
+<td><code>recovered</code></td>
+<td><code>string[]</code></td>
+<td>Field names that were successfully recovered</td>
+</tr>
+</tbody></table>
+<h3>Validation Modes</h3>
+<p><strong>Permissive (default):</strong></p>
+<ul>
+<li>Checks required fields exist</li>
+<li>Checks types are correct</li>
+<li>Allows unknown fields</li>
+<li>Allows missing optional fields</li>
+</ul>
+<p><strong>Strict (<code>{ strict: true }</code>):</strong></p>
+<ul>
+<li>All permissive checks plus:</li>
+<li>Warns on unknown extension keys</li>
+<li>Warns on empty required strings</li>
+<li>Validates asset URIs</li>
+<li>Checks decorator syntax</li>
+<li>Validates lorebook entry consistency</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

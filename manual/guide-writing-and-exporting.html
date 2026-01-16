@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Writing &amp; Exporting - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Writing &amp; Exporting</h1>
+<p>Save character cards to PNG images, JSON files, or CHARX containers. Choose the format based on how the card will be used.</p>
+<h2>Prerequisites</h2>
+<p>Before starting, you should:</p>
+<ul>
+<li><a href="concept-character-cards.html">Understand character card structure</a></li>
+<li><a href="concept-file-formats.html">Know the different file formats</a></li>
+</ul>
+<h2>Overview</h2>
+<p>We&#39;ll cover:</p>
+<ol>
+<li>Writing to PNG (most common)</li>
+<li>Writing to JSON</li>
+<li>Writing to CHARX with assets</li>
+<li>Writing standalone lorebooks</li>
+</ol>
+<h2>Step 1: Write to PNG</h2>
+<p>PNG is the most portable format - the image displays normally, but applications can extract the embedded card.</p>
+<pre><code class="language-typescript">import { writeCardToPng } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// You need an existing PNG image
+const imageBytes = readFileSync(&#39;base-image.png&#39;)
+
+// Embed the card into the image
+const cardPng = writeCardToPng(card, imageBytes)
+
+writeFileSync(&#39;character.png&#39;, cardPng)
+</code></pre>
+<p>The original image is preserved - only metadata chunks are added/replaced.</p>
+<h3>PNG Write Options</h3>
+<pre><code class="language-typescript">const cardPng = writeCardToPng(card, imageBytes, {
+  includeV2Chunk: true,      // Also write &#39;chara&#39; chunk for V2 compatibility (default: true)
+  serializeDecorators: true, // Convert decorator arrays back to @@syntax (default: true)
+})
+</code></pre>
+<p>Setting <code>includeV2Chunk: false</code> reduces file size slightly but breaks compatibility with V2-only applications like older SillyTavern versions.</p>
+<h2>Step 2: Write to JSON</h2>
+<p>JSON is useful for editing cards in text editors, storing in databases, or debugging.</p>
+<pre><code class="language-typescript">import { writeCardToJson } from &#39;@motioneffector/cards&#39;
+import { writeFileSync } from &#39;fs&#39;
+
+const jsonString = writeCardToJson(card)
+
+writeFileSync(&#39;character.json&#39;, jsonString)
+</code></pre>
+<p>The output is pretty-printed with 2-space indentation.</p>
+<h2>Step 3: Write to CHARX with Assets</h2>
+<p>CHARX bundles the card with asset files (icons, backgrounds, emotions) in a ZIP container.</p>
+<pre><code class="language-typescript">import { writeCardToCharx } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// Load your asset files
+const iconBytes = readFileSync(&#39;icon.png&#39;)
+const happyBytes = readFileSync(&#39;emotions/happy.png&#39;)
+const sadBytes = readFileSync(&#39;emotions/sad.png&#39;)
+
+// Bundle everything
+const charxBytes = writeCardToCharx(card, {
+  assets: [
+    { type: &#39;icon&#39;, name: &#39;main&#39;, data: iconBytes, ext: &#39;png&#39; },
+    { type: &#39;emotion&#39;, name: &#39;happy&#39;, data: happyBytes, ext: &#39;png&#39; },
+    { type: &#39;emotion&#39;, name: &#39;sad&#39;, data: sadBytes, ext: &#39;png&#39; },
+  ]
+})
+
+writeFileSync(&#39;character.charx&#39;, charxBytes)
+</code></pre>
+<p>The card&#39;s <code>assets</code> array is automatically updated with <code>embeded://</code> URIs pointing to the bundled files.</p>
+<h2>Step 4: Write Standalone Lorebooks</h2>
+<p>Lorebooks can be exported separately from cards.</p>
+<pre><code class="language-typescript">import { writeLorebookToPng, writeLorebookToJson } from &#39;@motioneffector/cards&#39;
+
+// To PNG (NovelAI-compatible)
+const lorebookPng = writeLorebookToPng(lorebook, baseImageBytes)
+writeFileSync(&#39;lorebook.png&#39;, lorebookPng)
+
+// To JSON
+const lorebookJson = writeLorebookToJson(lorebook)
+writeFileSync(&#39;lorebook.json&#39;, lorebookJson)
+</code></pre>
+<h2>Complete Example</h2>
+<pre><code class="language-typescript">import {
+  readCard,
+  writeCardToPng,
+  writeCardToJson,
+  writeCardToCharx
+} from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+// Load and modify a card
+const originalBytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(originalBytes)
+
+card.data.character_version = &#39;2.0.0&#39;
+card.data.tags.push(&#39;updated&#39;)
+
+// Export to all formats
+const asPng = writeCardToPng(card, originalBytes)
+writeFileSync(&#39;character-v2.png&#39;, asPng)
+
+const asJson = writeCardToJson(card)
+writeFileSync(&#39;character-v2.json&#39;, asJson)
+
+const asCharx = writeCardToCharx(card)
+writeFileSync(&#39;character-v2.charx&#39;, asCharx)
+
+console.log(&#39;Exported to PNG, JSON, and CHARX&#39;)
+</code></pre>
+<h2>Variations</h2>
+<h3>Creating a New Card from Scratch</h3>
+<pre><code class="language-typescript">import type { CharacterCard } from &#39;@motioneffector/cards&#39;
+import { writeCardToPng } from &#39;@motioneffector/cards&#39;
+import { readFileSync, writeFileSync } from &#39;fs&#39;
+
+const card: CharacterCard = {
+  spec: &#39;chara_card_v3&#39;,
+  spec_version: &#39;3.0&#39;,
+  data: {
+    name: &#39;New Character&#39;,
+    description: &#39;A character description.&#39;,
+    personality: &#39;Personality traits.&#39;,
+    scenario: &#39;The setting.&#39;,
+    first_mes: &#39;Hello!&#39;,
+    mes_example: &#39;&#39;,
+    creator_notes: &#39;&#39;,
+    system_prompt: &#39;&#39;,
+    post_history_instructions: &#39;&#39;,
+    alternate_greetings: [],
+    tags: [&#39;new&#39;],
+    creator: &#39;your-name&#39;,
+    character_version: &#39;1.0.0&#39;,
+    extensions: {},
+    group_only_greetings: [],
+  }
+}
+
+const baseImage = readFileSync(&#39;blank.png&#39;)
+const cardPng = writeCardToPng(card, baseImage)
+writeFileSync(&#39;new-character.png&#39;, cardPng)
+</code></pre>
+<h3>Stripping V2 Compatibility for Smaller Files</h3>
+<pre><code class="language-typescript">const cardPng = writeCardToPng(card, imageBytes, {
+  includeV2Chunk: false  // Only write ccv3 chunk
+})
+</code></pre>
+<p>This reduces file size but older applications won&#39;t be able to read the card.</p>
+<h3>Preserving Raw Decorator Content</h3>
+<p>If you want to keep <code>@@decorator</code> lines in content without serializing:</p>
+<pre><code class="language-typescript">// Read without parsing decorators
+const card = readCard(bytes, { parseDecorators: false })
+
+// Modify...
+
+// Write - decorators stay as raw text in content
+const output = writeCardToPng(card, imageBytes, {
+  serializeDecorators: false
+})
+</code></pre>
+<h2>Troubleshooting</h2>
+<h3>Output file is the same size as input</h3>
+<p><strong>Symptom:</strong> The PNG file size barely changed after adding card data.</p>
+<p><strong>Cause:</strong> Normal - card JSON is base64-encoded and added as metadata. For small cards, this adds only a few KB.</p>
+<p><strong>Solution:</strong> No action needed. Large lorebooks can add significant size.</p>
+<h3>Card data not appearing in other applications</h3>
+<p><strong>Symptom:</strong> Other apps don&#39;t see the card after you wrote it.</p>
+<p><strong>Cause:</strong> The app might only support V2 format, and you disabled the V2 chunk.</p>
+<p><strong>Solution:</strong> Ensure <code>includeV2Chunk: true</code> (the default) when writing.</p>
+<h3>CHARX file won&#39;t open</h3>
+<p><strong>Symptom:</strong> Applications reject the CHARX file.</p>
+<p><strong>Cause:</strong> The app might expect specific asset paths or card.json structure.</p>
+<p><strong>Solution:</strong> Verify the app&#39;s CHARX requirements. Try extracting the ZIP manually to inspect contents.</p>
+<h2>See Also</h2>
+<ul>
+<li><strong><a href="concept-file-formats.html">File Formats</a></strong> - Format details and structure</li>
+<li><strong><a href="guide-format-compatibility.html">Format Compatibility</a></strong> - Ensuring V2 app compatibility</li>
+<li><strong><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></strong> - Detailed CHARX guide</li>
+<li><strong><a href="api-writing.html">Writing API</a></strong> - Full function reference</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

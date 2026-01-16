@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your First Character Card - @motioneffector/cards</title>
+  <link rel="stylesheet" href="../demo-files/demo.css">
+  <link rel="stylesheet" href="manual.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>document.addEventListener('DOMContentLoaded', () => hljs.highlightAll());</script>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <h1 class="header-title">@motioneffector/cards</h1>
+      <p class="header-description">Documentation</p>
+      <nav class="header-links">
+        <a href="../index.html" class="header-link">Demo</a>
+        <a href="https://www.npmjs.com/package/@motioneffector/cards" class="header-link">npm</a>
+        <a href="https://github.com/motioneffector/cards" class="header-link">GitHub</a>
+      </nav>
+    </header>
+
+    <div class="manual-layout">
+      <aside class="manual-sidebar">
+        <nav class="sidebar-nav">
+<p><strong><a href="index.html">@motioneffector/cards</a></strong></p>
+<p><strong>Getting Started</strong></p>
+<ul>
+<li><a href="installation.html">Installation</a></li>
+<li><a href="your-first-character-card.html">Your First Character Card</a></li>
+</ul>
+<p><strong>Core Concepts</strong></p>
+<ul>
+<li><a href="concept-character-cards.html">Character Cards</a></li>
+<li><a href="concept-lorebooks-and-decorators.html">Lorebooks &amp; Decorators</a></li>
+<li><a href="concept-file-formats.html">File Formats</a></li>
+<li><a href="concept-validation-and-repair.html">Validation &amp; Repair</a></li>
+</ul>
+<p><strong>Guides</strong></p>
+<ul>
+<li><a href="guide-reading-cards.html">Reading Cards</a></li>
+<li><a href="guide-writing-and-exporting.html">Writing &amp; Exporting</a></li>
+<li><a href="guide-working-with-decorators.html">Working with Decorators</a></li>
+<li><a href="guide-validation-and-repair.html">Validation &amp; Repair</a></li>
+<li><a href="guide-format-compatibility.html">Format Compatibility</a></li>
+<li><a href="guide-bundling-assets-in-charx.html">Bundling Assets in CHARX</a></li>
+</ul>
+<p><strong>API Reference</strong></p>
+<ul>
+<li><a href="api-reading.html">Reading API</a></li>
+<li><a href="api-writing.html">Writing API</a></li>
+<li><a href="api-validation-and-repair.html">Validation &amp; Repair API</a></li>
+<li><a href="api-decorator.html">Decorator API</a></li>
+<li><a href="api-utilities.html">Utilities API</a></li>
+<li><a href="api-types-and-interfaces.html">Types &amp; Interfaces</a></li>
+<li><a href="api-error-classes.html">Error Classes</a></li>
+</ul>
+
+        </nav>
+      </aside>
+
+      <main class="manual-content">
+        <article class="manual-article">
+<h1>Your First Character Card</h1>
+<p>Read a character card from a PNG file, modify it, and write it back.</p>
+<p>By the end of this guide, you&#39;ll have loaded a card, changed some data, and saved it to a new PNG file.</p>
+<h2>What We&#39;re Building</h2>
+<p>We&#39;ll take an existing character card PNG, update the character version, add a tag, and export a new PNG with the changes embedded.</p>
+<h2>Step 1: Import the Library</h2>
+<pre><code class="language-typescript">import { readCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+</code></pre>
+<p>This gives you the two main functions: <code>readCard()</code> to load cards from any format, and <code>writeCardToPng()</code> to embed card data into a PNG image.</p>
+<h2>Step 2: Load the Card</h2>
+<pre><code class="language-typescript">import { readFileSync } from &#39;fs&#39;
+
+const pngBytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(pngBytes)
+</code></pre>
+<p><code>readCard()</code> auto-detects the format (PNG, JSON, or CHARX) and returns a normalized V3 card. Even if the file contains a V1 or V2 card, you get V3 back.</p>
+<h2>Step 3: Access and Modify Data</h2>
+<pre><code class="language-typescript">// Read existing data
+console.log(`Name: ${card.data.name}`)
+console.log(`Description: ${card.data.description}`)
+console.log(`Tags: ${card.data.tags.join(&#39;, &#39;)}`)
+
+// Make changes
+card.data.character_version = &#39;1.1.0&#39;
+card.data.tags.push(&#39;modified&#39;)
+</code></pre>
+<p>All card data lives in <code>card.data</code>. The structure is fully typed in TypeScript, so you get autocomplete for every field.</p>
+<h2>Step 4: Write the Updated Card</h2>
+<pre><code class="language-typescript">import { writeFileSync } from &#39;fs&#39;
+
+// Use the original image as the base
+const newPng = writeCardToPng(card, pngBytes)
+
+writeFileSync(&#39;character-updated.png&#39;, newPng)
+</code></pre>
+<p><code>writeCardToPng()</code> takes your card and an existing PNG image, then returns new PNG bytes with the card data embedded. The original image is preserved.</p>
+<h2>The Complete Code</h2>
+<p>Here&#39;s everything together:</p>
+<pre><code class="language-typescript">import { readFileSync, writeFileSync } from &#39;fs&#39;
+import { readCard, writeCardToPng } from &#39;@motioneffector/cards&#39;
+
+// Load the card
+const pngBytes = readFileSync(&#39;character.png&#39;)
+const card = readCard(pngBytes)
+
+// Display current data
+console.log(`Name: ${card.data.name}`)
+console.log(`Description: ${card.data.description}`)
+
+// Make changes
+card.data.character_version = &#39;1.1.0&#39;
+card.data.tags.push(&#39;modified&#39;)
+
+// Save to new file
+const newPng = writeCardToPng(card, pngBytes)
+writeFileSync(&#39;character-updated.png&#39;, newPng)
+
+console.log(&#39;Card updated and saved!&#39;)
+</code></pre>
+<h2>What&#39;s Next?</h2>
+<p>Now that you have the basics:</p>
+<ul>
+<li><strong><a href="concept-character-cards.html">Understand Character Cards</a></strong> - Learn about the data structure and field meanings</li>
+<li><strong><a href="concept-lorebooks-and-decorators.html">Work with Lorebooks</a></strong> - Add knowledge entries that activate during conversations</li>
+<li><strong><a href="api-reading.html">Read the API Reference</a></strong> - Full documentation for all reading functions</li>
+</ul>
+
+        </article>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
