@@ -3,6 +3,10 @@
  * Integrity tests and library-specific tests
  */
 
+// Import library to ensure it's available for integrity tests
+import * as Library from '../dist/index.js'
+if (!window.Library) window.Library = Library
+
 import {
   encodeBase64,
   decodeBase64,
