@@ -206,6 +206,9 @@ const testRunner = {
   }
 }
 
+// Export testRunner globally for Playwright tests
+window.testRunner = testRunner
+
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('run-all-tests').addEventListener('click', () => testRunner.runAll())
   document.getElementById('reset-page').addEventListener('click', () => window.location.reload())
