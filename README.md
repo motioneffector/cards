@@ -6,7 +6,6 @@ A TypeScript library for parsing and writing Character Card V3 and Lorebook data
 [![license](https://img.shields.io/npm/l/@motioneffector/cards.svg)](https://github.com/motioneffector/cards/blob/main/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
-**[Try the interactive demo →](https://motioneffector.github.io/cards/)**
 
 ## Features
 
