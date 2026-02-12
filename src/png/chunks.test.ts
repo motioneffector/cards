@@ -34,7 +34,7 @@ describe('PNG Chunk Handling', () => {
       expect(png[7]).toBe(0x0a)
       // Should be readable
       const chunks = readChunks(png)
-      expect(chunks.length).toBeGreaterThan(0)
+      expect(chunks[0]?.type).toBe('IHDR')
     })
 
     it('reads chunk length', () => {
@@ -77,8 +77,8 @@ describe('PNG Chunk Handling', () => {
         { type: 'IEND', data: new Uint8Array(0) },
       ])
       const chunks = readChunks(png)
-      expect(typeof chunks[0].crc).toBe('number')
       expect(chunks[0].crc).not.toBe(0)
+      expect(Number.isInteger(chunks[0].crc)).toBe(true)
     })
 
     it('iterates all chunks', () => {
@@ -114,7 +114,6 @@ describe('PNG Chunk Handling', () => {
 
     it('computes and writes CRC', () => {
       const chunk = createTextChunk('test', 'data')
-      expect(typeof chunk.crc).toBe('number')
       // Verify CRC is computed correctly
       const typeBytes = new Uint8Array([116, 69, 88, 116]) // "tEXt"
       const expectedCrc = computeCRC32(typeBytes, chunk.data)
@@ -125,7 +124,6 @@ describe('PNG Chunk Handling', () => {
   describe('CRC-32', () => {
     it('computes CRC for empty data', () => {
       const crc = computeCRC32(new Uint8Array([]))
-      expect(typeof crc).toBe('number')
       // CRC of empty data is well-known
       expect(crc).toBe(0)
     })
@@ -134,8 +132,7 @@ describe('PNG Chunk Handling', () => {
       const typeBytes = new Uint8Array([116, 69, 88, 116]) // "tEXt"
       const data = new Uint8Array([116, 101, 115, 116, 0, 100, 97, 116, 97])
       const crc = computeCRC32(typeBytes, data)
-      expect(typeof crc).toBe('number')
-      expect(crc).not.toBe(0)
+      expect(crc).toBeGreaterThan(0)
     })
 
     it('matches known test vectors', () => {

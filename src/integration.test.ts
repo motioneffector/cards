@@ -91,81 +91,83 @@ describe('Data Structures', () => {
 
     it('has data.name', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.name).toBe('string')
       expect(card.data.name).toBe('Test Character')
     })
 
     it('has data.description', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.description).toBe('string')
+      expect(card.data.description).toBe('A test character description')
     })
 
     it('has data.personality', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.personality).toBe('string')
+      expect(card.data.personality).toBe('Friendly and helpful')
     })
 
     it('has data.scenario', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.scenario).toBe('string')
+      expect(card.data.scenario).toBe('Test scenario')
     })
 
     it('has data.first_mes', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.first_mes).toBe('string')
+      expect(card.data.first_mes).toBe('Hello, welcome!')
     })
 
     it('has data.mes_example', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.mes_example).toBe('string')
+      expect(card.data.mes_example).toBe('<START>\n{{user}}: Hi\n{{char}}: Hello!')
     })
 
     it('has data.creator_notes', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.creator_notes).toBe('string')
+      expect(card.data.creator_notes).toBe('Created for testing')
     })
 
     it('has data.system_prompt', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.system_prompt).toBe('string')
+      expect(card.data.system_prompt).toBe('You are a helpful assistant')
     })
 
     it('has data.post_history_instructions', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.post_history_instructions).toBe('string')
+      expect(card.data.post_history_instructions).toBe('Continue the conversation')
     })
 
     it('has data.alternate_greetings array', () => {
       const card = createCompleteCard()
-      expect(Array.isArray(card.data.alternate_greetings)).toBe(true)
-      expect(card.data.alternate_greetings.length).toBe(2)
+      expect(card.data.alternate_greetings).toHaveLength(2)
+      expect(card.data.alternate_greetings[0]).toBe('Hi there!')
+      expect(card.data.alternate_greetings[1]).toBe('Greetings!')
     })
 
     it('has data.tags array', () => {
       const card = createCompleteCard()
-      expect(Array.isArray(card.data.tags)).toBe(true)
-      expect(card.data.tags.length).toBe(3)
+      expect(card.data.tags).toHaveLength(3)
+      expect(card.data.tags[0]).toBe('test')
+      expect(card.data.tags[1]).toBe('example')
+      expect(card.data.tags[2]).toBe('demo')
     })
 
     it('has data.creator', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.creator).toBe('string')
+      expect(card.data.creator).toBe('Test Creator')
     })
 
     it('has data.character_version', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.character_version).toBe('string')
+      expect(card.data.character_version).toBe('1.0.0')
     })
 
     it('has data.extensions object', () => {
       const card = createCompleteCard()
-      expect(typeof card.data.extensions).toBe('object')
+      expect(card.data.extensions).toEqual({ talkativeness: 0.5 })
     })
 
     it('has data.character_book optional', () => {
       const card = createCompleteCard()
-      expect(card.data.character_book).toBeDefined()
-      expect(Array.isArray(card.data.character_book?.entries)).toBe(true)
+      expect(card.data.character_book?.entries).toHaveLength(1)
+      expect(card.data.character_book?.entries[0].content).toBe('Entry content')
     })
   })
 
@@ -173,7 +175,8 @@ describe('Data Structures', () => {
     it('has entries array', () => {
       const card = createCompleteCard()
       const lorebook = card.data.character_book!
-      expect(Array.isArray(lorebook.entries)).toBe(true)
+      expect(lorebook.entries).toHaveLength(1)
+      expect(lorebook.entries[0].keys).toEqual(['keyword1', 'keyword2'])
     })
 
     it('has optional name', () => {
@@ -221,7 +224,7 @@ describe('Data Structures', () => {
     it('has extensions object', () => {
       const card = createCompleteCard()
       const lorebook = card.data.character_book!
-      expect(typeof lorebook.extensions).toBe('object')
+      expect(lorebook.extensions).toEqual({})
     })
   })
 
@@ -235,7 +238,6 @@ describe('Data Structures', () => {
         use_regex: false,
         extensions: {},
       }
-      expect(Array.isArray(entry.keys)).toBe(true)
       expect(entry.keys).toEqual(['key1', 'key2'])
     })
 
@@ -248,7 +250,7 @@ describe('Data Structures', () => {
         use_regex: false,
         extensions: {},
       }
-      expect(typeof entry.content).toBe('string')
+      expect(entry.content).toBe('This is the content')
     })
 
     it('has enabled boolean', () => {
@@ -260,7 +262,7 @@ describe('Data Structures', () => {
         use_regex: false,
         extensions: {},
       }
-      expect(typeof entry.enabled).toBe('boolean')
+      expect(entry.enabled).toBe(true)
     })
 
     it('has insertion_order number', () => {
@@ -272,7 +274,7 @@ describe('Data Structures', () => {
         use_regex: false,
         extensions: {},
       }
-      expect(typeof entry.insertion_order).toBe('number')
+      expect(entry.insertion_order).toBe(5)
     })
 
     it('has use_regex boolean', () => {
@@ -284,7 +286,7 @@ describe('Data Structures', () => {
         use_regex: true,
         extensions: {},
       }
-      expect(typeof entry.use_regex).toBe('boolean')
+      expect(entry.use_regex).toBe(true)
     })
 
     it('has optional decorators array', () => {
@@ -297,7 +299,8 @@ describe('Data Structures', () => {
         extensions: {},
         decorators: [{ type: 'depth', value: 4 }],
       }
-      expect(Array.isArray(entry.decorators)).toBe(true)
+      expect(entry.decorators).toHaveLength(1)
+      expect(entry.decorators[0]).toEqual({ type: 'depth', value: 4 })
     })
   })
 })

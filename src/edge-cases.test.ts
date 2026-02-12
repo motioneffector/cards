@@ -53,12 +53,12 @@ function createV3Card(name = 'Test'): CharacterCard {
 describe('Edge Cases', () => {
   describe('Malformed Data', () => {
     it('handles empty PNG', () => {
-      expect(() => readCard(new Uint8Array([]))).toThrow()
+      expect(() => readCard(new Uint8Array([]))).toThrow(/PNG|signature|empty|invalid/i)
     })
 
     it('handles PNG without card chunks', () => {
       const basePng = createMinimalPng()
-      expect(() => readCard(basePng)).toThrow(ParseError)
+      expect(() => readCard(basePng)).toThrow(/card|chunk|data|not found/i)
     })
 
     it('handles double-encoded base64', () => {
@@ -99,7 +99,9 @@ describe('Edge Cases', () => {
       const basePng = createMinimalPng()
       const largePng = writeCardToPng(card, basePng)
       const result = readCard(largePng)
-      expect(result.data.description.length).toBe(100000)
+      expect(result.data.description).toHaveLength(100000)
+      expect(result.data.description[0]).toBe('A')
+      expect(result.data.description[50000]).toBe('A')
     })
 
     it('handles 1000+ lorebook entries', () => {
@@ -117,7 +119,9 @@ describe('Edge Cases', () => {
       }
       const json = writeCardToJson(card)
       const result = readCardFromJson(json)
-      expect(result.data.character_book?.entries.length).toBe(1000)
+      expect(result.data.character_book?.entries).toHaveLength(1000)
+      expect(result.data.character_book?.entries[0].keys).toEqual(['key0'])
+      expect(result.data.character_book?.entries[999].keys).toEqual(['key999'])
     })
 
     it('handles very long strings', () => {
@@ -126,7 +130,9 @@ describe('Edge Cases', () => {
       card.data.description = longString
       const json = writeCardToJson(card)
       const result = readCardFromJson(json)
-      expect(result.data.description.length).toBe(1000000)
+      expect(result.data.description).toHaveLength(1000000)
+      expect(result.data.description[0]).toBe('X')
+      expect(result.data.description[500000]).toBe('X')
     })
   })
 
@@ -185,7 +191,8 @@ describe('Edge Cases', () => {
       const files = extractZip(charx)
       // Verify the asset exists (filename handling may vary)
       const cardJson = JSON.parse(decodeUTF8(files.get('card.json')!))
-      expect(cardJson.data.assets.length).toBe(1)
+      expect(cardJson.data.assets).toHaveLength(1)
+      expect(cardJson.data.assets[0].name).toBe('アイコン')
     })
 
     it('handles missing asset files', () => {

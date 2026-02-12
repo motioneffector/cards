@@ -109,7 +109,12 @@ export function writeCardToCharx(card: CharacterCard, options?: WriteCharxOption
   const files = new Map<string, Uint8Array>()
 
   // Prepare card with asset URIs updated
-  const cardCopy = JSON.parse(JSON.stringify(card)) as CharacterCard
+  let cardCopy: CharacterCard
+  try {
+    cardCopy = JSON.parse(JSON.stringify(card)) as CharacterCard
+  } catch (error) {
+    throw new Error(`Failed to serialize card: ${(error as Error).message}`)
+  }
 
   // Add assets if provided
   if (options?.assets) {

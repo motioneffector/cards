@@ -1,6 +1,6 @@
 {
   "name": "@motioneffector/cards",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Character Card V3 and Lorebook parser for AI character/world data",
   "author": "motioneffector",
   "license": "MIT",

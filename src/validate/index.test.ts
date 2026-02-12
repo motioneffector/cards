@@ -40,10 +40,7 @@ describe('validateCard()', () => {
       ;(card.data as Record<string, unknown>).name = undefined
       const result = validateCard(card)
       expect(result.valid).toBe(false)
-      expect(result.errors).toBeDefined()
-      expect(Array.isArray(result.errors)).toBe(true)
-      expect(result.errors!.length).toBeGreaterThan(0)
-      expect(result.errors?.some(e => e.includes('name'))).toBe(true)
+      expect(result.errors?.some(e => e.match(/name/i))).toBe(true)
     })
 
     it('returns valid: false for missing description', () => {
@@ -51,9 +48,7 @@ describe('validateCard()', () => {
       ;(card.data as Record<string, unknown>).description = undefined
       const result = validateCard(card)
       expect(result.valid).toBe(false)
-      expect(result.errors).toBeDefined()
-      expect(Array.isArray(result.errors)).toBe(true)
-      expect(result.errors!.length).toBeGreaterThan(0)
+      expect(result.errors?.some(e => e.match(/description/i))).toBe(true)
     })
 
     it('returns valid: false for wrong type', () => {
@@ -114,8 +109,8 @@ describe('validateCard()', () => {
       }
       const result = validateCard(card, { strict: true })
       // Valid decorator should not cause error
-      const decoratorErrors = result.errors?.filter(e => e.includes('decorator')) ?? []
-      expect(decoratorErrors).toEqual([])
+      const hasDecoratorError = result.errors?.some(e => e.includes('decorator')) === true
+      expect(hasDecoratorError).toBe(false)
     })
 
     it('validates asset URIs', () => {
@@ -144,8 +139,8 @@ describe('validateCard()', () => {
       }
       const result = validateCard(card, { strict: true })
       // Valid lorebook should pass - errors may be undefined or empty
-      const lorebookErrors = result.errors?.filter(e => e.includes('lorebook')) ?? []
-      expect(lorebookErrors).toEqual([])
+      const hasLorebookError = result.errors?.some(e => e.includes('lorebook')) === true
+      expect(hasLorebookError).toBe(false)
     })
   })
 
@@ -156,8 +151,9 @@ describe('validateCard()', () => {
       ;(card.data as Record<string, unknown>).description = undefined
       const result = validateCard(card)
       expect(result.errors).toBeDefined()
-      expect(Array.isArray(result.errors)).toBe(true)
       expect(result.errors!.length).toBeGreaterThanOrEqual(2)
+      expect(result.errors![0]).toMatch(/.+/)
+      expect(result.errors![1]).toMatch(/.+/)
     })
 
     it('errors include field path', () => {
