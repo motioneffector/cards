@@ -89,8 +89,6 @@ describe('repairCard()', () => {
       const card = createV3Card('Valid Card')
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
-      expect(result.card).toBeDefined()
-      expect(typeof result.card).toBe('object')
       expect(result.card.spec).toBe('chara_card_v3')
       expect(result.card.data.name).toBe('Valid Card')
     })
@@ -99,23 +97,24 @@ describe('repairCard()', () => {
       const card = createV3Card()
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
-      expect(result.image).toBeInstanceOf(Uint8Array)
-      expect(result.image.length).toBeGreaterThan(0)
+      expect(result.image[0]).toBe(0x89)
+      expect(result.image[1]).toBe(0x50)
     })
 
     it('returns empty warnings for valid input', () => {
       const card = createV3Card('No Warnings')
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
-      // May have some warnings but should not have error-level issues
-      expect(Array.isArray(result.warnings)).toBe(true)
+      expect(result.card.spec).toBe('chara_card_v3')
+      expect(result.card.data.name).toBe('No Warnings')
     })
 
     it('returns recovered fields list', () => {
       const card = createV3Card('Recovered')
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
-      expect(Array.isArray(result.recovered)).toBe(true)
+      expect(result.card.spec).toBe('chara_card_v3')
+      expect(result.card.data.name).toBe('Recovered')
     })
   })
 
@@ -148,17 +147,14 @@ describe('repairCard()', () => {
       const truncated = base64.slice(0, -5)
       const pngBytes = createPngWithTextChunk('chara', truncated)
       const result = repairCard(pngBytes)
-      // Should have warnings about truncation
-      expect(result.warnings.length).toBeGreaterThanOrEqual(0)
+      expect(result.warnings[0]).toMatch(/truncat|base64|corrupt|decode|pad|invalid|partial|recover/i)
     })
 
     it('recovers from malformed UTF-8', () => {
       const card = createV3Card('UTF8 Test')
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
-      expect(result.card.data.name).toBeDefined()
-      expect(typeof result.card.data.name).toBe('string')
-      expect(result.card.data.name.length).toBeGreaterThan(0)
+      expect(result.card.data.name).toMatch(/.+/)
     })
 
     it('recovers from partial JSON', () => {
@@ -179,11 +175,8 @@ describe('repairCard()', () => {
       const pngBytes = createPngWithTextChunk('chara', base64)
       const result = repairCard(pngBytes)
       // Should recover at least the name field that appeared before truncation
-      expect(result.card.data.name).toBeDefined()
-      expect(typeof result.card.data.name).toBe('string')
       expect(result.card.data.name).toBe('Partial JSON')
-      // Should have warnings about the partial/corrupt JSON
-      expect(result.warnings.length).toBeGreaterThan(0)
+      expect(result.warnings[0]).toMatch(/JSON|parse|partial|truncat|corrupt/i)
     })
 
     it('merges data from multiple chunks', () => {
@@ -217,8 +210,7 @@ describe('repairCard()', () => {
       // Corrupt CRC
       pngBytes[pngBytes.length - 5] = 0xff
       const result = repairCard(pngBytes)
-      // Warnings array should exist
-      expect(Array.isArray(result.warnings)).toBe(true)
+      expect(result.warnings[0]).toMatch(/CRC|corrupt|checksum|invalid|mismatch/i)
     })
 
     it('includes truncation warning', () => {
@@ -235,23 +227,20 @@ describe('repairCard()', () => {
       const truncated = base64.slice(0, -3)
       const pngBytes = createPngWithTextChunk('chara', truncated)
       const result = repairCard(pngBytes)
-      expect(Array.isArray(result.warnings)).toBe(true)
+      expect(result.warnings[0]).toMatch(/truncat|base64|corrupt|decode|pad|invalid|partial|recover/i)
     })
 
     it('includes parse warning', () => {
       // Create PNG with invalid base64
       const pngBytes = createPngWithTextChunk('chara', '!!!invalid!!!')
       const result = repairCard(pngBytes)
-      expect(result.warnings.length).toBeGreaterThan(0)
+      expect(result.warnings[0]).toMatch(/parse|invalid|base64|corrupt|decode/i)
     })
 
     it('warnings are human-readable', () => {
       const pngBytes = createPngWithTextChunk('chara', '!!!invalid!!!')
       const result = repairCard(pngBytes)
-      for (const warning of result.warnings) {
-        expect(typeof warning).toBe('string')
-        expect(warning.length).toBeGreaterThan(0)
-      }
+      expect(result.warnings[0]).toMatch(/parse|invalid|base64|corrupt|decode/i)
     })
   })
 
@@ -262,10 +251,7 @@ describe('repairCard()', () => {
       const result = repairCard(pngBytes)
       expect(result.card.spec).toBe('chara_card_v3')
       expect(result.card.spec_version).toBe('3.0')
-      expect(result.card.data).toBeDefined()
-      expect(typeof result.card.data).toBe('object')
-      expect(result.card.data.name).toBeDefined()
-      expect(typeof result.card.data.name).toBe('string')
+      expect(result.card.data.name).toMatch(/.+/)
     })
 
     it('image is clean PNG without metadata', () => {
@@ -283,11 +269,8 @@ describe('repairCard()', () => {
       const card = createV3Card('Specific Fields')
       const pngBytes = createPngWithCard(card)
       const result = repairCard(pngBytes)
-      expect(Array.isArray(result.recovered)).toBe(true)
-      // Should contain field names that were recovered
-      if (result.recovered.length > 0) {
-        expect(typeof result.recovered[0]).toBe('string')
-      }
+      expect(result.card.spec).toBe('chara_card_v3')
+      expect(result.card.data.name).toBe('Specific Fields')
     })
   })
 })

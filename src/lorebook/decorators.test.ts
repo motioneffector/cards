@@ -135,6 +135,8 @@ describe('Decorator System', () => {
       const content = '@@depth 4\n@@role system\n@@activate\nContent here'
       const result = parseDecorators(content)
       expect(result.decorators).toHaveLength(3)
+      expect(result.decorators[0]).toEqual({ type: 'depth', value: 4 })
+      expect(result.decorators[1]).toEqual({ type: 'role', value: 'system' })
       expect(result.content).toBe('Content here')
     })
 

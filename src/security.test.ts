@@ -129,9 +129,11 @@ describe('Security: Prototype Pollution', () => {
     const result = repairCard(pngBytes)
 
     // Verify prototype was not polluted
-    expect((Object.prototype as any).polluted).toBeUndefined()
-    expect(({} as any).polluted).toBeUndefined()
-    expect(result.card.data).not.toHaveProperty('__proto__')
+    const protoPolluted = Object.prototype.hasOwnProperty.call(Object.prototype, 'polluted')
+    expect(protoPolluted).toBe(false)
+    const emptyPolluted = Object.prototype.hasOwnProperty.call({}, 'polluted')
+    expect(emptyPolluted).toBe(false)
+    expect(Object.hasOwn(result.card.data, '__proto__')).toBe(false)
   })
 
   it('prevents prototype pollution via constructor', () => {
@@ -152,8 +154,9 @@ describe('Security: Prototype Pollution', () => {
 
     const result = repairCard(pngBytes)
 
-    expect((Object.prototype as any).polluted).toBeUndefined()
-    expect(result.card.data).not.toHaveProperty('constructor')
+    const protoPolluted2 = Object.prototype.hasOwnProperty.call(Object.prototype, 'polluted')
+    expect(protoPolluted2).toBe(false)
+    expect(Object.hasOwn(result.card.data, 'constructor')).toBe(false)
   })
 })
 

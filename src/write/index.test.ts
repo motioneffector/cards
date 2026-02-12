@@ -111,7 +111,7 @@ describe('writeCardToPng()', () => {
       const result = writeCardToPng(card, basePng)
       const ccv3Chunk = findTextChunk(result, 'ccv3')
       expect(ccv3Chunk.found).toBe(true)
-      expect(ccv3Chunk.data.length).toBeGreaterThan(0)
+      expect(ccv3Chunk.data).toMatch(/^[A-Za-z0-9+/=]+$/)
     })
 
     it('serializes card to JSON', () => {
@@ -147,10 +147,10 @@ describe('writeCardToPng()', () => {
       const result = writeCardToPng(card, basePng)
       // Verify chunks have CRC values populated (functional test)
       const chunks = readChunks(result)
-      expect(chunks.length).toBeGreaterThan(0)
-      // All chunks should have CRC values (non-zero for most chunks)
+      expect(chunks[0]?.type).toBe('IHDR')
+      // All chunks should have non-zero CRC values
       for (const chunk of chunks) {
-        expect(typeof chunk.crc).toBe('number')
+        expect(chunk.crc !== 0).toBe(true)
       }
       // Most importantly, the PNG should be readable back
       const readBack = readCard(result)
@@ -305,7 +305,8 @@ describe('writeCardToPng()', () => {
       const decoded = Buffer.from(ccv3Chunk.data, 'base64').toString('utf-8')
       const parsed = JSON.parse(decoded)
       // Decorators should still be array
-      expect(Array.isArray(parsed.data.character_book.entries[0].decorators)).toBe(true)
+      expect(parsed.data.character_book.entries[0].decorators).toHaveLength(1)
+      expect(parsed.data.character_book.entries[0].decorators[0]).toEqual({ type: 'depth', value: 4 })
     })
 
     it('decorator order preserved', () => {
@@ -348,8 +349,8 @@ describe('writeCardToJson()', () => {
     it('returns JSON string', () => {
       const card = createV3Card()
       const result = writeCardToJson(card)
-      expect(typeof result).toBe('string')
-      expect(() => JSON.parse(result)).not.toThrow()
+      const parsed = JSON.parse(result)
+      expect(parsed.spec).toBe('chara_card_v3')
     })
 
     it('includes spec field', () => {
@@ -548,8 +549,8 @@ describe('writeLorebookToJson()', () => {
         extensions: {},
       }
       const result = writeLorebookToJson(lorebook)
-      expect(typeof result).toBe('string')
-      expect(() => JSON.parse(result)).not.toThrow()
+      const parsed = JSON.parse(result)
+      expect(parsed.spec).toBe('lorebook_v3')
     })
 
     it('wraps in lorebook_v3 spec', () => {
@@ -564,7 +565,8 @@ describe('writeLorebookToJson()', () => {
       const parsed = JSON.parse(result)
       expect(parsed.spec).toBe('lorebook_v3')
       expect(parsed.data.name).toBe('Wrapped Book')
-      expect(parsed.data.entries.length).toBe(1)
+      expect(parsed.data.entries).toHaveLength(1)
+      expect(parsed.data.entries[0].keys).toEqual(['wrap'])
     })
   })
 })
